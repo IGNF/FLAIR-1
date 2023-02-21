@@ -1,0 +1,3 @@
+The .ZIP folder predictions_TOY.zip is an example on expected format submission for the FLAIR#1 challenge. 
+The folder contains only 50 .tif images corresponding to predictions on the test set of the TOY dataset.
+The final submission on Codalab should have the same structure but contain 15,700 .tif images corresponding to predictions on the full test dataset available after registration to the challenge.
