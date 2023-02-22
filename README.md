@@ -1,40 +1,77 @@
+# Semantic segmentation and domain adaptation challenge proposed by the French National Institute of Geographical and Forest Information (IGN).
 
-﻿#####################################
- FLAIR-one baseline : starting-kit 
-#####################################
+Participate in obtaining more accurate maps for a more comprehensive description and a better understanding of our environment! Come push the limits of state-of-the-art semantic segmentation approaches on a large and challenging dataset.
+
+## Important links
+
+**Access to the challenge:** https://codalab.lisn.upsaclay.fr/competitions/8769#learn_the_details
+
+**Data paper:** https://arxiv.org/pdf/2211.12979.pdf
+
+**Toy dataset:** https://drive.google.com/drive/folders/1v9E66U7uwJ2ubhkFEP73poGOlbIP-hKb?usp=share_link
+
+**Full dataset:**?
+
+![Alt bandeau FLAIR-IGN](images/visuel_FLAIR_bandeau.jpg?raw=true)
+
+## Context
+
+We present here a large dataset ( >20 billion pixels) of aerial imagery, topographic information and land cover (buildings, water, forest, agriculture...) annotations with the aim to further advance research on semantic segmentation , domain adaptation and transfer learning. Countrywide remote sensing aerial imagery is by necessity acquired at different times and dates and under different conditions. Likewise, at large scales, the characteristics of semantic classes can vary depending on location and become heterogenous. This opens up challenges for the spatial and temporal generalization of deep learning models!
+
+<figure style="text-align:center">
+  <img
+  src="images/FR_ortho_and_dataset.png"
+  alt="ortho image and train/test geographical repartition">
+  <figcaption>ORTHO HR® aerial image cover of France (left) and train and test spatial domains of the dataset (right).</figcaption>
+</figure>
+
+
+## Data and baseline
+
+The FLAIR-one dataset consists of 77,412 high resolution (0.2 m spatial resolution) patches with 13 semantic classes (19 original classes remapped to 13, see the associated paper in the starting kit for explanation). The dataset covers a total of approximatly 800 km², with patches that have been sampled accross the entire metropolitan French territory to be illustrating the different climate and landscapes (spatial domains). The aerial images included in the dataset were acquired during different months and years (temporal domains).
+
+A U-Net architecture with a pre-trained ResNet34 encoder from the pytorch segmentation models library is used for the baselines. The used architecture allows integration of patch-wise metadata information and employs commonly used image data augmentation techniques. Results are presented in the technical description of the dataset.
+
+<figure style="text-align:center">
+  <img
+  src="images/patches.png"
+  alt=" patches examples">
+  <figcaption>Example of input data (first three columns) and corresponding supervision masks (last column).</figcaption>
+</figure>
+
+## FLAIR-one baseline: starting-kit 
 
 
 The starting-kit contains :
 
-
-|_ toy_dataset_flair-one (folder): 
+- toy_dataset_flair-one (folder): 
 		sample of the full dataset with same structure and naming convention.
 
-|_ metadata (folder): 
+- metadata (folder): 
 		contains a .json file with the metadata associated to provided patches.
 
-|_ py_module (folder): 
+-  py_module (folder): 
 		contains .py files defining the modules used in the notebook.
 
-|_ flair-one-baseline.ipynb (notebook): 
+- flair-one-baseline.ipynb (notebook): 
 		a notebook allowing to launch the py_module, explore the data and train the baseline.
 
 
-
-
-
 -------------------------------
-!!  flair-one-baseline.ipynb !!  : You can use this notebook in two different ways. Carefully read the following: 
--------------------------------
+### **How to use flair-one-baseline.ipynb** You can use this notebook in two different ways. Carefully read the following: 
 
 
-## option 1 : locally
+### Option 1: locally
 
 This option is more practical as the data is relatively volumineous. 
 To do so, you just need to download the whole content of the starting-kit to your local machine and launch the notebook with a devoted software (jupyter notebook, jupyter lab, visual studio, ...) from within the starting-kit folder.
 
-::  best practice is to create a new environment, e.g., with conda create -n flair-one-baseline python=3.9
-::  the following libraries are needed (versions indicated ensure a working environment): 
+The best practice is to create a new environment, e.g., with conda:
+
+`create -n flair-one-baseline python=3.9`
+
+
+The following libraries are needed (versions indicated ensure a working environment): 
 
 	python==3.9.0
 	matplotlib==3.5.2
@@ -50,16 +87,21 @@ To do so, you just need to download the whole content of the starting-kit to you
 
 
 
-## option 2 : Google Colab
+### Option 2: Google Colab
 
 If you choose to use the notebook from the starting-kit in Google Colab, some steps are needed:
 
-:: create a link of the flair-one-starting-kit shared directory to your drive (right click and "create link in Drive").
+- Create a link of the flair-one-starting-kit shared directory to your drive (right click and "create link in Drive").
 Alternatively, you can download and upload the whole content of the starting-kit into your drive.
 
-:: open the flair-one-baseline.ipynb notebook in Colab
-:: if you are using a link to the shared notebook it has read only rights: select File --> Save a copy in Drive (will make a copy in your drive allowing read and write)
-:: select Runtime --> Change runtime type and select GPU
-:: uncomment the first notebook cell and run it (check for the path if you are using a copy of the content). 
+- Open the flair-one-baseline.ipynb notebook in Colab
+- If you are using a link to the shared notebook it has read only rights: select File --> Save a copy in Drive (will make a copy in your drive allowing read and write)
+- Select Runtime --> Change runtime type and select GPU
+- Uncomment the first notebook cell and run it (check for the path if you are using a copy of the content). 
 This will mount your drive to the local Colab VM and allow accessing the dataset files. 
 The cell will also install missing libraries on the VM needed to run the baseline code.  
+
+
+## Contact
+
+For any requests, questions, suggestions, feel free to contact us at ai-challenge@ign.fr
