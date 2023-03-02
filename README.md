@@ -66,16 +66,10 @@ And an example of a semantic
 segmentation of an urban and coastal area in the D076 spatial
 domain, obtained with the baseline trained model:
 
-<div style="display:flex">
-     <div style="flex:1;padding-right:10px;">
-          <img src="images/D076_2019_UU_S1_4_rvb.png" width="300"/>
-     </div>
-     <div style="flex:1;padding-left:10px;">
-          <img src="images/D076_2019_UU_S1_4_pred_rvb.png" width="300"/>
-     </div>
-</div>
-
 <figure style="text-align:center">
+ <img
+  src="images/image_pred_rvb.png"
+  alt="Confusion matrix">
   <figcaption>Example of a semantic segmentation result using the baseline model</figcaption>
 </figure>
 
