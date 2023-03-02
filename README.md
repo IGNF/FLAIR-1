@@ -26,11 +26,9 @@ We present here a large dataset ( >20 billion pixels) of aerial imagery, top
 </figure>
 
 
-## Data and baseline
+## Data
 
 The FLAIR-one dataset consists of 77,412 high resolution (0.2 m spatial resolution) patches with 13 semantic classes (19 original classes remapped to 13, see the associated paper in the starting kit for explanation). The dataset covers a total of approximatly 800 km², with patches that have been sampled accross the entire metropolitan French territory to be illustrating the different climate and landscapes (spatial domains). The aerial images included in the dataset were acquired during different months and years (temporal domains).
-
-A U-Net architecture with a pre-trained ResNet34 encoder from the pytorch segmentation models library is used for the baselines. The used architecture allows integration of patch-wise metadata information and employs commonly used image data augmentation techniques. Results are presented in the technical description of the dataset.
 
 <figure style="text-align:center">
   <img
@@ -39,8 +37,58 @@ A U-Net architecture with a pre-trained ResNet34 encoder from the pytorch segmen
   <figcaption>Example of input data (first three columns) and corresponding supervision masks (last column).</figcaption>
 </figure>
 
-## FLAIR-one baseline: starting-kit 
+## Baseline and challenge leaderboard
 
+A U-Net architecture with a pre-trained ResNet34 encoder from the pytorch segmentation models library is used for the baselines. The used architecture allows integration of patch-wise metadata information and employs commonly used image data augmentation techniques. It has about 24.4M parameters and it is implemented using the _segmentation-models-pytorch_ library. The results are evaluated with an Intersection Over Union (IoU) metric. More detailed results are presented in the technical description of the dataset.
+
+### Baseline results 
+
+| Model | mIoU 
+------------ | ------------- 
+| baseline | 0.5443±0.0014
+| baseline + _bottom + augmentation_ | 0.5570±0.0027
+
+The _bottom_ strategy refers to the adding a MLP encoded
+metadata to the last layer of the architecture’s encoder. The
+_augmentation_ strategy uses the three geometrical augmenta-
+tions described in the data paper with a probability of 0.5.
+
+Here is the confusion matrix obtained over the testing data.
+
+<figure style="text-align:center">
+  <img
+  src="images/FLAIR-1_baseline_heatmap.png"
+  alt="Confusion matrix">
+  <figcaption>Baseline confusion matrix of the test dataset normalized by rows.</figcaption>
+</figure>
+
+And an example of a semantic
+segmentation of an urban and coastal area in the D076 spatial
+domain, obtained with the baseline trained model:
+
+<div style="display:flex">
+     <div style="flex:1;padding-right:10px;">
+          <img src="images/D076_2019_UU_S1_4_rvb.png" width="300"/>
+     </div>
+     <div style="flex:1;padding-left:10px;">
+          <img src="images/D076_2019_UU_S1_4_pred_rvb.png" width="300"/>
+     </div>
+</div>
+
+<figure style="text-align:center">
+  <figcaption>Example of a semantic segmentation result using the baseline model</figcaption>
+</figure>
+
+### Challenge results
+
+Here we will compile the results of the challenge.
+
+## Acknowledgment
+
+This work was performed using HPC/AI resources from
+GENCI-IDRIS (Grant 2022-A0131013803).
+
+# FLAIR-one baseline: starting-kit 
 
 The starting-kit contains :
 
