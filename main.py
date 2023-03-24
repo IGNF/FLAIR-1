@@ -36,7 +36,7 @@ def step_loading(path_data, path_metadata_file: str, use_metadata: bool) -> dict
     train, val, test = load_data(path_data, path_metadata_file, use_metadata=use_metadata)
     return train, val, test
 
-def train_model(config, dict_train, dict_val, dict_test):
+def get_data_module(config, dict_train, dict_val, dict_test):
     if config["use_augmentation"] == True:
         transform_set = A.Compose([A.VerticalFlip(p=0.5),
                                 A.HorizontalFlip(p=0.5),
@@ -51,15 +51,18 @@ def train_model(config, dict_train, dict_val, dict_test):
         batch_size = config["batch_size"],
         num_workers = config["num_workers"],
         drop_last = True,
-        num_classes = config["data"]["num_classes"],
+        num_classes = config["num_classes"],
         num_channels = 5,
         use_metadata = config["use_metadata"],
         use_augmentations = transform_set)
     
+    return dm
+
+def get_segmentation_module(config):
     ## Define model and training parameters
 
     model = SMP_Unet_meta(n_channels = 5, 
-                          n_classes = dm.num_classes, 
+                          n_classes = config["num_classes"], 
                           use_metadata = config["use_metadata"])
     
     if config["use_weights"] == True:
@@ -83,13 +86,18 @@ def train_model(config, dict_train, dict_val, dict_test):
 
     seg_module = SegmentationTask(
         model = model,
-        num_classes = dm.num_classes,
+        num_classes = config["num_classes"],
         criterion = criterion,
         optimizer = optimizer,
         scheduler = scheduler,
         use_metadata=config["use_metadata"]
     )
 
+    return seg_module
+
+
+def train_model(config, data_module, seg_module):
+        
     ## Define callbacks
 
     ckpt_callback = ModelCheckpoint(
@@ -139,11 +147,14 @@ def train_model(config, dict_train, dict_val, dict_test):
         enable_progress_bar = config["enable_progress_bar"],
     )
 
-    trainer.fit(seg_module, datamodule=dm)
+    trainer.fit(seg_module, datamodule=data_module)
 
     ## Check metrics on validation set
 
-    trainer.validate(seg_module, datamodule=dm)
+    trainer.validate(seg_module, datamodule=data_module)
+
+
+def predict(config, data_module, seg_module):
 
     ## Inference and predictions export
 
@@ -162,7 +173,7 @@ def train_model(config, dict_train, dict_val, dict_test):
         enable_progress_bar = config["enable_progress_bar"],
     )
 
-    trainer.predict(seg_module, datamodule=dm)
+    trainer.predict(seg_module, datamodule=data_module)
     print('--  [FINISHED.]  --', f'output dir : {out_dir}', sep='\n')
 
 if __name__ == "__main__":
@@ -175,12 +186,22 @@ if __name__ == "__main__":
     seed_everything(2022, workers=True)
 
     ## Define data sets
+    # TODO modify call below with right data path configuration
     dict_train, dict_val, dict_test = step_loading(config["path_data"], config["path_metadata_file"], use_metadata=config["use_metadata"])  
     print_recap(config, dict_train, dict_val, dict_test)
+    
+    ## Define modules
+
+    dm = get_data_module(config, dict_train, dict_val, dict_test)
+    seg_module = get_segmentation_module(config)
 
     ## Train model
 
-    train_model(config, dict_train, dict_val, dict_test)
+    train_model(config, dm, seg_module)
+
+    ## Compute predictions
+
+    predict(config, dm, seg_module)
 
     ## Compute mIoU over the predictions
 

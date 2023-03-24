@@ -1,8 +1,12 @@
-data:
-  path_data: ""
-  out_folder: ""
-  out_folder_name: ""
-  num_classes: 13
+data_path:
+  aerial_train: ""
+  aerial_test: ""
+  labels_train: ""
+  labels_test: ""
+  
+out_folder: ""
+out_folder_name: ""
+num_classes: 13
 
 use_weights: True
 class_weights: [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0]

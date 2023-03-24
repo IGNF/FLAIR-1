@@ -104,36 +104,6 @@ def load_data(path_data, path_metadata, val_percent=0.8, use_metadata=True):
     
     return dict_train, dict_val, dict_test
 
-
-
-
-def subset_debug(train, val, test, subset_size, use_metadata=True):
-    
-    subset_train = int(np.ceil(subset_size*0.6))
-    subset_val   = int(np.ceil(subset_size*0.2))
-    subset_test  = int(np.ceil(subset_size*0.2))
-    idx_train = random.sample(range(0, len(train['IMG'])), subset_train)
-    idx_val = random.sample(range(0, len(val['IMG'])), subset_val)
-    idx_test = random.sample(range(0, len(test['IMG'])), subset_test)
-    if use_metadata == True:
-        dict_train = {'IMG':[train["IMG"][u] for u in random.sample(range(0, len(train['IMG'])), subset_train)],
-                     'MSK':[train["MSK"][u] for u in random.sample(range(0, len(train['IMG'])), subset_train)],
-                     'MTD':[train["MTD"][u] for u in random.sample(range(0, len(train['IMG'])), subset_train)]}
-        dict_val = {'IMG':[val["IMG"][u] for u in random.sample(range(0, len(val['IMG'])), subset_val)],
-                     'MSK':[val["MSK"][u] for u in random.sample(range(0, len(val['IMG'])), subset_val)],
-                     'MTD':[val["MTD"][u] for u in random.sample(range(0, len(val['IMG'])), subset_val)]}
-        dict_test  = {'IMG':[test["IMG"][u] for u in random.sample(range(0, len(test['IMG'])), subset_test)],
-                     'MTD':[test["MTD"][u] for u in random.sample(range(0, len(test['IMG'])), subset_test)]}
-    else:
-        dict_train = {'IMG':[train["IMG"][u] for u in random.sample(range(0, len(train['IMG'])), subset_train)],
-                     'MSK':[train["MSK"][u] for u in random.sample(range(0, len(train['IMG'])), subset_train)]}
-        dict_val = {'IMG':[val["IMG"][u] for u in random.sample(range(0, len(val['IMG'])), subset_val)],
-                     'MSK':[val["MSK"][u] for u in random.sample(range(0, len(val['IMG'])), subset_val)]}
-        dict_test  = {'IMG':[test["IMG"][u] for u in random.sample(range(0, len(test['IMG'])), subset_test)]}  
-        
-    return dict_train, dict_val, dict_test
-
-
 def read_config(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
