@@ -77,10 +77,7 @@ domain, obtained with the baseline trained model:
 
 Here we will compile the results of the challenge.
 
-## Acknowledgment
 
-This work was performed using HPC/AI resources from
-GENCI-IDRIS (Grant 2022-A0131013803).
 
 # FLAIR-one baseline: starting-kit 
 
@@ -112,7 +109,6 @@ The best practice is to create a new environment, e.g., with conda:
 
 `create -n flair-one-baseline python=3.9`
 
-
 The following libraries are needed (versions indicated ensure a working environment): 
 
 	python==3.9.0
@@ -142,6 +138,27 @@ Alternatively, you can download and upload the whole content of the starting-kit
 - Uncomment the first notebook cell and run it (check for the path if you are using a copy of the content). 
 This will mount your drive to the local Colab VM and allow accessing the dataset files. 
 The cell will also install missing libraries on the VM needed to run the baseline code.  
+
+
+
+## Reference
+Please include a citation to the following paper if you use the FLAIR #1 dataset:
+
+```
+@article{garioud2022flair1,
+  doi = {10.13140/RG.2.2.30183.73128/1},
+  url = {https://arxiv.org/pdf/2211.12979.pdf},
+  author = {Garioud, Anatol and Peillet, Stéphane and Bookjans, Eva and Giordano, Sébastien and Wattrelos, Boris},
+  title = {FLAIR #1: semantic segmentation and domain adaptation dataset},
+  publisher = {arXiv},
+  year = {2022}
+}
+```
+
+## Acknowledgment
+
+This work was performed using HPC/AI resources from
+GENCI-IDRIS (Grant 2022-A0131013803).
 
 
 ## Contact
