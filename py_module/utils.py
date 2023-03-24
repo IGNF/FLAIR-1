@@ -6,6 +6,7 @@ import json
 import random
 from random import shuffle
 import re
+import yaml
 
 
 
@@ -131,3 +132,22 @@ def subset_debug(train, val, test, subset_size, use_metadata=True):
         dict_test  = {'IMG':[test["IMG"][u] for u in random.sample(range(0, len(test['IMG'])), subset_test)]}  
         
     return dict_train, dict_val, dict_test
+
+
+def read_config(file_path):
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
+    
+
+@rank_zero_only
+def print_recap(config, dict_train, dict_val, dict_test):
+    print('\n+'+'='*80+'+', 'Model name: ' + config["out_model_name"], '+'+'='*80+'+', f"{'[---TASKING---]'}", sep='\n')
+    for info, val in zip(["use weights", "use metadata", "use augmentation"], [config["use_weights"], config["use_metadata"], config["use_augmentation"]]): 
+        print(f"- {info:25s}: {'':3s}{val}")
+    print('\n+'+'-'*80+'+', f"{'[---DATA SPLIT---]'}", sep='\n')
+    for split_name, d in zip(["train", "val", "test"], [dict_train, dict_val, dict_test]): 
+        print(f"- {split_name:25s}: {'':3s}{len(d['IMG'])} samples")
+    print('\n+'+'-'*80+'+', f"{'[---HYPER-PARAMETERS---]'}", sep='\n')
+    for info, val in zip(["batch size", "learning rate", "epochs", "nodes", "GPU per nodes", "accelerator", "workers"], [config["batch_size"], config["learning_rate"], config["num_epochs"], config["num_nodes"], config["gpus_per_node"], config["accelerator"], config["num_workers"]]): 
+        print(f"- {info:25s}: {'':3s}{val}")        
+    print('\n+'+'-'*80+'+', '\n')

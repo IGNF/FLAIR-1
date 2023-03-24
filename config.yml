@@ -1,0 +1,23 @@
+data:
+  path_data: ""
+  out_folder: ""
+  out_folder_name: ""
+  num_classes: 13
+
+use_weights: True
+class_weights: [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0]
+use_metadata: False
+use_augmentation: False
+
+batch_size: 2
+learning_rate: 0.02
+num_epochs: 3
+
+accelerator: gpu
+gpu_per_node: 1
+num_nodes: 1
+strategy: None 
+num_workers: 1
+
+enable_progress_bar: True
+progress_rate: 10
