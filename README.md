@@ -4,13 +4,12 @@ Participate in obtaining more accurate maps for a more comprehensive description
 
 ## Important links
 
-**Access to the challenge:** https://codalab.lisn.upsaclay.fr/competitions/8769#learn_the_details
-
 **Data paper:** https://arxiv.org/pdf/2211.12979.pdf
 
-**Toy dataset:** https://drive.google.com/drive/folders/1v9E66U7uwJ2ubhkFEP73poGOlbIP-hKb?usp=share_link
+**Challenge page :** https://codalab.lisn.upsaclay.fr/competitions/8769#learn_the_details [!CLOSED]
 
-**Full dataset:**?
+**Dataset link :** : https://ignf.github.io/FLAIR-Challenges/
+
 
 ![Alt bandeau FLAIR-IGN](images/visuel_FLAIR_bandeau.jpg?raw=true)
 
