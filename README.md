@@ -23,13 +23,16 @@ Participate in obtaining more accurate maps for a more comprehensive description
 
 The FLAIR #1 dataset is sampled countrywide and is composed of over 20 billion annotated pixels, acquired over three years and different months (spatio-temporal domains). The dataset is available to download <a href="https://ignf.github.io/FLAIR-Challenges/">here.</a> It consists of 512 x 512 patches with 13 (baselines) or 19 (full) semantic classes (see associated datapaper). Each patch has 5 channels (RVB-Infrared-Elevation). 
 
-<figure style="text-align:center">
+<br>
+
+<p align='center'>
+<figure>
   <img
   src="images/FLAIR-1_spatiotemporal.png"
   alt="ortho image and train/test geographical repartition">
   <figcaption>ORTHO HR® aerial image cover of France (left), train and test spatial domains of the dataset (middle) and acquisition months defining temporal domains (right).</figcaption>
 </figure>
-
+</p>
 
 
 
