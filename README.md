@@ -25,14 +25,14 @@ The FLAIR #1 dataset is sampled countrywide and is composed of over 20 billion a
 
 <br>
 
-<p align='center'>
-<figure>
+
+<figure style="text-align:center">
   <img
   src="images/FLAIR-1_spatiotemporal.png"
   alt="ortho image and train/test geographical repartition">
   <figcaption>ORTHO HR® aerial image cover of France (left), train and test spatial domains of the dataset (middle) and acquisition months defining temporal domains (right).</figcaption>
 </figure>
-</p>
+
 
 <br>
 
