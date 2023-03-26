@@ -35,14 +35,14 @@ The FLAIR #1 dataset is sampled countrywide and is composed of over 20 billion a
 
 
 
-
+<p align="center">
 <figure style="text-align:center">
   <img style="width:70%",
   src="images/patches.png"
   alt=" patches examples">
   <figcaption>Example of input data (first three columns) and corresponding supervision masks (last column).</figcaption>
 </figure>
-
+</p>
 <br>
 
 
@@ -56,13 +56,14 @@ The _metadata_ strategy refers encoding metadata with a shallow MLP and concaten
 Example of a semantic segmentation of an urban and coastal area in the D076 spatial
 domain, obtained with the baseline trained model:
 
+<p align="center">
 <figure style="text-align:center">
  <img
   src="images/image_pred_rvb.png"
   alt="Confusion matrix">
   <figcaption>Example of a semantic segmentation result using the baseline model</figcaption>
 </figure>
-
+</p>
 
 <br>
 
@@ -92,13 +93,14 @@ You can either use :
 
 The baseline U-Net with ResNet34 backbone obtains the following confusion matrix: 
 
+<p align="center">
 <figure style="text-align:center">
   <img style="width:50%",
   src="images/FLAIR-1_baseline_heatmap.png"
   alt="Confusion matrix">
   <figcaption>Baseline confusion matrix of the test dataset normalized by rows.</figcaption>
 </figure>
-
+</p>
 
 ## Reference
 Please include a citation to the following paper if you use the FLAIR #1 dataset:
