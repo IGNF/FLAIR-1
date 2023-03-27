@@ -76,7 +76,7 @@ The `config.yml` file controls paths, hyperparameters and computing ressources. 
 You can either use : 
 
 - ```
-  main.py --conf_file=config.yml
+  main.py --config_file=config.yml
   ```
 
 -  use the `flair-one-baseline.ipynb` notebook guiding you trough data visualization, training and testing.
