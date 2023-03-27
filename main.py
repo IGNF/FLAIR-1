@@ -191,8 +191,7 @@ if __name__ == "__main__":
     seed_everything(2022, workers=True)
 
     ## Define data sets
-    # TODO modify call below with right data path configuration
-    dict_train, dict_val, dict_test = step_loading(config["path_data"], config["path_metadata_file"], use_metadata=config["use_metadata"])  
+    dict_train, dict_val, dict_test = step_loading(config["data"], use_metadata=config["use_metadata"])  
     print_recap(config, dict_train, dict_val, dict_test)
     
     ## Define modules
