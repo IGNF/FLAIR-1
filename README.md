@@ -61,7 +61,7 @@ domain, obtained with the baseline trained model:
 
 
 <p align="center">
-  <img width="90%" src="images/image_pred_rvb.png">
+  <img width="100%" src="images/image_pred_rvb.png">
   <br>
   <em>Example of a semantic segmentation result using the baseline model.</em>
 </p>
