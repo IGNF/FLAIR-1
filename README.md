@@ -11,11 +11,11 @@ Participate in obtaining more accurate maps for a more comprehensive description
   
 <h2 style="margin-top:5px;">Important links</h2>
 
-**Datapaper:** https://arxiv.org/pdf/2211.12979.pdf
+`**Datapaper:**` https://arxiv.org/pdf/2211.12979.pdf
 
-**Dataset links :** https://ignf.github.io/FLAIR-Challenges/
+`**Dataset links :**` https://ignf.github.io/FLAIR-Challenges/
 
-**Challenge page :** https://codalab.lisn.upsaclay.fr/competitions/8769#learn_the_details [🛑 Inscription closed!]
+`**Challenge page :**` https://codalab.lisn.upsaclay.fr/competitions/8769#learn_the_details [🛑 Inscription closed!]
 
 </div>
 
