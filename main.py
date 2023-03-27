@@ -24,7 +24,7 @@ except ImportError:
 import albumentations as A
 
 #flair-one baseline modules 
-from py_module.utils import load_data, read_config, print_recap
+from py_module.utils import load_data, read_config, print_recap, print_metrics
 from py_module.datamodule import OCS_DataModule
 from py_module.model import SMP_Unet_meta
 from py_module.task_module import SegmentationTask
@@ -209,10 +209,10 @@ if __name__ == "__main__":
 
     ## Compute mIoU over the predictions
 
-    truth_msk = './reference/'
-    pred_msk  = './predictions/'
-    mIou = generate_miou(truth_msk, pred_msk)
-    print(mIou)
+    truth_msk = config['data']['path_labels_test']
+    pred_msk  = os.path.join(out_dir, "predictions"+"_"+config['outputs']["out_model_name"])
+    mIou, ious = generate_miou(truth_msk, pred_msk)
+    print_metrics(mIou, ious)
 
     
 
