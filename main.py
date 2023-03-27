@@ -4,7 +4,8 @@ import numpy as np
 import yaml
 import json
 import random
-from pathlib import Path 
+from pathlib import Path
+import argparse 
 
 #deep learning
 import torch
@@ -23,12 +24,15 @@ except ImportError:
 import albumentations as A
 
 #flair-one baseline modules 
-from py_module.utils import load_data, subset_debug, read_config, print_recap
+from py_module.utils import load_data, read_config, print_recap
 from py_module.datamodule import OCS_DataModule
 from py_module.model import SMP_Unet_meta
 from py_module.task_module import SegmentationTask
 from py_module.writer import PredictionWriter
 from py_module.generate_miou import generate_miou
+
+argParser = argparse.ArgumentParser()
+argParser.add_argument("--config_file", help="Path to the .yml config file")
 
 @rank_zero_only
 def step_loading(path_data, path_metadata_file: str, use_metadata: bool) -> dict:
@@ -177,9 +181,10 @@ def predict(config, data_module, seg_module):
     print('--  [FINISHED.]  --', f'output dir : {out_dir}', sep='\n')
 
 if __name__ == "__main__":
+
+    args = argParser.parse_args()
   
-    config_path = "/home/MValette/Documents/Challenge_FLAIR2/flair-one-starting-kit/config.yml"
-    config = read_config()
+    config = read_config(args.config_file)
 
     out_dir = Path(config["out_folder"], config["out_model_name"])
     out_dir.mkdir(parents=True, exist_ok=True)
