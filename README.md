@@ -3,7 +3,7 @@
 Participate in obtaining more accurate maps for a more comprehensive description and a better understanding of our environment! Come push the limits of state-of-the-art semantic segmentation approaches on a large and challenging dataset. Get in touch at ai-challenge@ign.fr
 
 
-![Alt bandeau FLAIR-IGN](images/visuel_FLAIR_bandeau.jpg?raw=true)
+![Alt bandeau FLAIR-IGN](images/flair_bandeau.jpg?raw=true)
 
 
 
@@ -29,7 +29,7 @@ The FLAIR #1 dataset is sampled countrywide and is composed of over 20 billion a
 
 <figure>
   <img
-  src="images/FLAIR-1_spatiotemporal.png"
+  src="images/flair-1_spatiotemporal.png"
   alt="ortho image and train/test geographical repartition">
   <figcaption>ORTHO HR® aerial image cover of France (left), train and test spatial domains of the dataset (middle) and acquisition months defining temporal domains (right).</figcaption>
 </figure>
@@ -39,7 +39,7 @@ The FLAIR #1 dataset is sampled countrywide and is composed of over 20 billion a
 <br>
 
 <p align="center">
-  <img width="70%" src="images/patches.png">
+  <img width="70%" src="images/flair-1_patches.png">
   <br>
   <em>Example of input data (first three columns) and corresponding supervision masks (last column).</em>
 </p>
@@ -61,7 +61,7 @@ domain, obtained with the baseline trained model:
 
 
 <p align="center">
-  <img width="100%" src="images/image_pred_rvb.png">
+  <img width="100%" src="images/flair-1_predicted.png">
   <br>
   <em>Example of a semantic segmentation result using the baseline model.</em>
 </p>
@@ -97,7 +97,7 @@ The baseline U-Net with ResNet34 backbone obtains the following confusion matrix
 
 
 <p align="center">
-  <img width="50%" src="images/FLAIR-1_baseline_heatmap.png">
+  <img width="50%" src="images/flair-1_heatmap.png">
   <br>
   <em>Baseline confusion matrix of the test dataset normalized by rows.</em>
 </p>
