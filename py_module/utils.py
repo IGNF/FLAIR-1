@@ -114,6 +114,12 @@ def read_config(file_path):
         return yaml.safe_load(f)
     
 @rank_zero_only
+def step_loading(paths_data, use_metadata: bool) -> dict:
+    print('+'+'-'*29+'+', '   LOADING DATA   ', '+'+'-'*29+'+')
+    train, val, test = load_data(paths_data, use_metadata=use_metadata)
+    return train, val, test    
+   
+@rank_zero_only
 def print_recap(config, dict_train, dict_val, dict_test):
     print('\n+'+'='*80+'+', 'Model name: ' + config['outputs']["out_model_name"], '+'+'='*80+'+', f"{'[---TASKING---]'}", sep='\n')
     for info, val in zip(["use weights", "use metadata", "use augmentation"], [config["use_weights"], config["use_metadata"], config["use_augmentation"]]): 
@@ -126,7 +132,6 @@ def print_recap(config, dict_train, dict_val, dict_test):
         print(f"- {info:25s}: {'':3s}{val}")        
     print('\n+'+'-'*80+'+', '\n')
 
-    
 @rank_zero_only
 def print_metrics(miou, ious):
     classes = ['building','pervious surface','impervious surface','bare soil','water','coniferous','deciduous',
