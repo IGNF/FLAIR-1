@@ -97,7 +97,7 @@ The baseline U-Net with ResNet34 backbone obtains the following confusion matrix
 
 
 <p align="center">
-  <img width="50%" src="images/1_baseline_heatmap.png">
+  <img width="50%" src="images/FLAIR-1_baseline_heatmap.png">
   <br>
   <em>Baseline confusion matrix of the test dataset normalized by rows.</em>
 </p>
