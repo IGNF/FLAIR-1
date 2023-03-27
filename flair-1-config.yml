@@ -9,6 +9,9 @@ data:
 
   path_metadata_aerial: "" #e.g., ./flair-1_metadata_aerial.json
   
+  
+outputs:
+
   out_folder: "" 
   out_model_name: ""
 
