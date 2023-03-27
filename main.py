@@ -107,7 +107,7 @@ def train_model(config, data_module, seg_module):
     ckpt_callback = ModelCheckpoint(
         monitor = "val_loss",
         dirpath = os.path.join(out_dir,"checkpoints"),
-        filename = "ckpt-{epoch:02d}-{val_loss:.2f}"+'_' + config["out_model_name"],
+        filename = "ckpt-{epoch:02d}-{val_loss:.2f}"+'_' + config['outputs']["out_model_name"],
         save_top_k = 1,
         mode = "min",
         save_weights_only = True, # can be changed accordingly
@@ -130,7 +130,7 @@ def train_model(config, data_module, seg_module):
 
     logger = TensorBoardLogger(
         save_dir = out_dir,
-        name = Path("tensorboard_logs"+'_'+config["out_model_name"]).as_posix()
+        name = Path("tensorboard_logs"+'_'+config['outputs']["out_model_name"]).as_posix()
     )
 
     loggers = [
@@ -163,7 +163,7 @@ def predict(config, data_module, seg_module):
     ## Inference and predictions export
 
     writer_callback = PredictionWriter(        
-        output_dir = os.path.join(out_dir, "predictions"+"_"+config["out_model_name"]),
+        output_dir = os.path.join(out_dir, "predictions"+"_"+config['outputs']["out_model_name"]),
         write_interval = "batch",
     )
 
@@ -186,7 +186,7 @@ if __name__ == "__main__":
   
     config = read_config(args.config_file)
 
-    out_dir = Path(config["out_folder"], config["out_model_name"])
+    out_dir = Path(config['outputs']["out_folder"], config['outputs']["out_model_name"])
     out_dir.mkdir(parents=True, exist_ok=True)
     seed_everything(2022, workers=True)
 
