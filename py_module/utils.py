@@ -115,7 +115,7 @@ def read_config(file_path):
     
 @rank_zero_only
 def print_recap(config, dict_train, dict_val, dict_test):
-    print('\n+'+'='*80+'+', 'Model name: ' + config['data']["out_model_name"], '+'+'='*80+'+', f"{'[---TASKING---]'}", sep='\n')
+    print('\n+'+'='*80+'+', 'Model name: ' + config['outputs']["out_model_name"], '+'+'='*80+'+', f"{'[---TASKING---]'}", sep='\n')
     for info, val in zip(["use weights", "use metadata", "use augmentation"], [config["use_weights"], config["use_metadata"], config["use_augmentation"]]): 
         print(f"- {info:25s}: {'':3s}{val}")
     print('\n+'+'-'*80+'+', f"{'[---DATA SPLIT---]'}", sep='\n')
