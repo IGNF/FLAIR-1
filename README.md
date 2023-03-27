@@ -39,12 +39,20 @@ The FLAIR #1 dataset is sampled countrywide and is composed of over 20 billion a
 <br>
 
 <figure align="center" width="100%">
-  <img style="width:70%; align:center",
+  <img style="width:70%",
   src="images/patches.png"
-  alt="patches examples"
-  style="display: block; margin: 0 auto">
+  alt="patches examples">
   <figcaption style="text-align:center">Example of input data (first three columns) and corresponding supervision masks (last column).</figcaption>
 </figure>
+
+
+<div style="text-align:center">
+  <img style="width:70%",
+  src="images/patches.png"
+  alt="patches examples">
+</div>
+
+
 
 
 <br>
