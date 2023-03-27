@@ -11,11 +11,11 @@ Participate in obtaining more accurate maps for a more comprehensive description
   
 <h2 style="margin-top:5px;">Important links</h2>
 
-**`Datapaper:`** https://arxiv.org/pdf/2211.12979.pdf
+**`Datapaper :`** https://arxiv.org/pdf/2211.12979.pdf
 
-`**Dataset links :**` https://ignf.github.io/FLAIR-Challenges/
+**`Dataset links :`** https://ignf.github.io/FLAIR-Challenges/
 
-`**Challenge page :**` https://codalab.lisn.upsaclay.fr/competitions/8769#learn_the_details [🛑 Inscription closed!]
+**`Challenge page :`** https://codalab.lisn.upsaclay.fr/competitions/8769#learn_the_details [🛑 Inscription closed!]
 
 </div>
 
@@ -38,8 +38,8 @@ The FLAIR #1 dataset is sampled countrywide and is composed of over 20 billion a
 <br>
 <br>
 
-<figure style="text-align:center">
-  <img style="width:70%",
+<figure>
+  <img style="width:70% text-align:center",
   src="images/patches.png"
   alt=" patches examples"
   style="display: block; margin: 0 auto">
