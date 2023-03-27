@@ -10,15 +10,15 @@ import yaml
 
 
 
-def load_data(path_data, path_metadata, val_percent=0.8, use_metadata=True):
+def load_data(paths_data, val_percent=0.8, use_metadata=True):
     
-    def _gather_data(path_folders, path_metadata: str, use_metadata: bool, test_set: bool) -> dict:
-      
+    def _gather_data(domains, paths_data: dict, use_metadata: bool, test_set: bool) -> dict:
+
         #### return data paths
         def get_data_paths (path, filter):
             for path in Path(path).rglob(filter):
                  yield path.resolve().as_posix()        
-        
+
         #### encode metadata
         def coordenc_opt(coords, enc_size=32) -> np.array:
             d = int(enc_size/2)
@@ -58,49 +58,52 @@ def load_data(path_data, path_metadata, val_percent=0.8, use_metadata=True):
             sin_time = np.sin(2*np.pi*(sec_day/86400)) ## total sec in day
             cos_time = np.cos(2*np.pi*(sec_day/86400))
             return enc_y+[norm(sin_month),norm(cos_month),norm(sin_day),norm(cos_day),norm(sin_time),norm(cos_time)]        
-      
-    
-        data = {'IMG':[],'MSK':[],'MTD':[]}
-        for domain in path_folders:
-            data['IMG'] += sorted(list(get_data_paths(domain, 'IMG*.tif')), key=lambda x: int(x.split('_')[-1][:-4]))
-            if test_set == False:
-                data['MSK'] += sorted(list(get_data_paths(domain, 'MSK*.tif')), key=lambda x: int(x.split('_')[-1][:-4]))
-                
+
+        data = {'IMG':[],'MSK':[],'MTD':[]}   
+        for domain in domains: 
+            for area in os.listdir(Path(paths_data['path_aerial_'+['train' if test_set == False else 'test'][0]], domain)):
+                data['IMG'] += sorted(list(get_data_paths(Path(paths_data['path_aerial_'+['train' if test_set == False else 'test'][0]], domain, area),'IMG*.tif')),
+                                      key=lambda x: int(x.split('_')[-1][:-4]),
+                                     )
+                if test_set == False:
+                    data['MSK'] += sorted(list(get_data_paths(Path(paths_data['path_labels_'+['train' if test_set == False else 'test'][0]], domain, area),'MSK*.tif')),
+                                          key=lambda x: int(x.split('_')[-1][:-4]),
+                                         )        
         if use_metadata == True:
-            
-            with open(path_metadata, 'r') as f:
+
+            with open(paths_data['path_metadata_aerial'], 'r') as f:
                 metadata_dict = json.load(f)              
             for img in data['IMG']:
-                curr_img = img.split('/')[-1][:-4]
+                curr_img     = img.split('/')[-1][:-4]
                 enc_coords   = coordenc_opt([metadata_dict[curr_img]["patch_centroid_x"], metadata_dict[curr_img]["patch_centroid_y"]])
                 enc_alti     = norm_alti(metadata_dict[curr_img]["patch_centroid_z"])
                 enc_camera   = format_cam(metadata_dict[curr_img]['camera'])
                 enc_temporal = cyclical_enc_datetime(metadata_dict[curr_img]['date'], metadata_dict[curr_img]['time'])
-                mtd_enc = enc_coords+enc_alti+enc_camera+enc_temporal 
+                mtd_enc      = enc_coords+enc_alti+enc_camera+enc_temporal 
                 data['MTD'].append(mtd_enc)
-        
+
         if test_set == False:
             if len(data['IMG']) != len(data['MSK']): 
                 print('[WARNING !!] UNMATCHING NUMBER OF IMAGES AND MASKS ! Please check load_data function for debugging.')
             if data['IMG'][0][-10:-4] != data['MSK'][0][-10:-4] or data['IMG'][-1][-10:-4] != data['MSK'][-1][-10:-4]: 
                 print('[WARNING !!] UNSORTED IMAGES AND MASKS FOUND ! Please check load_data function for debugging.')                
-            
+
         return data
     
     
-    path_trainval = Path(path_data, "train")
-    trainval_domains = [Path(path_trainval, domain) for domain in os.listdir(path_trainval)]
+    path_trainval = Path(paths_data['path_aerial_train'])
+    trainval_domains = os.listdir(path_trainval)
     shuffle(trainval_domains)
     idx_split = int(len(trainval_domains) * val_percent)
     train_domains, val_domains = trainval_domains[:idx_split], trainval_domains[idx_split:] 
     
-    dict_train = _gather_data(train_domains, path_metadata, use_metadata=use_metadata, test_set=False)
-    dict_val = _gather_data(val_domains, path_metadata, use_metadata=use_metadata, test_set=False)
+    dict_train = _gather_data(train_domains, paths_data, use_metadata=use_metadata, test_set=False)
+    dict_val = _gather_data(val_domains, paths_data, use_metadata=use_metadata, test_set=False)
     
-    path_test = Path(path_data, "test")
-    test_domains = [Path(path_test, domain) for domain in os.listdir(path_test)]
+    path_test = Path(paths_data['path_aerial_test'])
+    test_domains = os.listdir(path_test)
     
-    dict_test = _gather_data(test_domains, path_metadata, use_metadata=use_metadata, test_set=True)
+    dict_test = _gather_data(test_domains, paths_data, use_metadata=use_metadata, test_set=True)
     
     return dict_train, dict_val, dict_test
 
@@ -111,7 +114,7 @@ def read_config(file_path):
 
 @rank_zero_only
 def print_recap(config, dict_train, dict_val, dict_test):
-    print('\n+'+'='*80+'+', 'Model name: ' + config["out_model_name"], '+'+'='*80+'+', f"{'[---TASKING---]'}", sep='\n')
+    print('\n+'+'='*80+'+', 'Model name: ' + config['data']["out_model_name"], '+'+'='*80+'+', f"{'[---TASKING---]'}", sep='\n')
     for info, val in zip(["use weights", "use metadata", "use augmentation"], [config["use_weights"], config["use_metadata"], config["use_augmentation"]]): 
         print(f"- {info:25s}: {'':3s}{val}")
     print('\n+'+'-'*80+'+', f"{'[---DATA SPLIT---]'}", sep='\n')

@@ -1,27 +1,40 @@
-data_path:
-  aerial_train: ""
-  aerial_test: ""
-  labels_train: ""
-  labels_test: ""
+#### DATA PATHS
+data:
+
+  path_aerial_train: ""  #e.g.,  ./flair_aerial_train
+  path_labels_train: ""  #e.g., ./flair_labels_train
+
+  path_aerial_test:  ""  #e.g., ./flair_1_aerial_test
+  path_labels_test:  "" #e.g.,  ./flair_1_labels_test
+
+  path_metadata_aerial: "" #e.g., ./flair-1_metadata_aerial.json
   
-out_folder: ""
-out_folder_name: ""
+  out_folder: "" 
+  out_model_name: ""
+
+
 num_classes: 13
 
+#### TRAINING CONF
 use_weights: True
 class_weights: [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0]
 use_metadata: False
 use_augmentation: False
 
+
+#### HYPERPARAMETERS
 batch_size: 2
 learning_rate: 0.02
 num_epochs: 3
 
+#### COMPUTATIONAL
 accelerator: gpu
-gpu_per_node: 1
 num_nodes: 1
+gpus_per_node: 1
 strategy: None 
 num_workers: 1
 
+#### PRINT
 enable_progress_bar: True
 progress_rate: 10
+

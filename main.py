@@ -35,9 +35,9 @@ argParser = argparse.ArgumentParser()
 argParser.add_argument("--config_file", help="Path to the .yml config file")
 
 @rank_zero_only
-def step_loading(path_data, path_metadata_file: str, use_metadata: bool) -> dict:
+def step_loading(paths_data, use_metadata: bool) -> dict:
     print('+'+'-'*29+'+', '   LOADING DATA   ', '+'+'-'*29+'+')
-    train, val, test = load_data(path_data, path_metadata_file, use_metadata=use_metadata)
+    train, val, test = load_data(paths_data, use_metadata=use_metadata)
     return train, val, test
 
 def get_data_module(config, dict_train, dict_val, dict_test):
