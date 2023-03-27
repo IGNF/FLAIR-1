@@ -125,3 +125,16 @@ def print_recap(config, dict_train, dict_val, dict_test):
     for info, val in zip(["batch size", "learning rate", "epochs", "nodes", "GPU per nodes", "accelerator", "workers"], [config["batch_size"], config["learning_rate"], config["num_epochs"], config["num_nodes"], config["gpus_per_node"], config["accelerator"], config["num_workers"]]): 
         print(f"- {info:25s}: {'':3s}{val}")        
     print('\n+'+'-'*80+'+', '\n')
+
+    
+@rank_zero_only
+def print_metrics(miou, ious):
+    classes = ['building','pervious surface','impervious surface','bare soil','water','coniferous','deciduous',
+               'brushwood','vineyard','herbaceous vegetation','agricultural land','plowed land']
+    print('-'*40)
+    print(' '*8, 'Model mIoU : ', round(miou, 4))
+    print('-'*40)
+    print ("{:<25} {:<15}".format('Class','iou'))
+    print('-'*40)
+    for k, v in zip(classes, ious):
+        print ("{:<25} {:<15}".format(k, v))
