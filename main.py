@@ -15,16 +15,12 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.callbacks.progress.tqdm_progress import TQDMProgressBar
-from pytorch_lightning import Trainer, seed_everything
-try:
-  from pytorch_lightning.utilities.distributed import rank_zero_only
-except ImportError:
-  from pytorch_lightning.utilities.rank_zero import rank_zero_only  
+from pytorch_lightning import Trainer, seed_everything 
 
 import albumentations as A
 
 #flair-one baseline modules 
-from py_module.utils import load_data, read_config, print_recap, print_metrics
+from py_module.utils import load_data, step_loading, read_config, print_recap, print_metrics
 from py_module.datamodule import OCS_DataModule
 from py_module.model import SMP_Unet_meta
 from py_module.task_module import SegmentationTask
@@ -33,12 +29,6 @@ from py_module.generate_miou import generate_miou
 
 argParser = argparse.ArgumentParser()
 argParser.add_argument("--config_file", help="Path to the .yml config file")
-
-@rank_zero_only
-def step_loading(paths_data, use_metadata: bool) -> dict:
-    print('+'+'-'*29+'+', '   LOADING DATA   ', '+'+'-'*29+'+')
-    train, val, test = load_data(paths_data, use_metadata=use_metadata)
-    return train, val, test
 
 def get_data_module(config, dict_train, dict_val, dict_test):
     if config["use_augmentation"] == True:
