@@ -1,11 +1,11 @@
 #### DATA PATHS
 data:
 
-  path_aerial_train: ""  #e.g.,  ./flair_aerial_train
-  path_labels_train: ""  #e.g., ./flair_labels_train
-
-  path_aerial_test:  ""  #e.g., ./flair_1_aerial_test
-  path_labels_test:  "" #e.g.,  ./flair_1_labels_test
+  path_aerial_train: ""  #e.g.,  ./flair_aerial_train or toy
+  path_aerial_test:  ""  #e.g., ./flair_1_aerial_test or toy
+  
+  path_labels_train: ""  #e.g., ./flair_labels_train or toy
+  path_labels_test:  "" #e.g.,  ./flair_1_labels_test or toy
 
   path_metadata_aerial: "" #e.g., ./flair-1_metadata_aerial.json
   
