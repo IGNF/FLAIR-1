@@ -7,7 +7,10 @@ import random
 from random import shuffle
 import re
 import yaml
-
+try:
+  from pytorch_lightning.utilities.distributed import rank_zero_only
+except ImportError:
+  from pytorch_lightning.utilities.rank_zero import rank_zero_only  
 
 def load_data(paths_data, val_percent=0.8, use_metadata=True):
     
@@ -110,6 +113,7 @@ def read_config(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
     
+@rank_zero_only
 def print_recap(config, dict_train, dict_val, dict_test):
     print('\n+'+'='*80+'+', 'Model name: ' + config['data']["out_model_name"], '+'+'='*80+'+', f"{'[---TASKING---]'}", sep='\n')
     for info, val in zip(["use weights", "use metadata", "use augmentation"], [config["use_weights"], config["use_metadata"], config["use_augmentation"]]): 
