@@ -38,21 +38,6 @@ The FLAIR #1 dataset is sampled countrywide and is composed of over 20 billion a
 <br>
 <br>
 
-<figure align="center" width="100%">
-  <img style="width:70%",
-  src="images/patches.png"
-  alt="patches examples">
-  <figcaption style="text-align:center">Example of input data (first three columns) and corresponding supervision masks (last column).</figcaption>
-</figure>
-
-
-<div style="text-align:center">
-  <img style="width:70%",
-  src="images/patches.png"
-  alt="patches examples">
-</div>
-
-
 <p align="center">
   <img width="70%" src="images/patches.png">
   <br>
@@ -75,12 +60,11 @@ Example of a semantic segmentation of an urban and coastal area in the D076 spat
 domain, obtained with the baseline trained model:
 
 
-<figure>
- <img style="text-align:center",
-  src="images/image_pred_rvb.png"
-  alt="Confusion matrix">
-  <figcaption>Example of a semantic segmentation result using the baseline model</figcaption>
-</figure>
+<p align="center">
+  <img width="70%" src="images/image_pred_rvb.png">
+  <br>
+  <em>Example of a semantic segmentation result using the baseline model.</em>
+</p>
 
 
 <br>
@@ -112,12 +96,11 @@ You can either use :
 The baseline U-Net with ResNet34 backbone obtains the following confusion matrix: 
 
 
-<figure>
-  <img style="width:50%; text-align:center",
-  src="images/FLAIR-1_baseline_heatmap.png"
-  alt="Confusion matrix">
-  <figcaption>Baseline confusion matrix of the test dataset normalized by rows.</figcaption>
-</figure>
+<p align="center">
+  <img width="50%" src="images/1_baseline_heatmap.png">
+  <br>
+  <em>Baseline confusion matrix of the test dataset normalized by rows.</em>
+</p>
 
 
 ## Reference
