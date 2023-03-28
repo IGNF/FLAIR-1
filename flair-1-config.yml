@@ -34,7 +34,7 @@ num_epochs: 3
 accelerator: gpu
 num_nodes: 1
 gpus_per_node: 1
-strategy: None 
+strategy: null # null if only one GPU, else 'ddp' 
 num_workers: 1
 
 #### PRINT
