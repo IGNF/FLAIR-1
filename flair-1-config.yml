@@ -1,14 +1,13 @@
 #### DATA PATHS
 data:
 
-  path_aerial_train: ""  #e.g.,  ./flair_aerial_train or toy
-  path_aerial_test:  ""  #e.g., ./flair_1_aerial_test or toy
+  path_aerial_train: ""  #e.g.,  ./flair_aerial_train/ or flair_1_toy_aerial_train/
+  path_aerial_test:  ""  #e.g., ./flair_1_aerial_test/ or flair_1_toy_aerial_test/
   
-  path_labels_train: ""  #e.g., ./flair_labels_train or toy
-  path_labels_test:  "" #e.g.,  ./flair_1_labels_test or toy
+  path_labels_train: ""  #e.g., ./flair_labels_train or flair_1_toy_labels_train/
+  path_labels_test:  "" #e.g.,  ./flair_1_labels_test or flair_1_toy_labels_test/
 
-  path_metadata_aerial: "" #e.g., ./flair-1_metadata_aerial.json
-  
+  path_metadata_aerial: "./flair-1_metadata_aerial.json"
   
 outputs:
 
@@ -24,20 +23,19 @@ class_weights: [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0]
 use_metadata: False
 use_augmentation: False
 
-
 #### HYPERPARAMETERS
 batch_size: 2
 learning_rate: 0.02
 num_epochs: 3
 
-#### COMPUTATIONAL
-accelerator: gpu
+#### COMPUTATIONAL RESSOURCES
+accelerator: gpu # or cpu
 num_nodes: 1
 gpus_per_node: 1
 strategy: null # null if only one GPU, else 'ddp' 
 num_workers: 1
 
-#### PRINT
+#### PRINT PROGRESS
 enable_progress_bar: True
 progress_rate: 10
 
