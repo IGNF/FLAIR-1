@@ -14,7 +14,7 @@ Participate in obtaining more accurate maps for a more comprehensive description
 
 - **Datapaper :** https://arxiv.org/pdf/2211.12979.pdf
 
-- **Dataset links :** https://ignf.github.io/FLAIR-Challenges/
+- **Dataset links :** https://ignf.github.io/FLAIR/
 
 - **Challenge page :** https://codalab.lisn.upsaclay.fr/competitions/8769#learn_the_details [🛑 completed!]
 
