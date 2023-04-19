@@ -71,7 +71,7 @@ domain, obtained with the baseline trained model:
 
 ## Usage 
 
-The `config.yml` file controls paths, hyperparameters and computing ressources. The file `requirement.txt` is listing used libraries for the baselines.
+The `flair-1-config.yml` file controls paths, hyperparameters and computing ressources. The file `requirement.txt` is listing used libraries for the baselines.
 
 You can either use : 
 
