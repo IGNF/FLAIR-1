@@ -128,7 +128,7 @@ def display_samples(images, masks, nb_samples: list, palette=lut_colors) -> None
             ax2.set_title('Overlay Image & Mask', size=16,fontweight="bold",c='w')    
                  
 def display_all(images, masks) -> None:
-    GS = matplotlib.gridspec.GridSpec(20,10, wspace=0.002, hspace=0.1)
+    GS = matplotlib.gridspec.GridSpec(25,10, wspace=0.002, hspace=0.1)
     fig = plt.figure(figsize=(40,100))
     fig.patch.set_facecolor('black')
     for u,k in enumerate(images):
