@@ -93,6 +93,7 @@ A toy dataset (reduced size) is available to check that your installation and th
 | baseline U-Net (ResNet34) + _metadata + augmentation_ | 0.5570±0.0027
 
 If you want to submit a new entry, you can open a new issue.
+<b> Results of the challenge will be reported soon! </b>
 
 The baseline U-Net with ResNet34 backbone obtains the following confusion matrix: 
 
