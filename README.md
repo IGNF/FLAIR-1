@@ -73,13 +73,13 @@ domain, obtained with the baseline trained model:
 
 The `flair-1-config.yml` file controls paths, hyperparameters and computing ressources. The file `requirement.txt` is listing used libraries for the baselines.
 
-You can either use : 
+To launch a training/inference/metrics computation, you can either use : 
 
 - ```
   main.py --config_file=flair-1-config.yml
   ```
 
--  use the `flair-one-baseline.ipynb` notebook guiding you trough data visualization, training and testing.
+-  use the `flair-one-baseline.ipynb` notebook guiding you through data visualization, training and testing steps.
 
 <br>
 
@@ -104,7 +104,7 @@ The baseline U-Net with ResNet34 backbone obtains the following confusion matrix
 
 
 ## Reference
-Please include a citation to the following paper if you use the FLAIR #1 dataset:
+Please include a citation to the following article if you use the FLAIR #1 dataset:
 
 ```
 @article{garioud2022flair1,
