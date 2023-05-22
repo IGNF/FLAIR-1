@@ -1,9 +1,11 @@
 # FLAIR #1 : Semantic segmentation and domain adaptation challenge proposed by the French National Institute of Geographical and Forest Information (IGN).
 
+Code : [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/IGNF/FLAIR-1-AI-Challenge/blob/master/LICENSE) ,
+Dataset : [![license](https://img.shields.io/badge/License-IO%202.0-green.svg)](https://github.com/etalab/licence-ouverte/blob/master/open-licence.md).
+
+
 Participate in obtaining more accurate maps for a more comprehensive description and a better understanding of our environment! Come push the limits of state-of-the-art semantic segmentation approaches on a large and challenging dataset. Get in touch at ai-challenge@ign.fr
 
-Code : [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/IGNF/FLAIR-1-AI-Challenge/blob/master/LICENSE) ,
-Dataset : [![license](https://img.shields.io/badge/License-IO%202.0-green.svg)](https://github.com/etalab/licence-ouverte/blob/master/open-licence.md)
 
 
 ![Alt bandeau FLAIR-IGN](images/flair_bandeau.jpg?raw=true)
@@ -126,3 +128,17 @@ Please include a citation to the following article if you use the FLAIR #1 datas
 This work was performed using HPC/AI resources from
 GENCI-IDRIS (Grant 2022-A0131013803).
 
+## Dataset license
+
+The "OPEN LICENCE 2.0/LICENCE OUVERTE" is a license of the french gouverment made for open-data diffusion by public administration.
+An english version of this license could be found on the [official github page](https://github.com/etalab/licence-ouverte). 
+
+As stated by the license :
+
+### Applicable legislation
+
+This licence is governed by French law.
+
+### Compatibility of this licence
+
+This licence has been designed to be compatible with any free licence that at least requires an acknowledgement of authorship, and specifically with the previous version of this licence as well as with the following licences: United Kingdom’s “Open Government Licence” (OGL), Creative Commons’ “Creative Commons Attribution” (CC-BY) and Open Knowledge Foundation’s “Open Data Commons Attribution” (ODC-BY).
