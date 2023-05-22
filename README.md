@@ -129,8 +129,8 @@ GENCI-IDRIS (Grant 2022-A0131013803).
 
 ## Dataset license
 
-The "OPEN LICENCE 2.0/LICENCE OUVERTE" is a license of the french gouverment made for open-data diffusion by public administration.
-An english version of this license could be found on the [official github page](https://github.com/etalab/licence-ouverte). 
+The "OPEN LICENCE 2.0/LICENCE OUVERTE" is a license created by the French government specifically for the purpose of facilitating the dissemination of open data by public administration. 
+If you are looking for an English version of this license, you can find it on the official GitHub page at the [official github page](https://github.com/etalab/licence-ouverte).
 
 As stated by the license :
 
