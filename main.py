@@ -167,7 +167,7 @@ def predict(config, data_module, seg_module):
         enable_progress_bar = config["enable_progress_bar"],
     )
 
-    trainer.predict(seg_module, datamodule=data_module)
+    trainer.predict(seg_module, datamodule=data_module, return_predictions=False)
     print('--  [FINISHED.]  --', f'output dir : {out_dir}', sep='\n')
 
 if __name__ == "__main__":
