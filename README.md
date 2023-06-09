@@ -83,7 +83,7 @@ To launch a training/inference/metrics computation, you can either use :
   main.py --config_file=flair-1-config.yml
   ```
 
--  use the `flair-one-baseline.ipynb` notebook guiding you through data visualization, training and testing steps.
+-  use the `flair-1-baseline.ipynb` notebook guiding you through data visualization, training and testing steps.
 
 A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
 
