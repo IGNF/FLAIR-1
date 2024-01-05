@@ -75,15 +75,26 @@ domain, obtained with the baseline trained model:
 
 ## Usage 
 
-The `flair-1-config.yml` file controls paths, hyperparameters and computing ressources. The file `requirement.txt` is listing used libraries for the baselines.
+The file `requirement.txt` is listing used libraries for the baselines.
 
-To launch a training/inference/metrics computation, you can either use : 
+### Configuration 
 
-- ```
-  main.py --config_file=flair-1-config.yml
-  ```
+The pipeline is configured using a YAML file (`flair-1-config.yml`). The configuration file includes sections for data paths, tasks, model configuration, hyperparameters and computational resources.
 
--  use the `flair-1-baseline.ipynb` notebook guiding you through data visualization, training and testing steps.
+### Input CSV files
+
+The input CSV files for training, validation, and testing are provided in a folder with the official split. Each CSV file should contain the paths to the image-mask pairs for the corresponding dataset.
+
+### Usage
+
+To use the pipeline, run the main script with the configuration file as an argument:
+
+
+```
+python main.py --config_file=./flair-1-config.yml
+```
+
+The script will perform the tasks specified in the configuration file. If ‘train’ is enabled, it will train the model and save the trained model to the output folder. If ‘predict’ is enabled, it will load the trained model (or a specified checkpoint if ‘train’ is not enabled) and perform prediction on the test data. If ‘metrics’ is enabled, it will calculate the mean Intersection over Union (mIoU) and other IoU metrics for the predicted and ground truth masks.
 
 A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
 
