@@ -98,6 +98,8 @@ The script will perform the tasks specified in the configuration file. If ‘tra
 
 A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
 
+<em>Note: </em> A notebook is available in the legacy-torch branch (which uses different libraries versions and structure) that was used during the challenge. 
+
 <br>
 
 ## Leaderboard
