@@ -81,6 +81,37 @@ The file `requirement.txt` is listing used libraries for the baselines.
 
 The pipeline is configured using a YAML file (`flair-1-config.yml`). The configuration file includes sections for data paths, tasks, model configuration, hyperparameters and computational resources.
 
+`out_folder`: The path to the output folder where the results will be saved.<br>
+`out_model_name`: The name of the output model.<br>
+`train_csv`: Path to the CSV file containing paths to image-mask pairs for training.<br>
+`val_csv`: Path to the CSV file containing paths to image-mask pairs for validation.<br>
+`test_csv`: Path to the CSV file containing paths to image-mask pairs for testing.<br>
+`ckpt_model_path`: The path to the checkpoint file of the model for prediction.<br>
+`path_metadata_aerial`: The path to the aerial metadata JSON file.<br>
+`train`: If set to True, the model will be trained.<br>
+`predict`: If set to True, predictions will be made using the model.<br>
+`metrics`: If set to True, metrics will be calculated.<br>
+`num_classes`: The number of classes in your segmentation task.<br>
+`num_channels`: The number of channels in your input images.<br>
+`seed`: The seed for random number generation to ensure reproducibility.<br>
+`model_architecture`: The architecture of the model to be used (e.g., ‘unet’).<br>
+`encoder_name`: The name of the encoder to be used in the model (e.g., ‘resnet34’).<br>
+`use_metadata`: If set to True, metadata will be used.<br>
+`use_augmentation`: If set to True, data augmentation will be applied during training.<br>
+`use_weights`: If set to True, class weights will be used during training.<br>
+`class_weights`: A list of weights for each class.<br>
+`georeferencing_output`: If set to True, the output will be georeferenced.<br>
+`batch_size`: The batch size for training.<br>
+`learning_rate`: The learning rate for training.<br>
+`num_epochs`: The number of epochs for training.<br>
+`accelerator`: The type of accelerator to use (‘gpu’ or ‘cpu’).<br>
+`num_nodes`: The number of nodes to use for training.<br>
+`gpus_per_node`: The number of GPUs to use per node for training.<br>
+`strategy`: The strategy to use for distributed training (‘auto’,‘ddp’,...).<br>
+`num_workers`: The number of workers to use for data loading.<br>
+`enable_progress_bar`: If set to True, a progress bar will be displayed during training and inference.<br>
+`progress_rate`: The rate at which progress will be displayed.<br>
+
 ### Input CSV files
 
 The input CSV files for training, validation, and testing are provided in a folder with the official split. Each CSV file should contain the paths to the image-mask pairs for the corresponding dataset.
