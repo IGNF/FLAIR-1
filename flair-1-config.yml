@@ -1,29 +1,29 @@
 #### DATA PATHS
 paths:
 
-    out_folder : 'C:/Users/agari/Desktop/TESTING/'
+    out_folder : ''
 
     ######## TRAIN.PY NEEDED 
-    out_model_name: 'finished_full_redoinf' 
+    out_model_name: '' 
 
     train_csv : './csv_full/flair-1-paths-train.csv' # path to .csv containing paths to IMG/MSK pairs
     val_csv   : './csv_full/flair-1-paths-val.csv' # path to .csv containing paths to IMG/MSK pairs
 
-    path_metadata_aerial: 'D:/DATA/FLAIR-DATA/00_AUX/flair_aerial_metadata.json'
+    path_metadata_aerial: '../flair_aerial_metadata.json' # path to aerial images metadata file
 
     ######## PREDICT.PY NEEDED
-    test_csv : './csv_full/flair-1-paths-test.csv'
-    ckpt_model_path: 'C:/Users/agari/Desktop/TESTING/finished_full/checkpoints/ckpt-epoch=00-val_loss=0.86_finished_full.ckpt'
+    test_csv : './csv_full/flair-1-paths-test.csv' # path to .csv containing paths to IMG/MSK pairs
+    ckpt_model_path: '../checkpoints/ckpt-epoch=00-val_loss=0.86_finished_full.ckpt' # path to .ckpt model
 
-    path_metadata_aerial: 'D:/DATA/FLAIR-DATA/00_AUX/flair_aerial_metadata.json'
+    path_metadata_aerial: '../flair_aerial_metadata.json' # path to aerial images metadata file
 
 
 
 #### USAGE
 tasks:
 
-    train: False
-    predict: True
+    train: True
+    predict: True # if tain = False, need for ckpt_model_path to be set  
     metrics: True
 
 
@@ -56,7 +56,7 @@ accelerator: gpu # or cpu
 num_nodes: 1
 gpus_per_node: 1
 strategy: 'auto' # null if only one GPU, else 'ddp' 
-num_workers: 0
+num_workers: 10
 
 #### PRINT PROGRESS
 enable_progress_bar: True
