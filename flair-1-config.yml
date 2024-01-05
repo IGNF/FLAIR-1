@@ -1,41 +1,63 @@
 #### DATA PATHS
-data:
+paths:
 
-  path_aerial_train: ""  #e.g.,  ./flair_aerial_train/ or flair_1_toy_aerial_train/
-  path_aerial_test:  ""  #e.g., ./flair_1_aerial_test/ or flair_1_toy_aerial_test/
-  
-  path_labels_train: ""  #e.g., ./flair_labels_train or flair_1_toy_labels_train/
-  path_labels_test:  "" #e.g.,  ./flair_1_labels_test or flair_1_toy_labels_test/
+    out_folder : 'C:/Users/agari/Desktop/TESTING/'
 
-  path_metadata_aerial: "./flair-1_metadata_aerial.json"
-  
-outputs:
+    ######## TRAIN.PY NEEDED 
+    out_model_name: 'finished_full_redoinf' 
 
-  out_folder: "" 
-  out_model_name: ""
+    train_csv : './csv_full/flair-1-paths-train.csv' # path to .csv containing paths to IMG/MSK pairs
+    val_csv   : './csv_full/flair-1-paths-val.csv' # path to .csv containing paths to IMG/MSK pairs
+
+    path_metadata_aerial: 'D:/DATA/FLAIR-DATA/00_AUX/flair_aerial_metadata.json'
+
+    ######## PREDICT.PY NEEDED
+    test_csv : './csv_full/flair-1-paths-test.csv'
+    ckpt_model_path: 'C:/Users/agari/Desktop/TESTING/finished_full/checkpoints/ckpt-epoch=00-val_loss=0.86_finished_full.ckpt'
+
+    path_metadata_aerial: 'D:/DATA/FLAIR-DATA/00_AUX/flair_aerial_metadata.json'
+
+
+
+#### USAGE
+tasks:
+
+    train: False
+    predict: True
+    metrics: True
+
 
 
 num_classes: 13
+num_channels: 5
+seed: 2022
 
 #### TRAINING CONF
+model_architecture: 'unet'
+encoder_name: 'resnet34'
+
+use_metadata: True
+use_augmentation: True
 use_weights: True
 class_weights: [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0]
-use_metadata: False
-use_augmentation: False
+
+#### PREDICT CONF
+metrics : True 
+georeferencing_output : True
+num_classes: 13
 
 #### HYPERPARAMETERS
-batch_size: 2
+batch_size: 5
 learning_rate: 0.02
-num_epochs: 3
+num_epochs: 1
 
 #### COMPUTATIONAL RESSOURCES
 accelerator: gpu # or cpu
 num_nodes: 1
 gpus_per_node: 1
-strategy: null # null if only one GPU, else 'ddp' 
-num_workers: 1
+strategy: 'auto' # null if only one GPU, else 'ddp' 
+num_workers: 0
 
 #### PRINT PROGRESS
 enable_progress_bar: True
 progress_rate: 10
-
