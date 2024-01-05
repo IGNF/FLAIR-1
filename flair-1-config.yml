@@ -6,17 +6,16 @@ paths:
     ######## TRAIN.PY NEEDED 
     out_model_name: '' 
 
-    train_csv : './csv_full/flair-1-paths-train.csv' # path to .csv containing paths to IMG/MSK pairs
-    val_csv   : './csv_full/flair-1-paths-val.csv' # path to .csv containing paths to IMG/MSK pairs
+    train_csv : './csv_full/flair-1-paths-train.csv'
+    val_csv   : './csv_full/flair-1-paths-val.csv' 
 
-    path_metadata_aerial: '../flair_aerial_metadata.json' # path to aerial images metadata file
+    path_metadata_aerial: '../flair_aerial_metadata.json' 
 
     ######## PREDICT.PY NEEDED
-    test_csv : './csv_full/flair-1-paths-test.csv' # path to .csv containing paths to IMG/MSK pairs
-    ckpt_model_path: '../checkpoints/ckpt-epoch=00-val_loss=0.86_finished_full.ckpt' # path to .ckpt model
+    test_csv : './csv_full/flair-1-paths-test.csv' 
+    ckpt_model_path: '../checkpoints/ckpt-epoch=00-val_loss=0.86_baseline.ckpt'
 
-    path_metadata_aerial: '../flair_aerial_metadata.json' # path to aerial images metadata file
-
+    path_metadata_aerial: '../flair_aerial_metadata.json' 
 
 
 #### USAGE
@@ -25,7 +24,6 @@ tasks:
     train: True
     predict: True # if tain = False, need for ckpt_model_path to be set  
     metrics: True
-
 
 
 num_classes: 13
@@ -42,9 +40,7 @@ use_weights: True
 class_weights: [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0]
 
 #### PREDICT CONF
-metrics : True 
 georeferencing_output : True
-num_classes: 13
 
 #### HYPERPARAMETERS
 batch_size: 5
@@ -52,10 +48,10 @@ learning_rate: 0.02
 num_epochs: 1
 
 #### COMPUTATIONAL RESSOURCES
-accelerator: gpu # or cpu
+accelerator: gpu 
 num_nodes: 1
 gpus_per_node: 1
-strategy: 'auto' # null if only one GPU, else 'ddp' 
+strategy: 'auto' 
 num_workers: 10
 
 #### PRINT PROGRESS
