@@ -27,7 +27,7 @@ tasks:
 
 #### DATA CONF
 num_classes: 13
-channels: [1,2,3,4,5] # starts at 1
+channels: [1,2,3,4,5] # rasterio starts at 1
 seed: 2022
 
 #### NORMALIZATION
