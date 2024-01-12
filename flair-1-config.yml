@@ -30,6 +30,11 @@ num_classes: 13
 num_channels: 5
 seed: 2022
 
+#### NORMALIZATION
+norm_type: scaling # [scaling, custom, without], default: scaling to range [0,1], see github readme
+norm_means: [] # same length (order) as channels
+norm_stds: [] # same length (order) as channels
+
 #### TRAINING CONF
 model_architecture: 'unet'
 encoder_name: 'resnet34'
@@ -54,6 +59,7 @@ gpus_per_node: 1
 strategy: 'auto' 
 num_workers: 10
 
-#### PRINT PROGRESS
+#### PRINT/LOG
+copy_csv_to_output: True
 enable_progress_bar: True
 progress_rate: 10
