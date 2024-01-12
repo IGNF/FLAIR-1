@@ -2,10 +2,9 @@
 paths:
 
     out_folder : ''
+    out_model_name: ''
 
     ######## TRAIN.PY NEEDED 
-    out_model_name: '' 
-
     train_csv : './csv_full/flair-1-paths-train.csv'
     val_csv   : './csv_full/flair-1-paths-val.csv' 
 
