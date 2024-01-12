@@ -25,7 +25,7 @@ tasks:
     metrics: True
 
 #### DATA CONF
-num_classes: 13
+num_classes: 13 # or 19
 channels: [1,2,3,4,5] # rasterio starts at 1
 seed: 2022
 
@@ -38,10 +38,10 @@ norm_stds: [] # same length (order) as channels
 model_architecture: 'unet'
 encoder_name: 'resnet34'
 
-use_metadata: True
+use_metadata: False
 use_augmentation: True
 use_weights: True
-class_weights: [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0]
+class_weights: [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0] # [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0,0,0,1.0,0]
 
 #### PREDICT CONF
 georeferencing_output : True
