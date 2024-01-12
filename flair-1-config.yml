@@ -13,7 +13,7 @@ paths:
 
     ######## PREDICT.PY NEEDED
     test_csv : './csv_full/flair-1-paths-test.csv' 
-    ckpt_model_path: '../checkpoints/ckpt-epoch=00-val_loss=0.86_baseline.ckpt'
+    ckpt_model_path: '' #'../checkpoints/ckpt-epoch=00-val_loss=0.86_baseline.ckpt'
 
     path_metadata_aerial: '../flair_aerial_metadata.json' 
 
