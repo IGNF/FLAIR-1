@@ -92,8 +92,9 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `predict`: If set to True, predictions will be made using the model.<br>
 `metrics`: If set to True, metrics will be calculated.<br>
 `num_classes`: The number of classes in your segmentation task.<br>
-`num_channels`: The number of channels in your input images.<br>
+`channels`: The channels opened in your input images. Images are opened with rasterio which starts at 1 for the first channel.<br>
 `seed`: The seed for random number generation to ensure reproducibility.<br>
+`norm_type`: Normalization to be applied to the train/valid/test images. If scaling, img_as_float from skimage is used; if custom, means and standard deviations provided are used to center-reduce the images; if without, no normalization is applied.<br>
 `model_architecture`: The architecture of the model to be used (e.g., ‘unet’).<br>
 `encoder_name`: The name of the encoder to be used in the model (e.g., ‘resnet34’).<br>
 `use_metadata`: If set to True, metadata will be used.<br>
@@ -109,6 +110,7 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `gpus_per_node`: The number of GPUs to use per node for training.<br>
 `strategy`: The strategy to use for distributed training (‘auto’,‘ddp’,...).<br>
 `num_workers`: The number of workers to use for data loading.<br>
+`copy_csv_to_output`: Makes a copy of paths csv into the output directory.<br>
 `enable_progress_bar`: If set to True, a progress bar will be displayed during training and inference.<br>
 `progress_rate`: The rate at which progress will be displayed.<br>
 
