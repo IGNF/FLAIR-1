@@ -95,6 +95,8 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `channels`: The channels opened in your input images. Images are opened with rasterio which starts at 1 for the first channel.<br>
 `seed`: The seed for random number generation to ensure reproducibility.<br>
 `norm_type`: Normalization to be applied to the train/valid/test images. If scaling, img_as_float from skimage is used; if custom, means and standard deviations provided are used to center-reduce the images; if without, no normalization is applied.<br>
+`norm_means`: Array corresponding to the channel means of the dataset to be used for normalization (in channels order).<br>
+`norm_stds`: Array corresponding to the channel standard deviations of the dataset to be used for normalization (in channels order).<br>
 `model_architecture`: The architecture of the model to be used (e.g., ‘unet’).<br>
 `encoder_name`: The name of the encoder to be used in the model (e.g., ‘resnet34’).<br>
 `use_metadata`: If set to True, metadata will be used.<br>
