@@ -157,13 +157,14 @@ if __name__ == "__main__":
         dict_val   = gather_paths(config, split='val')
     if config['tasks']['predict']: 
         dict_test  = gather_paths(config, split='test')
-    if config["copy_csv_to_output"]:
-        csv_copy_dir = Path(out_dir, 'used_csv')
+    if config["cp_csv_and_conf_to_output"]:
+        csv_copy_dir = Path(out_dir, 'used_csv_and_config')
         csv_copy_dir.mkdir(parents=True, exist_ok=True)
         if config["tasks"]["train"]:
             shutil.copy(config["paths"]["train_csv"], csv_copy_dir)
             shutil.copy(config["paths"]["val_csv"], csv_copy_dir)
         if config["tasks"]["predict"]: shutil.copy(config["paths"]["test_csv"], csv_copy_dir)
+        shutil.copy(args.config_file, csv_copy_dir)
 
 
 
@@ -174,7 +175,7 @@ if __name__ == "__main__":
         # Set the seed
         seed_everything(config['seed'], workers=True)
 
-        print_recap_training(config, dict_train, dict_val)
+        print_recap_training(config, dict_train, dict_val, dict_test)
         
         # Define modules
         seg_module = get_segmentation_module(config, stage='train')
@@ -184,6 +185,7 @@ if __name__ == "__main__":
         trained_state_dict = seg_module.state_dict()
 
         ender.record()  
+        torch.cuda.synchronize()
         inference_time_seconds = starter.elapsed_time(ender) / 1000.0   
 
         logging.info(f"\n[Training finished in {str(timedelta(seconds=inference_time_seconds))} HH:MM:SS with {config['num_nodes']} nodes and {config['gpus_per_node']} gpus per node]") 
@@ -220,11 +222,8 @@ if __name__ == "__main__":
 
     if config['tasks']['metrics']:
 
-        truth_msk = sorted(dict_test['MSK'], key=lambda x: int(x.split('_')[-1][:-4]))
-        pred_msk  = os.path.join(out_dir)
-        confmat, ious, miou = generate_miou(truth_msk, pred_msk)
-
-        print_save_metrics(out_dir_predict, confmat, ious, miou)
+        confmat, miou, ious = generate_miou(config, out_dir_predict)
+        print_save_metrics(config, out_dir_predict, confmat, ious, miou)
 
 
 
