@@ -1,4 +1,5 @@
-# FLAIR #1 : Semantic segmentation and domain adaptation challenge proposed by the French National Institute of Geographical and Forest Information (IGN).
+# FLAIR #1 : Semantic segmentation and domain adaptation of land-cover
+### Challenge proposed by the French National Institute of Geographical and Forest Information (IGN).
 
 Code : [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/IGNF/FLAIR-1-AI-Challenge/blob/master/LICENSE) &emsp; Dataset : [![license](https://img.shields.io/badge/License-IO%202.0-green.svg)](https://github.com/etalab/licence-ouverte/blob/master/open-licence.md)
 
@@ -18,7 +19,7 @@ Participate in obtaining more accurate maps for a more comprehensive description
 
 - **Datapaper :** https://arxiv.org/pdf/2211.12979.pdf
 
-- **Dataset links :** https://ignf.github.io/FLAIR/
+- **Dataset links :** https://ignf.github.io/FLAIR/ or https://huggingface.co/datasets/IGNF/FLAIR
 
 - **Challenge page :**  https://codalab.lisn.upsaclay.fr/competitions/8769 [🛑 closed!]
 
