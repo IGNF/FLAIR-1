@@ -7,7 +7,12 @@ import torch
 from torch.utils.data import Dataset
 
 
-def norm(in_img, norm_type=None, means=[], stds=[]):
+def norm(in_img : np.ndarray, 
+         norm_type : str = None, 
+         means : list = [], 
+         stds: list = [],
+         ):
+    
     in_img = in_img.astype(np.float64) 
     if norm_type not in ['scaling','custom','without']:
             logging.error("Normalization argument should be 'scaling', 'custom' or 'without'.")
@@ -30,14 +35,14 @@ def norm(in_img, norm_type=None, means=[], stds=[]):
 class fit_dataset(Dataset):
 
     def __init__(self,
-                 dict_files,
-                 channels=[1,2,3,4,5],
-                 num_classes=13, 
-                 use_metadata=True,
-                 use_augmentations=None,
-                 norm_type='scale',
-                 means=[],
-                 stds=[]
+                 dict_files : dict,
+                 channels : list = [1,2,3,4,5],
+                 num_classes : int = 13, 
+                 use_metadata : bool = True,
+                 use_augmentations : bool = None,
+                 norm_type : str = 'scale',
+                 means : list = [],
+                 stds : list = []
                  ):
 
         self.list_imgs = np.array(dict_files["IMG"])
@@ -61,7 +66,7 @@ class fit_dataset(Dataset):
     def read_msk(self, raster_file: str) -> np.ndarray:
         with rasterio.open(raster_file) as src_msk:
             array = src_msk.read()[0]
-            array[array > self.num_classes] = self.num_classes
+            #array[array > self.num_classes] = self.num_classes
             array = array-1
             array = np.stack([array == i for i in range(self.num_classes)], axis=0)
             return array  
@@ -98,13 +103,13 @@ class fit_dataset(Dataset):
 class predict_dataset(Dataset):
 
     def __init__(self,
-                 dict_files,
-                 channels=[1,2,3,4,5],
-                 num_classes=13, 
-                 use_metadata=True,
-                 norm_type='scaling',
-                 means=[],
-                 stds=[]
+                 dict_files : dict,
+                 channels : list = [1,2,3,4,5],
+                 num_classes : int = 13, 
+                 use_metadata : bool = True,
+                 norm_type : str = 'scaling',
+                 means : list = [],
+                 stds : list = []
                  ):
         
         self.list_imgs = np.array(dict_files["IMG"])

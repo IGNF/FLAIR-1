@@ -7,19 +7,19 @@ class flair_datamodule(LightningDataModule):
 
     def __init__(
         self,
-        dict_train=None,
-        dict_val=None,
-        dict_test=None,
-        num_workers=1,
-        batch_size=2,
-        drop_last=True,
-        num_classes=13,
-        channels=[1,2,3,4,5],
-        use_metadata=True,
-        use_augmentations=True,
-        norm_type='scaling',
-        means=[],
-        stds=[]
+        dict_train : dict = None,
+        dict_val : dict = None,
+        dict_test : dict = None,
+        num_workers : int = 1,
+        batch_size : int = 2,
+        drop_last : bool = True,
+        num_classes : int = 13,
+        channels : list = [1,2,3,4,5],
+        use_metadata: bool = True,
+        use_augmentations : bool = True,
+        norm_type : str = 'scaling',
+        means : list = [],
+        stds : list = []
     ):
         super().__init__()
         self.dict_train = dict_train

@@ -8,11 +8,11 @@ class segmentation_task_training(pl.LightningModule):
     def __init__(
         self,
         model,
-        num_classes,
-        criterion=None,
-        optimizer=None,
-        use_metadata=False,
-        scheduler=None,
+        num_classes : int,
+        criterion = None,
+        optimizer = None,
+        use_metadata : bool = False,
+        scheduler : bool = None,
     ):
 
         super().__init__()
@@ -105,7 +105,8 @@ class segmentation_task_training(pl.LightningModule):
             on_epoch=True,
             prog_bar=True,
             logger=True,
-            rank_zero_only=True)
+            rank_zero_only=True,
+        )
         self.log(
             "val_miou",
             self.val_epoch_metrics,
@@ -113,7 +114,8 @@ class segmentation_task_training(pl.LightningModule):
             on_epoch=True,
             prog_bar=True,
             logger=True,
-            rank_zero_only=True)
+            rank_zero_only=True,
+        )
         self.val_loss.reset()
         self.val_metrics.reset()
 
@@ -139,8 +141,8 @@ class segmentation_task_predict(pl.LightningModule):
     def __init__(
         self,
         model,
-        num_classes,
-        use_metadata=False,
+        num_classes : int,
+        use_metadata : bool = False,
     ):
 
         super().__init__()

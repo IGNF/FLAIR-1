@@ -34,18 +34,19 @@ class predictionwriter(BasePredictionWriter):
             preds = preds.cpu().numpy().astype('uint8') # Pass prediction on CPU
             
             for prediction, filename in zip(preds, filenames):
-                output_file = str(self.output_dir+'/'+filename.split('/')[-1].replace('IMG', 'PRED'))
+                output_file = str(self.output_dir+'/'+filename.split('/')[-1].replace(filename.split('/')[-1], 'PRED_'+filename.split('/')[-1]))
                 with rasterio.open(filename, 'r') as f:
                     meta = f.profile  # extract georeferencing information from input img
                     meta['count'] = 1
-                with rasterio.open(output_file, 'w', compress='lzw', **meta) as dst:
+                    meta['compress'] = 'lzw'
+                with rasterio.open(output_file, 'w', **meta) as dst:
                     dst.write(prediction, 1)
         else:
             preds, filenames = prediction["preds"], prediction["id"]
             preds = preds.cpu().numpy().astype('uint8')  # Pass prediction on CPU
 
             for prediction, filename in zip(preds, filenames):
-                output_file = str(self.output_dir+'/'+filename.split('/')[-1].replace('IMG', 'PRED'))
+                output_file = str(self.output_dir+'/'+filename.split('/')[-1].replace(filename.split('/')[-1], 'PRED_'+filename.split('/')[-1]))
                 Image.fromarray(prediction).save(output_file,  compression='tiff_lzw') 
                            
 

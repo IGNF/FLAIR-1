@@ -131,39 +131,68 @@ def parsing_metadata(image_path_list, config):
 
 
 @rank_zero_only
-def print_recap_training(config, dict_train, dict_val):
-    logging.info('\n+'+'='*80+'+')
-    logging.info('Model name: '+ config['paths']["out_model_name"])
-    logging.info('+'+'='*80+'+')
+def print_recap_training(config, dict_train=None, dict_val=None, dict_test=None):
+    logging.info('\n+' + '=' * 80 + '+')
+    logging.info('Model name: ' + config['paths']["out_model_name"])
+    logging.info('+' + '=' * 80 + '+')
     logging.info("[---TASKING---]")
-    for info, val in zip(["model architecture", "encoder name", "use weights", "use metadata", "use augmentation"], [config['model_architecture'], config['encoder_name'], config["use_weights"], config["use_metadata"], config["use_augmentation"]]): 
+    for info, val in zip(["model architecture", "encoder name", "use weights", "use metadata", "use augmentation"], 
+                         [config['model_architecture'], config['encoder_name'], config["use_weights"], config["use_metadata"], config["use_augmentation"]]): 
         logging.info(f"- {info:25s}: {'':3s}{val}")
-    logging.info('+'+'-'*80+'+')
+    logging.info('+' + '-' * 80 + '+')
     logging.info('[---DATA SPLIT---]')
-    for split_name, d in zip(["train", "val"], [dict_train, dict_val]): 
-        logging.info(f"- {split_name:25s}: {'':3s}{len(d['IMG'])} samples")
-    logging.info('+'+'-'*80+'+')
+    if config['tasks']['train']:
+        for split_name, d in zip(["train", "val"], [dict_train, dict_val]): 
+            logging.info(f"- {split_name:25s}: {'':3s}{len(d['IMG'])} samples")
+    if config['tasks']['predict']:
+        logging.info(f"- {'test':25s}: {'':3s}{len(dict_test['IMG'])} samples")
+    logging.info('+' + '-' * 80 + '+')
     logging.info('[---HYPER-PARAMETERS---]')
-    for info, val in zip(["batch size", "learning rate", "seed", "epochs", "nodes", "GPU per nodes", "accelerator", "workers"], [config["batch_size"], config["learning_rate"], config["seed"], config["num_epochs"], config["num_nodes"], config["gpus_per_node"], config["accelerator"], config["num_workers"]]): 
+    for info, val in zip(["batch size", "learning rate", "seed", "epochs", "nodes", "GPU per nodes", "accelerator", "workers"], 
+                         [config["batch_size"], config["learning_rate"], config["seed"], config["num_epochs"], config["num_nodes"], config["gpus_per_node"], config["accelerator"], config["num_workers"]]): 
         logging.info(f"- {info:25s}: {'':3s}{val}")        
-    logging.info('+'+'-'*80+'+\n\n')
+    logging.info('+' + '-' * 80 + '+')
+    logging.info('[---NORMALIZATION---]')
+    logging.info(f"- norm type: {config['norm_type']}")
+    logging.info(f"- norm means: {config['norm_means']}")
+    logging.info(f"- norm stds: {config['norm_stds']}")
+    logging.info('+' + '-' * 80 + '+')
+    logging.info('[---PREDICT CONFIG---]')
+    logging.info(f"- georeferencing output: {config['georeferencing_output']}")
+    logging.info('+' + '-' * 80 + '+')
+    logging.info('[---COMPUTATIONAL RESOURCES---]')
+    logging.info(f"- accelerator: {config['accelerator']}")
+    logging.info(f"- num nodes: {config['num_nodes']}")
+    logging.info(f"- gpus per node: {config['gpus_per_node']}")
+    logging.info(f"- strategy: {config['strategy']}")
+    logging.info(f"- num workers: {config['num_workers']}")
+    logging.info('+' + '-' * 80 + '+')
+    logging.info('[---PRINT PROGRESS---]')
+    logging.info(f"- enable progress bar: {config['enable_progress_bar']}")
+    logging.info(f"- progress rate: {config['progress_rate']}")
+    logging.info('+' + '-' * 80 + '+')
+    logging.info('[---CLASSES AND WEIGHTS---]')
+    for class_id, class_info in config['classes'].items():
+        weight, name = class_info
+        logging.info(f"- Class {class_id} ({name}): weight {weight}")
+    logging.info('+' + '-' * 80 + '+\n\n')
+
 
 
 @rank_zero_only
-def print_save_metrics(out_folder, confmat, ious, miou):
+def print_save_metrics(config, out_folder, confmat, ious, miou):
 
     out_folder_metrics = Path('/'.join(out_folder.as_posix().split('/')[:-1]), 'metrics')
     out_folder_metrics.mkdir(exist_ok=True, parents=True)
 
     np.save(out_folder_metrics.as_posix()+'/confmat.npy', confmat)
 
-    classes = ['building','pervious surface','impervious surface','bare soil','water','coniferous','deciduous',
-               'brushwood','vineyard','herbaceous vegetation','agricultural land','plowed land']
-    logging.info('\n'+'-'*40)
-    logging.info(' '*8+'Model mIoU : '+str(round(miou, 4)))
-    logging.info('-'*40)
-    logging.info ("{:<25} {:<15}".format('Class','iou'))
-    logging.info('-'*40)
-    for k, v in zip(classes, ious):
-        logging.info("{:<25} {:<15}".format(k, v))
-    logging.info('\n\n')   
+    logging.info('\n'+'-'*65)
+    logging.info(' '*20+'Model mIoU : '+str(round(miou, 4)))
+    logging.info('-'*65)
+    logging.info ("{:<25} {:<15} {:<10}".format('Class','Weight', 'IoU'))
+    logging.info('-'*65)
+    for iou, class_info in zip(ious, config['classes'].items()):
+        _ , info = class_info
+        logging.info("{:<25} {:<15} {:<10}".format(info[1], info[0], iou))
+    logging.info('\n\n') 

@@ -35,20 +35,31 @@ class smp_unet_mtd(nn.Module):
     
     """    
     def __init__(self,
-                 architecture,
-                 encoder,
-                 n_channels, 
-                 n_classes,
-                 use_metadata=True
+                 architecture : str,
+                 encoder : str ,
+                 n_channels : int, 
+                 n_classes : int,
+                 use_metadata : bool = False
                  ):
+        
         super(smp_unet_mtd, self).__init__()
         
-        self.seg_model = smp.create_model(arch=architecture, encoder_name=encoder, classes=n_classes, in_channels=n_channels)
+        self.seg_model = smp.create_model(arch=architecture, 
+                                          encoder_name=encoder, 
+                                          classes=n_classes, 
+                                          in_channels=n_channels,
+         )
+        
         self.use_metadata = use_metadata
+
         if use_metadata == True:
             self.enc = metadata_mlp()
+            
     
-    def forward(self, x, met):
+    def forward(self, 
+                x, 
+                met,
+                ):
         
         if self.use_metadata == True:
             feats = self.seg_model.encoder(x)

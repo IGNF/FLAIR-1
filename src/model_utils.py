@@ -9,7 +9,11 @@ from .task_module import segmentation_task_training, segmentation_task_predict
 
 
 
-def get_data_module(config, dict_train=None, dict_val=None, dict_test=None):
+def get_data_module(config, 
+                    dict_train : dict =None, 
+                    dict_val : dict = None, 
+                    dict_test : dict = None,
+                    ):
     """
     This function creates a data module for training, validation, and testing.
     
@@ -41,8 +45,8 @@ def get_data_module(config, dict_train=None, dict_val=None, dict_test=None):
         batch_size = config["batch_size"],
         num_workers = config["num_workers"],
         drop_last = True,
-        num_classes = config["num_classes"],
-        channels=config["channels"],
+        num_classes = len(config["classes"]),
+        channels = config["channels"],
         use_metadata = config["use_metadata"],
         use_augmentations = transform_set,
         norm_type = config["norm_type"],
@@ -54,7 +58,9 @@ def get_data_module(config, dict_train=None, dict_val=None, dict_test=None):
 
 
 
-def get_segmentation_module(config, stage='train'):
+def get_segmentation_module(config, 
+                            stage : str = 'train',
+                            ):
     """
     This function creates a segmentation module for training or prediction.
     
@@ -71,14 +77,14 @@ def get_segmentation_module(config, stage='train'):
     model = smp_unet_mtd(architecture = config['model_architecture'],
                          encoder = config['encoder_name'],
                          n_channels = len(config["channels"]), 
-                         n_classes = config["num_classes"], 
-                         use_metadata = config["use_metadata"]
+                         n_classes = len(config["classes"]), 
+                         use_metadata = config["use_metadata"],
     )
     
     if stage == 'train':
         if config["use_weights"]:
             with torch.no_grad():
-                class_weights = torch.FloatTensor(config["class_weights"])
+                class_weights = torch.FloatTensor([config["classes"][i][0] for i in config["classes"]])
             criterion = nn.CrossEntropyLoss(weight=class_weights)
         else:
             criterion = nn.CrossEntropyLoss()
@@ -96,18 +102,18 @@ def get_segmentation_module(config, stage='train'):
 
         seg_module = segmentation_task_training(
             model = model,
-            num_classes = config["num_classes"],
+            num_classes = len(config["classes"]),
             criterion = criterion,
             optimizer = optimizer,
             scheduler = scheduler,
-            use_metadata=config["use_metadata"]
+            use_metadata=config["use_metadata"],
         )
 
     elif stage == 'predict':
         seg_module = segmentation_task_predict(
             model = model,
-            num_classes = config["num_classes"],
-            use_metadata=config["use_metadata"],
+            num_classes = len(config["classes"]),
+            use_metadata = config["use_metadata"],
         )        
 
     return seg_module
