@@ -111,16 +111,20 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `val_csv`: Path to the CSV file containing paths to image-mask pairs for validation.<br>
 `test_csv`: Path to the CSV file containing paths to image-mask pairs for testing.<br>
 `ckpt_model_path`: The path to the checkpoint file of the model for prediction if train is disabled.<br>
-`path_metadata_aerial`: The path to the aerial metadata JSON file.<br><br>
 
 `train`: If set to True, the model will be trained.<br>
+`train_load_ckpt`: Initialize model with given weights.<br>
 `predict`: If set to True, predictions will be made using the model.<br>
 `metrics`: If set to True, metrics will be calculated.<br><br>
+`delete_preds`: Remove prediction files after metrics calculation.<br><br>
 
 `model_architecture`: The architecture of the model to be used (e.g., ‘unet’).<br>
 `encoder_name`: The name of the encoder to be used in the model (e.g., ‘resnet34’).<br>
 `use_augmentation`: If set to True, data augmentation will be applied during training.<br>
+
 `use_metadata`: If set to True, metadata will be used. If other than the FLAIR dataset, see structure to be provided.<br>
+`path_metadata_aerial`: The path to the aerial metadata JSON file.<br><br>
+
 `channels`: The channels opened in your input images. Images are opened with rasterio which starts at 1 for the first channel.<br>
 `seed`: The seed for random number generation to ensure reproducibility.<br><br>
 
@@ -129,7 +133,11 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `num_epochs`: The number of epochs for training.<br><br>
 
 `use_weights`: If set to True, class weights will be used during training.<br>
-`classes`: A dict-like list of class-values, class-weight and class-name.<br><br>
+`classes`: Dict of semantic classes : value in images : [weight, classname]. See config file for an example.<br>
+
+`norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]), custom (center-reduced with provided means and standard deviantions), without.<br><br>
+`norm_means`: If custom, means for each input band.<br><br>
+`norm_stds`: If custom standard deviation for each input band.<br><br>
 
 `georeferencing_output`: If set to True, the output will be georeferenced.<br><br>
 
