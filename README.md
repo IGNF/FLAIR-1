@@ -133,7 +133,7 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `num_epochs`: The number of epochs for training.<br><br>
 
 `use_weights`: If set to True, class weights will be used during training.<br>
-`classes`: Dict of semantic classes : value in images : [weight, classname]. See config file for an example.<br>
+`classes`: Dict of semantic classes with value in images as key and list [weight, classname] as value. See config file for an example.<br>
 
 `norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]), custom (center-reduced with provided means and standard deviantions), without.<br><br>
 `norm_means`: If custom, means for each input band.<br><br>
