@@ -21,8 +21,6 @@ from src.utils import read_config, print_recap
 
 argParser = argparse.ArgumentParser()
 argParser.add_argument("--config_file", help="Path to the .yml config file")
-#####argParser.add_argument("--job_id", help="slurm job id to get out file")
-
 
 
 def setup_environment(args):
