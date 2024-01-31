@@ -48,7 +48,7 @@ class predictionwriter(BasePredictionWriter):
             for prediction, filename in zip(preds, filenames):
                 output_file = str(self.output_dir+'/'+filename.split('/')[-1].replace(filename.split('/')[-1], 'PRED_'+filename.split('/')[-1]))
                 Image.fromarray(prediction).save(output_file,  compression='tiff_lzw') 
-                           
+
 
     def on_predict_batch_end(
             self, 
