@@ -57,7 +57,6 @@ def load_model(checkpoint: str | Path, key_path: List[str] | None = None, model_
 
 class Detector:
     """
-
     """
 
     def __init__(self,
@@ -87,7 +86,6 @@ class Detector:
                  dem: bool = False,
                  out_dalle_size: int | None = None
                  ):
-
         self.resolution: GEO_FLOAT_TUPLE = resolution if resolution is not None else [0.20, 0.20]
         self.verbosity = verbosity
         self.img_size_pixel = img_size_pixel
@@ -129,10 +127,8 @@ class Detector:
                              "blockxsize": self.img_size_pixel,
                              "blockysize": self.img_size_pixel,
                              "SPARSE_MODE": self.sparse_mode}
-
         if self.output_type == "bit":
             self.gdal_options["bit"] = 1
-
         self.layers = layers
         self.tile_factor = tile_factor
         self.margin_zone = margin_zone
@@ -171,42 +167,28 @@ class Detector:
 
     def detect(self, images):
         """
-
         Parameters
         ----------
         images
 
         Returns
         -------
-
         """
 
         if self.use_gpu:
             images = images.cuda()
-
         with torch.no_grad():
-
             logits = self.model(images)
             logits.to(self.device)
-
         # predictions
-
         if self.n_classes == 1:
-
             predictions = torch.sigmoid(logits)
-
         else:
-
             if self.mutual_exclusion is True:
-
                 predictions = F.softmax(logits, dim=1)
-
             else:
-
                 predictions = torch.sigmoid(logits)
-
         predictions = predictions.cpu().numpy()
-
         return predictions
 
     def save(self, predictions, indices):

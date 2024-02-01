@@ -46,7 +46,7 @@ class Zone:
     tile_factor: int | None, default: None
     """
     layers: List[Layer]
-    extent: str | Path
+    extent: str | Path | None = None
     margin: int | None = None
     output_dalle_size: int | None = None
     dem: bool = False
