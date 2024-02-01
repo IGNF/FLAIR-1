@@ -24,8 +24,8 @@ from src.detect.commons import dirs_exist, files_exist, Zone  # noqa: E402
 from src.detect.logger import get_new_logger, get_simple_handler  # noqa: E402
 from src.detect.rio import get_number_of_band  # noqa: E402
 from src.detect.detect import Detector  # noqa: E402
-from src.detect.job import ZoneDetectionJob, ZoneDetectionJobNoDalle  # noqa: E402
-from src.detect.types import GEO_FLOAT_TUPLE, OUTPUT_TYPE, PARAMS
+from src.detect.job import ZoneDetectionJob, ZoneDetectionJobNoDalle, create_box_from_bounds  # noqa: E402
+from src.detect.types import GEO_FLOAT_TUPLE, OUTPUT_TYPE
 
 LOGGER = getLogger(__name__)
 # test zone FID=18
@@ -34,9 +34,6 @@ LOGGER = getLogger(__name__)
 STD_OUT_LOGGER = get_new_logger("stdout_detection")
 ch = get_simple_handler()
 STD_OUT_LOGGER.addHandler(ch)
-
-
-
 
 
 @dataclass
@@ -191,13 +188,24 @@ class ConfDetection:
         layers = self.zone.layers
         with rasterio.open(next(iter(layers)).path) as src:
             crs = src.crs
+            bounds = src.bounds
             LOGGER.debug(crs)
         if os.path.isfile(self.zone.extent):
             gdf_zone = gpd.GeoDataFrame.from_file(self.zone.extent)
-        else:
+        elif isinstance(self.zone.extent, str):
             gdf_zone = gpd.GeoDataFrame([{"id": 1, "geometry": wkt.loads(self.zone.extent)}],
                                         geometry="geometry",
                                         crs=crs)
+        elif self.zone.extent is None and len(self.zone.layers) == 1:
+            gdf_zone = gpd.GeoDataFrame({"id": 1, "geometry": create_box_from_bounds(x_min=bounds[0],
+                                                                                     y_min=bounds[1],
+                                                                                     x_max=bounds[2],
+                                                                                     y_max=bounds[3])},
+                                        geometry="geometry",
+                                        crs=crs)
+        else:
+            raise Error(ErrorCodes.ERR_MAIN_CONF_ERROR, message='Please provide one layer or an extent'
+                                                                'with one or more layers')
         LOGGER.debug(gdf_zone)
         # extent = self.zone.extent
         tile_factor = self.zone.tile_factor
