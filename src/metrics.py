@@ -52,7 +52,7 @@ def metrics(config: dict, path_preds: str, remove_preds=False):
     weights = np.array([config["classes"][i][0] for i in config["classes"]])
     unused_classes = np.where(weights == 0)[0]
     confmat_cleaned = np.delete(sum_confmat, unused_classes, axis=0)  # remove rows
-    confmat_cleaned = np.delete(confmat_cleaned, unused_classes, axis=1)  # remove columns) == 0)[0]
+    confmat_cleaned = np.delete(confmat_cleaned, unused_classes, axis=1)  # remove columns
     
     per_c_ious, avg_ious = class_IoU(confmat_cleaned, len(np.nonzero(weights)[0]))
     ovr_acc = overall_accuracy(confmat_cleaned)
