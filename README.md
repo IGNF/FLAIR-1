@@ -1,3 +1,5 @@
+<div align="center">
+  
 # FLAIR #1 : Semantic segmentation and domain adaptation of land-cover
 ### Challenge proposed by the French National Institute of Geographical and Forest Information (IGN).
 
@@ -10,7 +12,7 @@ Participate in obtaining more accurate maps for a more comprehensive description
 
 ![Alt bandeau FLAIR-IGN](images/flair_bandeau.jpg?raw=true)
 
-
+</div>
 
 <div style="border-width:1px; border-style:solid; border-color:#d2db8c; padding-left: 1em; padding-right: 1em; ">
   
