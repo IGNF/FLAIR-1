@@ -3,7 +3,7 @@ import pathlib
 from pathlib import Path
 from enum import Enum, unique, auto
 import traceback
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, Dict, List
 from rasterio.io import DatasetReader
 
@@ -24,7 +24,7 @@ class Layer:
     bands: Optional[list[int]] = None
     name: str = 'image'
     key: str = 'image'
-    connection: Optional[DatasetReader] = None
+    connection: DatasetReader = field(init=False)
 
 
 @dataclass

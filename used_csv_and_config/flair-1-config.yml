@@ -1,0 +1,78 @@
+#### DATA PATHS
+paths:
+    out_folder : ''
+    out_model_name: ''
+
+    ######## TRAIN.PY NEEDED 
+    train_csv : './csv_full/flair-1-paths-train.csv'
+    val_csv   : './csv_full/flair-1-paths-val.csv' 
+    ######## PREDICT.PY NEEDED
+    test_csv : './csv_full/flair-1-paths-test.csv' 
+    ckpt_model_path: '' #'../checkpoints/ckpt-epoch=00-val_loss=0.86_baseline.ckpt'
+
+    path_metadata_aerial: '../flair_aerial_metadata.json' 
+
+
+#### USAGE
+tasks:
+    train: True
+    predict: True
+    metrics: True
+
+#### TRAINING CONF
+model_architecture: 'unet'
+encoder_name: 'resnet34'
+use_augmentation: True
+
+use_metadata: False # Can be True if FLAIR dataset
+
+channels: [1,2,3,4,5] # starts at 1
+seed: 2022
+
+#### HYPERPARAMETERS
+batch_size: 5
+learning_rate: 0.02
+num_epochs: 1
+
+#### DATA CONF
+use_weights: True
+classes: # k = value in MSK : v = [weight, name]
+    1:  [1, 'building']
+    2:  [1, 'pervious surface']
+    3:  [1, 'impervious surface']
+    4:  [1, 'bare soil']
+    5:  [1, 'water']
+    6:  [1, 'coniferous']
+    7:  [1, 'deciduous']
+    8:  [1, 'brushwood']
+    9:  [1, 'vineyard']
+    10: [1, 'herbaceous vegetation']
+    11: [1, 'agricultural land']
+    12: [1, 'plowed land']
+    13: [1, 'swimming_pool']
+    14: [1, 'snow']
+    15: [0, 'clear cut']
+    16: [0, 'mixed']
+    17: [0, 'ligneous']
+    18: [1, 'greenhouse']
+    19: [0, 'other']
+
+#### NORMALIZATION
+norm_type: scaling # [scaling, custom, without], default: scaling to range [0,1], see github readme
+norm_means: [] # same length (order) as channels
+norm_stds: [] # same length (order) as channels
+
+#### PREDICT CONF
+georeferencing_output : True
+
+#### COMPUTATIONAL RESSOURCES
+accelerator: gpu # or cpu
+num_nodes: 1
+gpus_per_node: 1
+strategy: 'auto' # null if only one GPU, else 'ddp' 
+num_workers: 10
+
+#### PRINT PROGRESS
+cp_csv_and_conf_to_output: True
+enable_progress_bar: True
+progress_rate: 10
