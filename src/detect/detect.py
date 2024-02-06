@@ -29,29 +29,34 @@ from src.detect.commons import create_folder
 from src.detect.model import get_module, SegmentationModelFactory
 from src.detect.job import create_polygon_from_bounds, ZoneDetectionJob, ZoneDetectionJobNoDalle
 from src.detect.types import OUTPUT_TYPE, GEO_INT_TUPLE, GEO_FLOAT_TUPLE
-from src.task_module import segmentation_task_predict
+from src.task_module import segmentation_task_predict, segmentation_task_training
 from src.tasks_utils import smp_unet_mtd
 
 LOGGER = getLogger(__name__)
 NB_PROCESSOR = multiprocessing.cpu_count()
-
+DEFAULT_KEY_PATH = ['state_dict']
+DEFAULT_MODEL_PREFIX = 'model.seg_model'
 
 def load_model(checkpoint: str | Path, key_path: List[str] | None = None, model_name: str = 'Unet',
                encoder: str = 'resnet34', n_classes: int = 12, model_prefix: str | None = None,
                n_channels: int = 5, *args, **kwargs) -> nn.Module:
-    if key_path is None and model_prefix is None:
+    if key_path is not None or model_prefix is not None:
         model: nn.Module = SegmentationModelFactory.create_model(model_name=model_name, encoder=encoder,
                                                                  n_classes=n_classes, n_channels=n_channels)
         state_dict = get_module(checkpoint=checkpoint, key_path=key_path, model_prefix=model_prefix)
         model.load_state_dict(state_dict=state_dict, strict=True)
     else:
+
         smp_model = smp_unet_mtd(architecture=model_name,
                                  encoder=encoder,
                                  n_classes=n_classes,
                                  n_channels=n_channels)
+
         model: LightningModule = segmentation_task_predict(model=smp_model, num_classes=n_classes,
                                                            use_metadata=False)
-        model.load_from_checkpoint(checkpoint_path=checkpoint)
+        d = torch.load(checkpoint, map_location="cpu")
+        model = model.load_state_dict(state_dict=d["state_dict"], strict=False)
+        # assert isinstance(model, torch.nn.Module)
     return model
 
 
@@ -65,9 +70,9 @@ class Detector:
                  margin_zone: int,
                  job: ZoneDetectionJob | ZoneDetectionJobNoDalle,
                  output_path: str | Path,
-                 model_name: str,
                  checkpoint: str | Path,
                  model_prefix: str | None = None,
+                 model_name: str = 'unet',
                  encoder_name: str = 'resnet34',
                  key_path: List[str] | None = None,
                  n_classes: int | None = 12,
@@ -110,8 +115,8 @@ class Detector:
         self.job = job
         self.data_loader = None
         self.dataset = None
-        self.key_path = key_path
-        self.model_prefix = model_prefix
+        self.key_path = DEFAULT_KEY_PATH if key_path is None else key_path
+        self.model_prefix = DEFAULT_MODEL_PREFIX if model_prefix is None else model_prefix
         self.model = load_model(checkpoint=self.checkpoint, key_path=self.key_path, model_prefix=self.model_prefix,
                                 n_classes=self.n_classes, n_channels=self.n_channel, encoder=self.encoder_name,
                                 model_name=self.model_name)

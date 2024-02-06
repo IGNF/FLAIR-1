@@ -151,23 +151,19 @@ def predict_stage(config, data_module, out_dir_predict, trained_state_dict=None)
     predict(config, data_module, seg_module, out_dir_predict)
 
 
-
-
-
-if __name__ == "__main__":
-
+def main():
     # Read config and create output folder
     args = argParser.parse_args()
     config, out_dir = setup_environment(args)
 
     # Custom Logger for console/logfile output
-    sys.stdout = Logger(Path(config['paths']["out_folder"], config['paths']["out_model_name"], 'compute.log').as_posix())
-    print(datetime.datetime.now().strftime("Starting : %Y-%m-%d  %H:%M")+'\n')
+    sys.stdout = Logger(
+        Path(config['paths']["out_folder"], config['paths']["out_model_name"], 'compute.log').as_posix())
+    print(datetime.datetime.now().strftime("Starting : %Y-%m-%d  %H:%M") + '\n')
 
     # Define data sets
     dict_train, dict_val, dict_test = get_datasets(config)
-    print_recap(config, dict_train, dict_val, dict_test) 
-
+    print_recap(config, dict_train, dict_val, dict_test)
 
     # Copy relevant files for tracking
     if config["cp_csv_and_conf_to_output"]:
@@ -185,7 +181,7 @@ if __name__ == "__main__":
 
     # Inference
     if config['tasks']['predict']:
-        out_dir_predict = Path(out_dir, 'predictions_'+config['paths']["out_model_name"])
+        out_dir_predict = Path(out_dir, 'predictions_' + config['paths']["out_model_name"])
         out_dir_predict.mkdir(parents=True, exist_ok=True)
         predict_stage(config, dm, out_dir_predict, trained_state_dict)
 
@@ -194,9 +190,5 @@ if __name__ == "__main__":
             metrics(config, out_dir_predict, remove_preds=config['tasks']['delete_preds'])
 
 
-
-     
-
-
-
-
+if __name__ == "__main__":
+    main()

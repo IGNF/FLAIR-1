@@ -1,0 +1,29 @@
+verbosity: false
+img_size_pixel: 512
+resolution: 0.2
+checkpoint: /home/SKhelifi/dev/cosia-detection/checkpoint/ckpt-epoch=57-val_loss=0.60_1_FLAIR-HF_12_scaling_RVBIE_unetresnet34.ckpt
+n_classes: 19
+batch_size: 2
+key_path: ['state_dict']
+model_prefix: 'model'
+use_gpu: true
+output_path: /home/SKhelifi/dev/cosia-detection/output
+interruption_recovery: False
+mutual_exclusion: True
+model_name: 'unet'
+encoder_name: 'resnet34'
+output_type: "bit"
+sparse_mode: False
+threshold: 0.5
+num_worker: 1
+num_thread: 16
+zone:
+  tile_factor: 2
+  margin: 256
+  output_dalle_size: 2500
+  layers:
+    - path: /home/SKhelifi/dev/cosia-detection/data/rasters/D012_2019-Z11_UU-ortho_img.tif
+      key: rvbie
+      name: rvbie
+      bands: [1, 2, 3, 4, 5]
+  extent: /home/SKhelifi/dev/cosia-detection/data/zone_test-shape-flair-detect.shp

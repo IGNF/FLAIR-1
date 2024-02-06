@@ -1,20 +1,27 @@
 from pathlib import Path
 from dataclasses import dataclass, field
 from typing import List, Mapping
+from logging import getLogger
 
 from segmentation_models_pytorch import create_model
 import torch
 
 
+logger = getLogger(__name__)
+
 def get_module(checkpoint: str | Path, key_path: List[str] | None = None,
                model_prefix: str | None = None) -> Mapping:
     d = torch.load(checkpoint, map_location='cpu')
-    out = d['state_dict']
+
     print(key_path)
-    """
+    out = d
     if key_path is not None:
-        out = [out[i] for i in key_path]
-    """
+        for i in key_path:
+            try:
+                out = out[i]
+            except KeyError as ke:
+                logger.error(f'Key {i} from key_path parameter was not found in checkpoint')
+
     # assert isinstance(out, dict)
 
     if model_prefix is not None:

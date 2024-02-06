@@ -40,8 +40,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'flair-detect=detect.main:main',
-            'flair-train=src.main:'
+            'flair-detect=src.detect.main:main',
+            'flair-train=main:main'
         ]
     }
 )

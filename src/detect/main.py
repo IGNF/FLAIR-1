@@ -98,15 +98,15 @@ class ConfDetection:
         ERR_DETECTION_ERROR, if something goes wrong during the prediction
     """
     verbosity: bool
-    img_size_pixel: int
-    resolution: float | GEO_FLOAT_TUPLE
     checkpoint: str
     zone: Zone
     n_classes: int
     batch_size: int
     use_gpu: bool
     output_path: str | Path
-    model_prefix: str
+    img_size_pixel: int = 512
+    resolution: float | GEO_FLOAT_TUPLE = 0.2
+    model_prefix: str | None = None
     key_path: List[str] | None = None
     n_channels: int = 3
     interruption_recovery: bool = False
@@ -185,6 +185,8 @@ class ConfDetection:
         """Configuraiton of the Detector class used to make the
         detection
         """
+        self.resolution = (self.resolution, self.resolution) if isinstance(self.resolution, int) \
+            else self.resolution
         layers = self.zone.layers
         with rasterio.open(next(iter(layers)).path) as src:
             crs = src.crs
