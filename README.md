@@ -182,6 +182,12 @@ To use the pipeline, run the main script with the configuration file as an argum
 python main.py --config_file=./flair-1-config.yml
 ```
 
+To run the pipeline if you have install flair with pip:
+
+```bash
+flair-train --conf-file=/my/conf/file.yaml
+```
+
 The script will perform the tasks specified in the configuration file. If ‘train’ is enabled, it will train the model and save the trained model to the output folder. If ‘predict’ is enabled, it will load the trained model (or a specified checkpoint if ‘train’ is not enabled) and perform prediction on the test data. If ‘metrics’ is enabled, it will calculate the mean Intersection over Union (mIoU) and other IoU metrics for the predicted and ground truth masks.
 
 A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
@@ -247,6 +253,11 @@ This licence has been designed to be compatible with any free licence that at le
 <br>
 The command line detection aims to bring detection at scale, meaning you can use it for any size of raster or vrt, could be a country.
 The detection uses overlaping<br>
+To run detection:
+
+```bash
+flair-detect --conf=/my/conf/file.yaml
+```
 
 You can find cofiguration exemple files (we use yaml) with gpu: [gpu configuration](detect_conf_example_gpu.yaml) <br>
 or with cpu: [cpu configuration](detect_conf_example_cpu.yaml)
