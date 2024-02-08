@@ -119,9 +119,9 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `ckpt_model_path`: The path to the checkpoint file of the model for prediction if train is disabled.<br>
 
 `train`: If set to True, the model will be trained.<br>
-`train_load_ckpt`: Initialize model with given weights.<br>
+`train_load_ckpt`: Initialize model with given weights.<br><br>
 `predict`: If set to True, predictions will be made using the model.<br>
-`metrics`: If set to True, metrics will be calculated.<br><br>
+`metrics`: If set to True, metrics will be calculated.<br>
 `delete_preds`: Remove prediction files after metrics calculation.<br><br>
 
 `model_architecture`: The architecture of the model to be used (e.g., ‘unet’).<br>
