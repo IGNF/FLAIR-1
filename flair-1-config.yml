@@ -16,8 +16,12 @@ paths:
 #### USAGE
 tasks:
     train: True
+    train_load_ckpt: False
+
     predict: True
+
     metrics: True
+    delete_preds: True
 
 #### TRAINING CONF
 model_architecture: 'unet'
