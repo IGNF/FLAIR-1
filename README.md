@@ -1,6 +1,7 @@
 <div align="center">
   
-# FLAIR #1 : Semantic segmentation and domain adaptation for land-cover from aerial imagery
+# FLAIR #1 
+# Semantic segmentation and domain adaptation for land-cover from aerial imagery
 ### Challenge proposed by the French National Institute of Geographical and Forest Information (IGN).
 
 
