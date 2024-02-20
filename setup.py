@@ -7,10 +7,10 @@ from setuptools import setup, find_packages
 setup(
     name='flair',
     version='0.1.0',  # Change this as needed or implement dynamic version reading from VERSION file
-    author='samy khelifi',
-    author_email='samy.khelifi@ign.fr',
-    description='baseline and demo code for flair challenge 1',
-    long_description=open('README.md').read(),
+    author='anatol garioud & samy khelifi',
+    author_email='ai-challenge@ign.fr',
+    description='baseline and demo code for flair 1 challenge',
+    long_description='French Land-cover from Arospace ImageRy,
     long_description_content_type='text/markdown',
     url='https://github.com/IGNF/FLAIR-1-AI-Challenge',
     project_urls={
