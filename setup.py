@@ -10,7 +10,7 @@ setup(
     author='anatol garioud & samy khelifi',
     author_email='ai-challenge@ign.fr',
     description='baseline and demo code for flair 1 challenge',
-    long_description='French Land-cover from Arospace ImageRy,
+    long_description='French Land-cover from Arospace ImageRy',
     long_description_content_type='text/markdown',
     url='https://github.com/IGNF/FLAIR-1-AI-Challenge',
     project_urls={
