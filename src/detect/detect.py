@@ -83,16 +83,11 @@ class Detector:
                  use_gpu: bool = True,
                  num_worker: int | None = None,
                  num_thread: int | None = None,
-                 mutual_exclusion: bool = True,
                  output_type: OUTPUT_TYPE = "uint8",
-                 sparse_mode: bool = False,
-                 threshold: float = 0.5,
-                 verbosity: bool = False,
                  dem: bool = False,
                  out_dalle_size: int | None = None
                  ):
         self.resolution: GEO_FLOAT_TUPLE = resolution if resolution is not None else [0.20, 0.20]
-        self.verbosity = verbosity
         self.img_size_pixel = img_size_pixel
         self.model_name = model_name
         self.checkpoint = checkpoint
@@ -106,12 +101,8 @@ class Detector:
                                                ' return False')
         self.device = torch.device("cuda" if self.use_gpu else "cpu")
         self.num_worker = num_worker
-        self.num_thread = num_thread
-        self.mutual_exclusion = mutual_exclusion
         self.output_path = output_path
         self.output_type = output_type
-        self.sparse_mode = sparse_mode
-        self.threshold = threshold
         self.job = job
         self.data_loader = None
         self.dataset = None
@@ -124,14 +115,11 @@ class Detector:
         self.model.to(self.device)
         self.meta = None
         self.resolution = resolution
-        self.job = job
-        self.num_thread = num_thread
-        self.num_worker = num_worker
         self.gdal_options = {"compress": "LZW",
                              "tiled": True,
                              "blockxsize": self.img_size_pixel,
                              "blockysize": self.img_size_pixel,
-                             "SPARSE_MODE": self.sparse_mode}
+                            }
         if self.output_type == "bit":
             self.gdal_options["bit"] = 1
         self.layers = layers
@@ -166,9 +154,7 @@ class Detector:
         if self.output_type == "argmax":
             self.meta_output["count"] = 1
         self.num_worker = 0 if self.num_worker is None else self.num_worker
-        self.num_thread = NB_PROCESSOR if self.num_thread is None else self.num_thread
         torch.inference_mode()
-        # torch.set_num_threads(self.num_thread)
 
     def detect(self, images):
         """
@@ -186,13 +172,7 @@ class Detector:
             logits = self.model(images)
             logits.to(self.device)
         # predictions
-        if self.n_classes == 1:
-            predictions = torch.sigmoid(logits)
-        else:
-            if self.mutual_exclusion is True:
-                predictions = F.softmax(logits, dim=1)
-            else:
-                predictions = torch.sigmoid(logits)
+        predictions = torch.sigmoid(logits)
         predictions = predictions.cpu().numpy()
         return predictions
 
@@ -203,8 +183,8 @@ class Detector:
             prediction = substract_margin(prediction, self.margin_zone, self.margin_zone)
             prediction = reshape_as_raster(prediction)
 
-            prediction = self.converter.from_type("float32").to_type(self.output_type).convert(prediction,
-                                                                                               threshold=self.threshold)
+            prediction = self.converter.from_type("float32").to_type(self.output_type).convert(prediction)
+
             output_id = self.job.get_cell_at(index[0], "output_id")
             LOGGER.debug(output_id)
             name = str(output_id) + ".tif"
