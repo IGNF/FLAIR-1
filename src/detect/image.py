@@ -245,14 +245,13 @@ class TypeConverter:
         self._to = img_type
         return self
 
-    def convert(self, img, threshold=0.5):
+    def convert(self, img):
         """Make conversion
 
         Parameters
         ----------
         img : NDArray
             input image
-        threshold : float, optional
             used with 1bit output, to binarize pixels, by default 0.5
 
         Returns
@@ -271,7 +270,6 @@ class TypeConverter:
                 img = np.iinfo(np.uint8).max * img  # scale by 255
                 return img.astype(np.uint8)
             elif self._to == "bit":
-                img = img > threshold
                 return img.astype(np.uint8)
             elif self._to == "argmax":
                 img = np.argmax(img, axis=0)

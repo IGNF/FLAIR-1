@@ -47,8 +47,6 @@ class ConfDetection:
 
     Parameters
     ----------
-    verbosity : boolean
-        verbosity of logger
     img_size_pixel : int
         image size of output in pixel
     resolution : Union(float, tuple(float, float))
@@ -57,21 +55,12 @@ class ConfDetection:
         name of te model as declared in the nn.models.build_model function
     checkpoint : str
         file of trained model with weights parameters (ex: pytorch lightning checkpoint)
-    zone : Zone
-        the description of an inference by zone, by default None
-        See Also :ref:`Zone <zone>`
     n_classes : int
         The number of class learned by the model
     batch_size : int
         the size of the batch in the dataloader
     use_gpu : boolean
         use a GPU or not
-    interruption_recovery : boolean
-        store and restart from where the detection has been
-        if an interruption has been encountered
-    mutual_exclusion : boolean
-        In multiclass model you can use softmax if True or
-        Sigmoïd if False
     output_path : str
         output path of the detection
     model_prefix: str, optional, default None
@@ -80,24 +69,15 @@ class ConfDetection:
         checkpoints, where the model is serializer with other elements
     output_type : str
         the output type, one of uint8, float32 or bit
-    sparse_mode : boolean
-        if set to True, will only write the annotated pixels on disk.
-        If can save a lot of space if you pick up "bit" as output type
-    threshold : float between 0 and 1
-        threshold used in the case of an output in bit (0/1)
     num_worker : int, optional
         Number of worker used by the dataloader.
         Be careful with a prediction by zone (concurrency), by default None (0 extra worker)
-    num_thread : int, optional
-        Number of thread used during the prediction.
-        Useful when you infer on CPU, by default None
 
     Raises
     ------
     Error
         ERR_DETECTION_ERROR, if something goes wrong during the prediction
     """
-    verbosity: bool
     checkpoint: str
     zone: Zone
     n_classes: int
@@ -109,13 +89,9 @@ class ConfDetection:
     model_prefix: str | None = None
     key_path: List[str] | None = None
     n_channels: int = 3
-    interruption_recovery: bool = False
-    mutual_exclusion: bool = True
     model_name: str = 'unet'
     encoder_name: str = 'resnet34'
     output_type: OUTPUT_TYPE = "uint8"
-    sparse_mode: bool = False
-    threshold: float = 0.5
     num_worker: Optional[int] = None
     num_thread: Optional[int] = None
     _detector: Optional[Detector] = field(init=False)
@@ -135,7 +111,6 @@ class ConfDetection:
         batch size: {self.batch_size}
         image size pixel: {self.img_size_pixel}
         resolution: {self.resolution}
-        activation: {"softmax" if self.mutual_exclusion is True else "sigmoïd"}
         output type: {self.output_type}""")
         STD_OUT_LOGGER.info(f"""overlap margin: {self.zone.margin}
                             compute digital elevation model: {self.zone.dem}
@@ -171,9 +146,6 @@ class ConfDetection:
         try:
             files_exist([self.checkpoint])
             dirs_exist([self.output_path])
-            if self.output_type == "argmax":
-                assert self.mutual_exclusion, ('argmax output has been thought '
-                                               'to work with mutual exclusion (softmax activation function')
         except Error as error:
             raise Error(ErrorCodes.ERR_DETECTION_ERROR,
                              "something went wrong during detection configuration",
@@ -221,20 +193,17 @@ class ConfDetection:
                                                 overlap=self.zone.margin,
                                                 out_dalle_size=out_dalle_size)
         LOGGER.debug(len(self.df))
-        # self.df = self.df.sample(n=100, random_state=1).reset_index()
-        # self.df.to_file("/home/dlsupport/data/33/ground_truth/2018/learning_zones/test_zone_1.shp")
 
         if out_dalle_size is not None:
             zone_detection_job = ZoneDetectionJob(self.df,
                                                   self.output_path,
-                                                  self.interruption_recovery)
+                                                  )
         else:
             zone_detection_job = ZoneDetectionJobNoDalle(self.df,
                                                          self.output_path,
-                                                         self.interruption_recovery)
+                                                         )
         zone_detection_job.save_job()
-        # write_job = WriteJob(df_write, self.output_path, self.interruption_recovery, file_name="write_job.shp")
-        # write_job.save_job()
+
         dem = self.zone.dem
         n_channel = get_number_of_band(layers, dem)
         LOGGER.debug(f"number of channel input: {n_channel}")
@@ -257,11 +226,7 @@ class ConfDetection:
                                  use_gpu=self.use_gpu,
                                  num_worker=self.num_worker,
                                  num_thread=self.num_thread,
-                                 mutual_exclusion=self.mutual_exclusion,
                                  output_type=self.output_type,
-                                 sparse_mode=self.sparse_mode,
-                                 threshold=self.threshold,
-                                 verbosity=self.verbosity,
                                  dem=dem,
                                  out_dalle_size=out_dalle_size)
 
