@@ -25,8 +25,7 @@ argParser.add_argument("--config_file", help="Path to the .yml config file")
 
 def setup_environment(args):
     """
-    This function reads the configuration file, creates the output directory, 
-    and sets up the logger.
+    Read the configuration file, create output directory and sets up the logger.
     """
     config = read_config(args.config_file)
     out_dir = Path(config['paths']["out_folder"], config['paths']["out_model_name"])
