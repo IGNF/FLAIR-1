@@ -1,11 +1,11 @@
-output_path: "C:/Users/agari/Desktop/TESTING/TESTS_FLAIR-1/detect/"
+output_path: "../detect/"
 
 zone:
   tile_factor: 2
   margin: 256
   output_dalle_size: 2048
   layers:
-    - path: "C:/Users/agari/Desktop/TESTING/TESTS_FLAIR-1/DATA_INFER/D085_2019-Z9_NF-ortho_img.tif"
+    - path: "../D085_2019-Z9_NF-ortho_img.tif"
       key: "rvbie"
       name: "rvbie"
       bands: [1, 2, 3, 4, 5]
@@ -14,7 +14,7 @@ img_pixels_detection: 512
 output_type: "argmax"
 n_classes: 19
 
-model_weights: "C:/Users/agari/Desktop/TESTING/TESTS_FLAIR-1/DATA_INFER/FLAIR-HF_15_scaling_RVBIE_unetresnet34.pth"
+model_weights: "../FLAIR-HF_15_scaling_RVBIE_unetresnet34.pth"
 batch_size: 2
 use_gpu: true
 model_name: 'unet'
