@@ -1,14 +1,14 @@
 #### DATA PATHS
 paths:
-    out_folder : 'C:/Users/agari/Desktop/TESTING/TESTS_FLAIR-1/'
-    out_model_name: 'redo_train_d012z16_pretr'
+    out_folder : ''
+    out_model_name: ''
 
     ######## TRAIN NEEDED 
-    train_csv : 'C:/Users/agari/Desktop/FLAIR-1-simple-detect/csv_toy/flair-1-paths-toy-train_ag.csv'
-    val_csv   : 'C:/Users/agari/Desktop/FLAIR-1-simple-detect/csv_toy/flair-1-paths-toy-val_ag.csv'
+    train_csv : '/csv_toy/flair-1-paths-toy-train_ag.csv'
+    val_csv   : '/csv_toy/flair-1-paths-toy-val_ag.csv'
     ######## PREDICT (PATCH) NEEDED
-    test_csv : 'C:/Users/agari/Desktop/TESTING/TESTS_FLAIR-1/DATA_INFER/zone_d012z16.csv'
-    ckpt_model_path: "C:/Users/agari/Desktop/TESTING/TESTS_FLAIR-1/DATA_INFER/ckpt-epoch=67-val_loss=0.60_7_FLAIR-HF_15_scaling_RVBIE_unetresnet34.ckpt"
+    test_csv : ''
+    ckpt_model_path: ""
 
     path_metadata_aerial: '../flair_aerial_metadata.json' 
 
