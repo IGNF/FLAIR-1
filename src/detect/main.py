@@ -158,24 +158,16 @@ class ConfDetection:
                                           crs=crs,
                                           geometry="geometry")
             
-            self.resolution = (abs(round(src.profile['transform'].a, 2)), abs(round(src.profile['transform'].e, 2)))   #### Rounding at 2 as sub centimeter resolution is unexpected
-
-        LOGGER.debug(gdf_zone)
-        tile_factor = self.zone.tile_factor
+            self.resolution = src.res[0], src.res[1]  #### Rounding at 2 as sub centimeter resolution is unexpected
+        print(f"resolution {self.resolution}")
         margin_zone = self.zone.margin
-        output_size = self.img_pixels_detection * tile_factor
-        out_dalle_size = self.zone.output_dalle_size if self.zone.output_dalle_size is not None else None
-        print('HERE', out_dalle_size)
-        out_dalle_size = (width, height)
-        print('THERE', out_dalle_size)
-
-
-        LOGGER.debug(f"output_size {out_dalle_size}")
+        output_size = self.img_pixels_detection
+        print(f"output_size {output_size}")
+        print(f"margin {self.zone.margin}")
         self.df, _ = ZoneDetectionJob.build_job(gdf=gdf_zone,
                                                 output_size=output_size,
                                                 resolution=self.resolution,
-                                                overlap=self.zone.margin,
-                                                out_dalle_size=out_dalle_size
+                                                overlap=self.zone.margin
                                                 )
         LOGGER.debug(len(self.df))
 
@@ -189,7 +181,6 @@ class ConfDetection:
         LOGGER.debug(f"number of channel input: {n_channel}")
 
         self.detector = Detector(layers=layers,
-                                 tile_factor=tile_factor,
                                  margin_zone=margin_zone,
                                  job=zone_detection_job,
                                  output_path=self.output_path,
@@ -204,8 +195,7 @@ class ConfDetection:
                                  use_gpu=self.use_gpu,
                                  num_worker=self.num_worker,
                                  output_type=self.output_type,
-                                 dem=dem,
-                                 out_dalle_size=out_dalle_size)
+                                 dem=dem,)
 
         LOGGER.debug(self.detector.__dict__)
         self.detector.configure()

@@ -262,9 +262,7 @@ flair-detect --conf=/my/conf/file.yaml
 You can find cofiguration exemple files (we use yaml) with gpu: [gpu configuration](detect_conf_example_gpu.yaml) <br>
 or with cpu: [cpu configuration](detect_conf_example_cpu.yaml)
 
-`verbosity`: (Optional), boolean, rather to log extra log, default is false<br><br>
 `img_size_pixel`: (Optional), integer,  size of the image in extracted patches in pixel, default is 512 <br><br>
-`resolution`: (Optional), float or tuple of float,  resolution in x, y axis in ground sampling distance, default is 0.2, you can set a float or a tuple of float for dynamic CRS with rectangular pixels.<br><br>
 `checkpoint`: (Mandatory), str, path to your checkpoint<br><br>
 `n_classes`: (Mandatory), integer, number of classes<br><br>
 `batch_size`: (Optional), integer, size of batch in dataloader, default is 2<br><br>
@@ -272,22 +270,12 @@ or with cpu: [cpu configuration](detect_conf_example_cpu.yaml)
 `model_prefix`: (Optional), string,  Used only if your checkpoint was not made with the training loop of flair. Like key_path, used to extract the named module in pytorch segmentation models format (something like 'seg_model.model') if your state_dict named module start like this, it will delete from every named module this part of the name and will keep only the pytorch segmenation models ones (starting by encoder.* or decoder.*). Default is null (None)<br><br>
 `use_gpu`: (Optional), boolean, rather use gpu or cpu for inference, default is true<br><br>
 `output_path`: (Mandatory), string, path where you want to output your result<br><br>
-`interruption_recovery`: (Optional), boolean, False<br><br>
-`mutual_exclusion`: (Optional), boolean, True<br><br>
 `model_name`: (Optional), string, Used only if your checkpoint was not made with the training loop of flair. Name of the model in pytorch segmentation models, default is 'unet'<br><br>
 `encoder_name`: (Optional), string, Used only if your checkpoint was not made with the training loop of flair. Name of the encoder from pytorch segmentation model, default is 'resnet34'<br><br>
 `output_type`: (Optional) type of output, can be "float32" for raw model output, "uint8" for a band of integer between 0 and 255 representing the output of the model (use less memory than float32), "argmax" which will output only one band with the index of the class, and "bit" which will binarize the output of each band with a threshold<br><br>
-`sparse_mode`: (Optional) rather to set sparsity to rasterio geotiff write mode<br><br>
-`threshold`: (Optional) used with output_type set to "bit", the threshold value, default is 0.5<br><br>
-`num_worker`: (Optional) number of worker used by dataloader, in macosx, value should be set to 0 and on other systems vlaue should not be set at a higher value than 2 because paved detection can have concurrency issues compared with traditional detection<br><br>
-`num_thread`: (Optional) the number of thread used by pytorch under the hood, used for cpu inference<br><br>
-<br>`extent`: (Optional, mandatory is more than one layer have been set to zone field) /home/SKhelifi/dev/cosia-detection/data/zone_test-shape-flair-detect.shp<br><br>
+`num_worker`: (Optional) number of worker used by dataloader, in macosx, value should be set to 0 and on other systems vlaue should not be set at a higher value than 2 for linux because paved detection can have concurrency issues compared with traditional detection and set to 0 for mac and windows (gdal implementation's problem)<br><br>
 `zone`: (Mandatory), this is where you configure your layers (rasters of vrt of rasters) inputs. You can have one or many layers<br>
-&ensp;&ensp;&ensp;&ensp;`tile_factor`: (Optional), integer, used to multiply image size field, default is 2<br>
 &ensp;&ensp;&ensp;&ensp;`margin`: (Optional), integer, used to compute the margin between patchs for overlapping detection. 256 by exemple means that every 256Xresolution step, a patch center will be computed. Overlaping detection aims at using an efficient receptive field at any point in your input zone.<br>
-&ensp;&ensp;&ensp;&ensp;`output_dalle_size`: (Optional), integer, used to pave your output in a predefined size format. By exemple, if it's set to 2500, it will write raster of size 2500Xresolution as output (it will assemble patchs output intesecting the paved output raster). Default is null (None), it will not pave your output, and will write patch by patch.
 &ensp;&ensp;&ensp;&ensp;`layers`: (Mandatory), you could have one layer of a list of layers representing your raster of vrt input, and even select the bands of interest<br>
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;- `path`: (Mandatory), string,  path to your raster or vrt layer<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`key`: (Optional), string, key used internally to differenciate your layer from the others<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`name`: (Optional), string, same utility as key.<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`bands`: (Optional), list of integer from 1 to ... (something like [1, 2, 3, 4, 5], order doesn't count), used to extract only the bands of interest for detection, default is null, and it will use all your bands.<br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;- `bands`: (Optional), list of integer from 1 to ... (something like [1, 2, 3, 4, 5], order doesn't count), used to extract only the bands of interest for detection, default is null, and it will use all your bands.<br>
