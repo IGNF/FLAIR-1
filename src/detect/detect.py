@@ -12,12 +12,12 @@ from typing import List
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-import torch.nn.functional as F
+
 from tqdm import tqdm
 import rasterio
 from rasterio.features import geometry_window
 from rasterio.plot import reshape_as_raster
-from pytorch_lightning import LightningModule
+# from pytorch_lightning import LightningModule
 # from rasterio.warp import aligned_target
 # from geopandas import GeoDataFrame
 
@@ -34,6 +34,7 @@ from src.train.tasks_utils import smp_unet_mtd
 
 LOGGER = getLogger(__name__)
 NB_PROCESSOR = multiprocessing.cpu_count()
+
 
 def load_model(checkpoint: str | Path, model_name: str = 'Unet',
                encoder: str = 'resnet34', n_classes: int = 15,
@@ -53,7 +54,6 @@ class Detector:
 
     def __init__(self,
                  layers: List[Layer],
-                 tile_factor: int,
                  margin_zone: int,
                  job: ZoneDetectionJob | ZoneDetectionJobNoDalle,
                  output_path: str | Path,
@@ -69,8 +69,9 @@ class Detector:
                  num_worker: int | None = None,
                  output_type: OUTPUT_TYPE = "uint8",
                  dem: bool = False,
-                 out_dalle_size: int | None = None
+                 out_dalle_size: int | None | bool = False
                  ):
+
         self.resolution: GEO_FLOAT_TUPLE = resolution if resolution is not None else [0.20, 0.20]
         self.img_size_pixel = img_size_pixel
         self.model_name = model_name
@@ -105,7 +106,6 @@ class Detector:
         if self.output_type == "bit":
             self.gdal_options["bit"] = 1
         self.layers = layers
-        self.tile_factor = tile_factor
         self.margin_zone = margin_zone
         self.dem = dem
         self.output_write = os.path.join(self.output_path, "result")
@@ -127,8 +127,8 @@ class Detector:
         self.meta["dtype"] = "uint8" if self.output_type in ["uint8", "bit", "argmax"] else "float32"
         self.meta["count"] = self.n_classes
         self.meta_output = self.meta.copy()
-        if self.out_dalle_size is None:
-            self.meta_output["height"] = self.img_size_pixel * self.tile_factor - (2 * self.margin_zone)
+        if self.out_dalle_size is None or self.out_dalle_size is False:
+            self.meta_output["height"] = self.img_size_pixel - (2 * self.margin_zone)
             self.meta_output["width"] = self.meta_output["height"]
         else:
             self.meta_output["height"] = math.ceil(self.out_dalle_size[1] / self.resolution[1])
@@ -181,7 +181,9 @@ class Detector:
                 bottom = self.job.get_cell_at(index[0], "bottom_o")
                 right = self.job.get_cell_at(index[0], "right_o")
                 top = self.job.get_cell_at(index[0], "top_o")
-
+                if self.out_dalle_size is False:
+                    self.meta_output["width"], self.meta_output["height"] = ((right - left) // self.resolution[0],
+                                                                             (top - bottom) // self.resolution[1])
                 self.meta_output["transform"] = rasterio.transform.from_bounds(
                     left, bottom, right, top, self.meta_output["width"], self.meta_output["height"])
                 out = rasterio.open(output_file, 'w+', **self.meta_output, **self.gdal_options)
@@ -229,8 +231,8 @@ class Detector:
                                                     output_type=self.output_type,
                                                     meta=self.meta,
                                                     dem=self.dem,
-                                                    height=self.img_size_pixel * self.tile_factor,
-                                                    width=self.img_size_pixel * self.tile_factor,
+                                                    height=self.img_size_pixel,
+                                                    width=self.img_size_pixel,
                                                     resolution=self.resolution)
                 with self.dataset as dataset:
                     LOGGER.debug(f"length: {len(dataset.job)}")

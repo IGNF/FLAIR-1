@@ -59,51 +59,39 @@ class PatchJobDetection(BaseDetectionJob):
         self.keep_only_todo_list()
 
     def __len__(self):
-
         return len(self._df)
 
     def __str__(self):
-
         return f" PatchJobDetection with dataframe {self._df}"
 
     @classmethod
     def read_file(cls, file_name):
-
         return pd.read_csv(file_name)
 
     def get_row_at(self, index):
-
         return self._df.iloc[index]
 
     def get_cell_at(self, index, column):
-
         return self._df.at[index, column]
 
     def set_cell_at(self, index, column, value):
-
         self._df.at[index, column] = value
 
     def get_job_done(self):
-
         return self._df[self._df["job_done"] == 1]
 
     def get_todo_list(self):
-
         return self._df[self._df["job_done"] == 0]
 
     def keep_only_todo_list(self):
-
         self._job_done = self.get_job_done()
         self._df = self.get_todo_list()
         self._df.reset_index(drop=True)
         self._job_done.reset_index(drop=True)
 
     def save_job(self):
-
         out = self._df
-
         if self._job_done is not None:
-
             out = pd.concat([out, self._job_done])
 
         out.to_csv(os.path.join(self._path, self._job_file))
@@ -143,7 +131,6 @@ class ZoneDetectionJob(PatchJobDetection):
         return gpd.read_file(file_name)
 
     def get_job_done(self):
-
         df_grouped = self._df.groupby(["output_id"]).agg({"job_done": ["sum", "count"]})
         LOGGER.debug(df_grouped)
         LOGGER.debug(df_grouped.index.values.tolist())
@@ -161,7 +148,6 @@ class ZoneDetectionJob(PatchJobDetection):
             return self._df[~self._df["output_id"].isin(self._job_done["output_id"].values)]
 
     def save_job(self):
-
         out = self._df
         LOGGER.debug(f"length of job todo {len(out)}")
         if self._job_done is not None:
@@ -180,7 +166,6 @@ class ZoneDetectionJob(PatchJobDetection):
         return self.get_cell_at(idx, "geometry").bounds
 
     def job_finished_for_output_id(self, output_id):
-
         dalle_df = self._df[self._df["output_id"] == output_id]
         if len(dalle_df[dalle_df["job_done"] == 1]) == len(dalle_df):
             return True
@@ -237,12 +222,14 @@ class ZoneDetectionJob(PatchJobDetection):
         ]
         tmp_list = []
         write_gdf = None
+
         for idx, df_row in gdf.iterrows():
-            bounds = df_row["geometry"].bounds
-            min_x, min_y = bounds[0], bounds[1]
-            max_x, max_y = bounds[2], bounds[3]
-            name = df_row["id"] if "id" in gdf.columns else idx
             if out_dalle_size is not None:
+                bounds = df_row["geometry"].bounds
+                min_x, min_y = bounds[0], bounds[1]
+                max_x, max_y = bounds[2], bounds[3]
+                name = df_row["id"] if "id" in gdf.columns else idx
+
                 for i in np.arange(min_x, max_x, out_dalle_size[0]):
                     for j in np.arange(min_y, max_y, out_dalle_size[1]):
                         "handling case where the extent is not a multiple of step"
@@ -269,19 +256,38 @@ class ZoneDetectionJob(PatchJobDetection):
                                     "geometry": create_box_from_bounds(i,  i + out_dalle_size[0], j, j + out_dalle_size[1])
                                 }
                         tmp_list.append(row_d)
-                write_gdf = gpd.GeoDataFrame(tmp_list, crs=gdf.crs, geometry="geometry")
             else:
-                write_gdf = gdf
+                bounds = df_row["geometry"].bounds
+                left, bottom = bounds[0], bounds[1]
+                right, top = bounds[2], bounds[3]
+                name = df_row["id"] if "id" in gdf.columns else idx
+                col, row = int(bottom // resolution[0]), int(left // resolution[0])
+                row_d = {
+                    "id": f"{name}-{row}-{col}",
+                    "name": name,
+                    "job_done": False,
+                    "left": left,
+                    "bottom": bottom,
+                    "right": right,
+                    "top": top,
+                    "affine": "",
+                    "patch_count": 0,
+                    "nb_patch_done": 0,
+                    "geometry": df_row.geometry
+                }
+                tmp_list.append(row_d)
+        write_gdf = gpd.GeoDataFrame(tmp_list, crs=gdf.crs, geometry="geometry")
         tmp_list = []
         for idx, df_row in write_gdf.iterrows():
 
             bounds = df_row["geometry"].bounds
+            print(f"row bounds {bounds}")
+            print(f"overlap_u {overlap_u}")
             LOGGER.debug(bounds)
             min_x, min_y = bounds[0], bounds[1]
             max_x, max_y = bounds[2], bounds[3]
 
             for i in np.arange(min_x - overlap_u[0], max_x + overlap_u[0], step[0]):
-
                 for j in np.arange(min_y - overlap_u[1], max_y + overlap_u[1], step[1]):
                     "handling case where the extent is not a multiple of step"
                     if i + output_size_u[0] > max_x + overlap_u[0]:
@@ -292,40 +298,22 @@ class ZoneDetectionJob(PatchJobDetection):
                     right = i + output_size_u[0] - overlap_u[0]
                     bottom = j + overlap_u[1]
                     top = j + output_size_u[1] - overlap_u[1]
-
                     col, row = int((j - min_y) // resolution[0]) + 1, int((i - min_x) // resolution[1]) + 1
-                    if out_dalle_size is not None:
-                        row_d = {
-                                    "id": str(f"{idx + 1}-{row}-{col}"),
-                                    "output_id": df_row["id"],
-                                    "dalle_done": 0,
-                                    "job_done": 0,
-                                    "left": left,
-                                    "bottom": bottom,
-                                    "right": right,
-                                    "top": top,
-                                    "left_o": df_row["left"],
-                                    "bottom_o": df_row["bottom"],
-                                    "right_o": df_row["right"],
-                                    "top_o": df_row["top"],
-                                    "geometry": create_box_from_bounds(i, i + output_size_u[0], j, j + output_size_u[1])
-                                }
-                    else:
-                        row_d = {
-                                    "id": str(f"{idx + 1}-{row}-{col}"),
-                                    "output_id": str(f"{idx + 1}-{row}-{col}"),
-                                    "dalle_done": 0,
-                                    "job_done": 0,
-                                    "left": left,
-                                    "bottom": bottom,
-                                    "right": right,
-                                    "top": top,
-                                    "left_o": left,
-                                    "bottom_o": bottom,
-                                    "right_o": right,
-                                    "top_o": top,
-                                    "geometry": create_box_from_bounds(i, i + output_size_u[0], j, j + output_size_u[1])
-                                }
+                    row_d = {
+                                "id": str(f"{idx + 1}-{row}-{col}"),
+                                "output_id": df_row["id"],
+                                "dalle_done": 0,
+                                "job_done": 0,
+                                "left": left,
+                                "bottom": bottom,
+                                "right": right,
+                                "top": top,
+                                "left_o": df_row["left"],
+                                "bottom_o": df_row["bottom"],
+                                "right_o": df_row["right"],
+                                "top_o": df_row["top"],
+                                "geometry": create_box_from_bounds(i, i + output_size_u[0], j, j + output_size_u[1])
+                            }
                     tmp_list.append(row_d)
                     if out_dalle_size is not None:
                         write_gdf.at[idx, "patch_count"] += 1

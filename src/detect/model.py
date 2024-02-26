@@ -10,6 +10,7 @@ import torch
 
 logger = getLogger(__name__)
 
+
 def get_module(checkpoint: str | Path) -> Mapping:
     
     if checkpoint is not None and os.path.isfile(checkpoint) and checkpoint.endswith('.ckpt'):
