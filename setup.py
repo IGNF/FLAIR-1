@@ -1,21 +1,16 @@
 import os, sys
-# sys.path.append(os.path.dirname(__file__))
+
 from pathlib import Path
 from setuptools import setup, find_packages
 
-current_dir = Path(__file__).parent
-readme_path = current_dir / 'README.md'
-readme = readme_path.read_text()
-requirements_path = current_dir / 'requirements.txt'
-requirements = requirements_path.read_text().splitlines()
 setup(
     name='flair',
     version='0.1.0',  # Change this as needed or implement dynamic version reading from VERSION file
-    author='anatol garioud & samy khelifi',
+    author='Anatol Garioud & Samy Khelifi',
     author_email='ai-challenge@ign.fr',
     description='baseline and demo code for flair 1 challenge',
     long_description='French Land-cover from Arospace ImageRy',
-    long_description_content_type=readme,
+    long_description_content_type='French Land-cover from Arospace ImageRy',
     url='https://github.com/IGNF/FLAIR-1-AI-Challenge',
     project_urls={
         'Bug Tracker': 'https://github.com/IGNF/FLAIR-1-AI-Challenge'
@@ -50,5 +45,3 @@ setup(
     }
 )
 
-# Configure flake8 and pytest as needed, possibly through other means
-# as setup.py doesn't directly support these configurations.
