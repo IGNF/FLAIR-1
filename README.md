@@ -119,10 +119,29 @@ pip install -e .
 
 ```
 
+### Tasks
 
-### Configuration 
+This library comprises two main components:
 
-The pipeline is configured using a YAML file (`flair-1-config.yml`). The configuration file includes sections for data paths, tasks, model configuration, hyperparameters and computational resources.
+#### flair_patch
+
+The flair_patch module is used for training, inference and metrics calculation at the patch level. To use this pipeline :
+
+```bash
+flair-train --conf=/my/conf/file.yaml
+```
+This will perform the tasks specified in the configuration file. If ‘train’ is enabled, it will train the model and save the trained model to the output folder. If ‘predict’ is enabled, it will load the trained model (or a specified checkpoint if ‘train’ is not enabled) and perform prediction on the test data. If ‘metrics’ is enabled, it will calculate the mean Intersection over Union (mIoU) and other IoU metrics for the predicted and ground truth masks.
+A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
+Note: A notebook is available in the legacy-torch branch (which uses different libraries versions and structure) that was used during the challenge.
+
+
+#### zone_detect
+This module aims to infer a pre-trained model at a larger scale than individual patches. It allows overlapping inferences using a margin argument. Specifically, this module expects a single georeferenced TIFF file as input.<br>
+
+
+### Configuration for flair_patch
+
+The pipeline is configured using a YAML file (`flair-1-config.yaml`). The configuration file includes sections for data paths, tasks, model configuration, hyperparameters and computational resources.
 
 `out_folder`: The path to the output folder where the results will be saved.<br>
 `out_model_name`: The name of the output model.<br>
@@ -154,8 +173,8 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `use_weights`: If set to True, class weights will be used during training.<br>
 `classes`: Dict of semantic classes with value in images as key and list [weight, classname] as value. See config file for an example.<br>
 
-`norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]), custom (center-reduced with provided means and standard deviantions), without.<br><br>
-`norm_means`: If custom, means for each input band.<br><br>
+`norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]), custom (center-reduced with provided means and standard deviantions), without.<br>
+`norm_means`: If custom, means for each input band.<br>
 `norm_stds`: If custom standard deviation for each input band.<br><br>
 
 `georeferencing_output`: If set to True, the output will be georeferenced.<br><br>
@@ -169,31 +188,32 @@ The pipeline is configured using a YAML file (`flair-1-config.yml`). The configu
 `cp_csv_and_conf_to_output`: Makes a copy of paths csv and config file to the output directory.<br>
 `enable_progress_bar`: If set to True, a progress bar will be displayed during training and inference.<br>
 `progress_rate`: The rate at which progress will be displayed.<br>
+<br>
 
-### Input CSV files
+### Configuration for zone_detect
 
-The input CSV files for training, validation, and testing are provided in a folder with the official split. Each CSV file should contain the paths to the image-mask pairs for the corresponding dataset.
+The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 
-### Usage
+`output_path`: path where you want to output your result.<br><br>
 
-To use the pipeline, run the main script with the configuration file as an argument:
+`input_img_path` : path to your georeferenced raster.<br>
+`bands` : bands to be used in your raster file.<br><br>
 
+`img_pixels_detection` : size in pixels of infered patches, default is 512.<br>
+`margin` : margin between patchs for overlapping detection. 128 by exemple means that every 128*resolution step, a patch center will be computed.<br>
+`output_type` : type of output, can be "float32" for raw model output, "uint8" for a band of integer between 0 and 255 representing the output of the model (use less memory than float32), "argmax" which will output only one band with the index of the class, and "bit" which will binarize the output of each band with a threshold.<br>
+`n_classes` : number of classes.<br><br>
 
-```
-python main.py --config_file=./flair-1-config.yml
-```
+`model_weights` : path to your model weights or checkpoint.<br>
+`batch_size` : size of batch in dataloader, default is 2.<br> 
+`use_gpu` : boolean, rather use gpu or cpu for inference, default is true.<br>
+`model_name` : name of the model in pytorch segmentation models, default is 'unet'.<br>
+`encoder_name` :  Name of the encoder from pytorch segmentation model, default is 'resnet34'.<br>
+`num_worker` : number of worker used by dataloader, value should not be set at a higher value than 2 for linux because paved detection can have concurrency issues compared with traditional detection and set to 0 for mac and windows (gdal implementation's problem).<br><br>
 
-To run the pipeline if you have install flair with pip:
-
-```bash
-flair-train --conf-file=/my/conf/file.yaml
-```
-
-The script will perform the tasks specified in the configuration file. If ‘train’ is enabled, it will train the model and save the trained model to the output folder. If ‘predict’ is enabled, it will load the trained model (or a specified checkpoint if ‘train’ is not enabled) and perform prediction on the test data. If ‘metrics’ is enabled, it will calculate the mean Intersection over Union (mIoU) and other IoU metrics for the predicted and ground truth masks.
-
-A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
-
-<em>Note: </em> A notebook is available in the legacy-torch branch (which uses different libraries versions and structure) that was used during the challenge. 
+`norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]), custom (center-reduced with provided means and standard deviantions), without.<br>
+`norm_means`: If custom, means for each input band.<br>
+`norm_stds`: If custom standard deviation for each input band.<br><br>
 
 <br>
 
@@ -249,34 +269,3 @@ This licence is governed by French law.
 ### Compatibility of this licence
 
 This licence has been designed to be compatible with any free licence that at least requires an acknowledgement of authorship, and specifically with the previous version of this licence as well as with the following licences: United Kingdom’s “Open Government Licence” (OGL), Creative Commons’ “Creative Commons Attribution” (CC-BY) and Open Knowledge Foundation’s “Open Data Commons Attribution” (ODC-BY).
-
-## Detection
-<br>
-The command line detection aims to bring detection at scale, meaning you can use it for any size of raster or vrt, could be a country.
-The detection uses overlaping<br>
-To run detection:
-
-```bash
-flair-detect --conf=/my/conf/file.yaml
-```
-
-You can find cofiguration exemple files (we use yaml) with gpu: [gpu configuration](detect_conf_example_gpu.yaml) <br>
-or with cpu: [cpu configuration](detect_conf_example_cpu.yaml)
-
-`img_size_pixel`: (Optional), integer,  size of the image in extracted patches in pixel, default is 512 <br><br>
-`checkpoint`: (Mandatory), str, path to your checkpoint<br><br>
-`n_classes`: (Mandatory), integer, number of classes<br><br>
-`batch_size`: (Optional), integer, size of batch in dataloader, default is 2<br><br>
-`key_path`: (Optional), list of string,   Used only if your checkpoint was not made with the training loop of flair. If you want to extract the state_dict field from a checkpoint coming from another pytorch lightning module than the Flair one. Expecting a list, like this ['state_dict']. Default is null (None)<br><br>
-`model_prefix`: (Optional), string,  Used only if your checkpoint was not made with the training loop of flair. Like key_path, used to extract the named module in pytorch segmentation models format (something like 'seg_model.model') if your state_dict named module start like this, it will delete from every named module this part of the name and will keep only the pytorch segmenation models ones (starting by encoder.* or decoder.*). Default is null (None)<br><br>
-`use_gpu`: (Optional), boolean, rather use gpu or cpu for inference, default is true<br><br>
-`output_path`: (Mandatory), string, path where you want to output your result<br><br>
-`model_name`: (Optional), string, Used only if your checkpoint was not made with the training loop of flair. Name of the model in pytorch segmentation models, default is 'unet'<br><br>
-`encoder_name`: (Optional), string, Used only if your checkpoint was not made with the training loop of flair. Name of the encoder from pytorch segmentation model, default is 'resnet34'<br><br>
-`output_type`: (Optional) type of output, can be "float32" for raw model output, "uint8" for a band of integer between 0 and 255 representing the output of the model (use less memory than float32), "argmax" which will output only one band with the index of the class, and "bit" which will binarize the output of each band with a threshold<br><br>
-`num_worker`: (Optional) number of worker used by dataloader, in macosx, value should be set to 0 and on other systems vlaue should not be set at a higher value than 2 for linux because paved detection can have concurrency issues compared with traditional detection and set to 0 for mac and windows (gdal implementation's problem)<br><br>
-`zone`: (Mandatory), this is where you configure your layers (rasters of vrt of rasters) inputs. You can have one or many layers<br>
-&ensp;&ensp;&ensp;&ensp;`margin`: (Optional), integer, used to compute the margin between patchs for overlapping detection. 256 by exemple means that every 256Xresolution step, a patch center will be computed. Overlaping detection aims at using an efficient receptive field at any point in your input zone.<br>
-&ensp;&ensp;&ensp;&ensp;`layers`: (Mandatory), you could have one layer of a list of layers representing your raster of vrt input, and even select the bands of interest<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;- `path`: (Mandatory), string,  path to your raster or vrt layer<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;- `bands`: (Optional), list of integer from 1 to ... (something like [1, 2, 3, 4, 5], order doesn't count), used to extract only the bands of interest for detection, default is null, and it will use all your bands.<br>
