@@ -106,6 +106,8 @@ domain, obtained with the baseline trained model:
 
 ## Lib usage 
 
+<br><br>
+
 ### Installation
 
 ```bash
@@ -118,10 +120,11 @@ cd FLAIR-1*
 pip install -e .
 
 ```
+<br><br>
 
 ### Tasks
 
-This library comprises two main components:
+This library comprises two main components:<br>
 
 #### flair_patch
 
@@ -134,10 +137,10 @@ This will perform the tasks specified in the configuration file. If ‘train’ 
 A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
 Note: A notebook is available in the legacy-torch branch (which uses different libraries versions and structure) that was used during the challenge.
 
-
 #### zone_detect
 This module aims to infer a pre-trained model at a larger scale than individual patches. It allows overlapping inferences using a margin argument. Specifically, this module expects a single georeferenced TIFF file as input.<br>
 
+<br><br>
 
 ### Configuration for flair_patch
 
@@ -188,7 +191,8 @@ The pipeline is configured using a YAML file (`flair-1-config.yaml`). The config
 `cp_csv_and_conf_to_output`: Makes a copy of paths csv and config file to the output directory.<br>
 `enable_progress_bar`: If set to True, a progress bar will be displayed during training and inference.<br>
 `progress_rate`: The rate at which progress will be displayed.<br>
-<br>
+
+<br><br>
 
 ### Configuration for zone_detect
 
@@ -215,7 +219,7 @@ The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 `norm_means`: If custom, means for each input band.<br>
 `norm_stds`: If custom standard deviation for each input band.<br><br>
 
-<br>
+<br><br>
 
 ## Leaderboard
 
