@@ -104,21 +104,22 @@ domain, obtained with the baseline trained model:
 
 <br>
 
-## Usage 
+## Lib usage 
 
 ### Installation
 
-The file `requirement.txt` is listing used libraries for the baselines.
-
 ```bash
 # it's recommended to install on a conda virtual env
-conda (or mamba) create -n my_env_name -c conda-forge python=3.11.6
+conda create -n my_env_name -c conda-forge python=3.11.6
+conda activate my_env_name
+pip install torch==2.0.0 --extra-index-url=https://download.pytorch.org/whl/cu117
 git clone git@github.com:IGNF/FLAIR-1.git
 cd FLAIR-1*
 pip install -e .
 
 ```
-git clone 
+
+
 ### Configuration 
 
 The pipeline is configured using a YAML file (`flair-1-config.yml`). The configuration file includes sections for data paths, tasks, model configuration, hyperparameters and computational resources.
