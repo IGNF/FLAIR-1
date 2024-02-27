@@ -138,7 +138,11 @@ A toy dataset (reduced size) is available to check that your installation and th
 Note: A notebook is available in the legacy-torch branch (which uses different libraries versions and structure) that was used during the challenge.
 
 #### zone_detect
-This module aims to infer a pre-trained model at a larger scale than individual patches. It allows overlapping inferences using a margin argument. Specifically, this module expects a single georeferenced TIFF file as input.<br>
+This module aims to infer a pre-trained model at a larger scale than individual patches. It allows overlapping inferences using a margin argument. Specifically, this module expects a single georeferenced TIFF file as input.
+
+```bash
+flair-detect --conf=/my/conf/file-detect.yaml
+```
 
 <br><br>
 
