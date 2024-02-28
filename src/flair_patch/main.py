@@ -87,7 +87,11 @@ def load_checkpoint(ckpt_file_path, seg_module, exit_on_fail=False):
     if ckpt_file_path is not None and os.path.isfile(ckpt_file_path) and ckpt_file_path.endswith('.ckpt'):
         checkpoint = torch.load(ckpt_file_path, map_location="cpu")
         seg_module.load_state_dict(checkpoint["state_dict"], strict=False)
-        print('Loaded model weights from ckpt.')  
+        print('Loaded model weights from ckpt.')
+    elif ckpt_file_path is not None and os.path.isfile(ckpt_file_path) and (ckpt_file_path.endswith('.pth') or ckpt_file_path.endswith('.pt')):
+        checkpoint = torch.load(ckpt_file_path, map_location="cpu")
+        seg_module.load_state_dict(checkpoint, strict=False)
+        print('Loaded model weights from pytorch file.')       
     else: 
         print("Invalid checkpoint file path.")
         if exit_on_fail:
