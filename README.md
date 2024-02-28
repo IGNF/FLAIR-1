@@ -126,7 +126,7 @@ pip install -e .
 
 This library comprises two main components:<br>
 
-#### flair_patch
+#### :file_folder: flair_patch
 
 The flair_patch module is used for training, inference and metrics calculation at the patch level. To use this pipeline :
 
@@ -137,7 +137,7 @@ This will perform the tasks specified in the configuration file. If ‘train’ 
 A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
 Note: A notebook is available in the legacy-torch branch (which uses different libraries versions and structure) that was used during the challenge.
 
-#### zone_detect
+#### :file_folder: zone_detect
 This module aims to infer a pre-trained model at a larger scale than individual patches. It allows overlapping inferences using a margin argument. Specifically, this module expects a single georeferenced TIFF file as input.
 
 ```bash
