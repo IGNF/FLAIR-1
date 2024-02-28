@@ -108,7 +108,7 @@ domain, obtained with the baseline trained model:
 
 <br><br>
 
-### Installation
+### Installation :pushpin:
 
 ```bash
 # it's recommended to install on a conda virtual env
@@ -122,7 +122,7 @@ pip install -e .
 ```
 <br><br>
 
-### Tasks
+### Tasks :mag_right:
 
 This library comprises two main components:<br>
 
