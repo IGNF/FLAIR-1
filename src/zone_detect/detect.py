@@ -213,6 +213,25 @@ class Detector:
                 out.close()
 
 
+    def normalization(self, in_img, norma):
+        if norma['norm_type'] not in ['scaling', 'custom']:
+            print("Normalization argument should be 'scaling' or 'custom'")
+            raise ValueError("Invalid normalization type")
+
+        if norma['norm_type'] == 'custom':
+            if len(norma['norm_means']) != len(norma['norm_stds']):
+                print("If custom, provided normalization means and stds should be of the same length.")
+                raise ValueError("Mismatched means and stds lengths")
+            else:
+                for i in range(len(norma['norm_means'])):
+                    in_img[:, i] -= norma['norm_means'][i]/255
+                    in_img[:, i] /= norma['norm_stds'][i]/255
+        elif norma['norm_type'] == 'scaling':
+            pass
+        
+        return in_img
+
+  
     def run(self):
         if len(self.job) > 0:
             try:
@@ -232,7 +251,9 @@ class Detector:
                                                   pin_memory=True
                                                   )
                     for samples in tqdm(self.data_loader):
-                        predictions = self.detect(samples["image"])
+                        imgs = samples["image"]
+                        imgs = self.normalization(imgs, self.norma)
+                        predictions = self.detect(imgs)
                         indices = samples["index"].cpu().numpy()
                         LOGGER.debug(indices)
                         self.save(predictions, indices)
