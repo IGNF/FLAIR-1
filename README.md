@@ -11,7 +11,7 @@
 
 
 
-Participate in obtaining more accurate maps for a more comprehensive description and a better understanding of our environment! Come push the limits of state-of-the-art semantic segmentation approaches on a large and challenging dataset. Get in touch at ai-challenge@ign.fr
+Participate in obtaining more accurate maps for a more comprehensive description and a better understanding of our environment! Come push the limits of state-of-the-art semantic segmentation approaches on a large and challenging dataset. Get in touch at :email: ai-challenge@ign.fr
 
 
 
@@ -146,7 +146,7 @@ flair-detect --conf=/my/conf/file-detect.yaml
 
 <br><br>
 
-### Configuration for flair_patch
+### Configuration for flair_patch :page_facing_up:
 
 The pipeline is configured using a YAML file (`flair-1-config.yaml`). The configuration file includes sections for data paths, tasks, model configuration, hyperparameters and computational resources.
 
@@ -198,7 +198,7 @@ The pipeline is configured using a YAML file (`flair-1-config.yaml`). The config
 
 <br><br>
 
-### Configuration for zone_detect
+### Configuration for zone_detect :page_facing_up:
 
 The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 
