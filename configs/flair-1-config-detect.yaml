@@ -1,19 +1,22 @@
-output_path: /home/SKhelifi/dev/cosia-detection/output
+output_path: 
 
-zone:
-  margin: 50
-  layers:
-    - path: /home/SKhelifi/dev/cosia-detection/data/rasters/D012_2019-Z11_UU-ortho_img.tif
-      bands: [1, 2, 3, 4, 5]
+input_img_path: ../D085_2019-Z9_NF-ortho_img.tif
+bands: [1, 2, 3, 4, 5]
+
 img_pixels_detection: 512
+margin: 128
 output_type: "argmax"
 n_classes: 19
-model_weights: /home/SKhelifi/dev/cosia-detection/checkpoint/ckpt-epoch=57-val_loss=0.60_1_FLAIR-HF_12_scaling_RVBIE_unetresnet34.ckpt
-batch_size: 16
+
+
+model_weights: ../FLAIR-INC_rgbie_15cl_resnet34-unet_weights.pth
+batch_size: 4
 use_gpu: true
 model_name: 'unet'
 encoder_name: 'resnet34'
-num_worker: 0  # IF OS=WINDOWS or MACOSX ; set as 0
-# norm: scaling
-# norm_means:
-# norm_stds:
+num_worker: 10  # IF OS=WINDOWS or MACOSX ; set as 0
+
+normalization: 
+  - norm_type: custom 
+  - norm_means: [105.08, 110.87, 101.82, 106.38, 53.26]
+  - norm_stds: [52.17, 45.38, 44, 39.69, 79.3]
