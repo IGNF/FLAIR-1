@@ -219,7 +219,7 @@ The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 `encoder_name` :  Name of the encoder from pytorch segmentation model, default is 'resnet34'.<br>
 `num_worker` : number of worker used by dataloader, value should not be set at a higher value than 2 for linux because paved detection can have concurrency issues compared with traditional detection and set to 0 for mac and windows (gdal implementation's problem).<br><br>
 
-`norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]), custom (center-reduced with provided means and standard deviantions), without.<br>
+`norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]) or custom (center-reduced with provided means and standard deviantions).<br>
 `norm_means`: If custom, means for each input band.<br>
 `norm_stds`: If custom standard deviation for each input band.<br><br>
 
