@@ -114,24 +114,25 @@ domain, obtained with the baseline trained model:
 # it's recommended to install on a conda virtual env
 conda create -n my_env_name -c conda-forge python=3.11.6
 conda activate my_env_name
-pip install torch==2.0.0 --extra-index-url=https://download.pytorch.org/whl/cu117
 git clone git@github.com:IGNF/FLAIR-1.git
 cd FLAIR-1*
 pip install -e .
+pip install torch==2.0.0 --extra-index-url=https://download.pytorch.org/whl/cu117
 
 ```
+
 <br><br>
 
 ### Tasks :mag_right:
 
 This library comprises two main components:<br>
 
-#### :file_folder: flair_patch
+#### :file_folder: flair
 
 The flair_patch module is used for training, inference and metrics calculation at the patch level. To use this pipeline :
 
 ```bash
-flair-train --conf=/my/conf/file.yaml
+flair --conf=/my/conf/file.yaml
 ```
 This will perform the tasks specified in the configuration file. If ‘train’ is enabled, it will train the model and save the trained model to the output folder. If ‘predict’ is enabled, it will load the trained model (or a specified checkpoint if ‘train’ is not enabled) and perform prediction on the test data. If ‘metrics’ is enabled, it will calculate the mean Intersection over Union (mIoU) and other IoU metrics for the predicted and ground truth masks.
 A toy dataset (reduced size) is available to check that your installation and the information in the configuration file are correct.
