@@ -47,7 +47,7 @@ setup(
     entry_points={
         'console_scripts': [
             'flair-detect=src.zone_detect.main:main',
-            'flair-train=src.flair_patch.main:main'
+            'flair=src.flair.main:main'
         ]
     }
 )
