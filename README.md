@@ -125,7 +125,7 @@ pip install torch==2.0.0 --extra-index-url=https://download.pytorch.org/whl/cu11
 
 ### Tasks :mag_right:
 
-This library comprises two main components:<br>
+This library comprises two main entry points:<br>
 
 #### :file_folder: flair
 
