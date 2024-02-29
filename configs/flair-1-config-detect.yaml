@@ -1,6 +1,6 @@
 output_path: 
 
-input_img_path: ../D085_2019-Z9_NF-ortho_img.tif
+input_img_path: ../path/to/raster/file.tif
 bands: [1, 2, 3, 4, 5]
 
 img_pixels_detection: 512
