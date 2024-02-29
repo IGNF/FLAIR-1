@@ -62,7 +62,7 @@ classes: # k = value in MSK : v = [weight, name]
     19: [0, 'other']
 
 #### NORMALIZATION
-norm_type: scaling # [scaling, custom, without], default: scaling to range [0,1], see github readme
+norm_type: custom # [scaling, custom, without], default: scaling to range [0,1], see github readme
 norm_means: [105.08,110.87,101.82,106.38,53.26] # same length (order) as channels
 norm_stds: [52.17,45.38,44,39.69,79.3] # same length (order) as channels
 
