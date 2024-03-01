@@ -18,5 +18,5 @@ num_worker: 10  # IF OS=WINDOWS or MACOSX ; set as 0
 
 normalization: 
   - norm_type: custom 
-  - norm_means: [105.08, 110.87, 101.82, 106.38, 53.26]
-  - norm_stds: [52.17, 45.38, 44, 39.69, 79.3]
+    norm_means: [105.08, 110.87, 101.82, 106.38, 53.26]
+    norm_stds: [52.17, 45.38, 44, 39.69, 79.3]
