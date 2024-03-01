@@ -146,7 +146,7 @@ class Detector:
         self.meta_output = self.meta.copy()
         self.meta_output["height"] = self.img_size_pixel - (2 * self.margin_zone)
         self.meta_output["width"] = self.meta_output["height"]
-        self.meta["count"] = self.n_classes
+        self.meta_output["count"] = self.n_classes
         if self.output_type == "argmax":
             self.meta_output["count"] = 1
         self.num_worker = 0 if self.num_worker is None else self.num_worker
