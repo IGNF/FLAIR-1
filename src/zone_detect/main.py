@@ -122,7 +122,7 @@ class ConfDetection:
             if not all(os.path.isfile(f) for f in [self.model_weights]):
                 raise Exception("Model weight files do not exist.")
             self.configure()
-        except Error as error:
+        except Exception as error:
             LOGGER.debug(f"something went wrong during detection configuration {error}")
 
 
