@@ -14,7 +14,7 @@ batch_size: 4
 use_gpu: true
 model_name: 'unet'
 encoder_name: 'resnet34'
-num_worker: 10  # IF OS=WINDOWS or MACOSX ; set as 0
+num_worker: 2
 
 normalization: 
   - norm_type: custom 
