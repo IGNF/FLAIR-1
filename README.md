@@ -203,7 +203,8 @@ The pipeline is configured using a YAML file (`flair-1-config.yaml`). The config
 
 The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 
-`output_path`: path to output result.<br><br>
+`output_path`: path to output result.<br>
+`output_name`: name of resulting raster.<br><br>
 
 `input_img_path` : path to georeferenced raster.<br>
 `bands` : bands to be used in your raster file.<br><br>
@@ -219,6 +220,8 @@ The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 `model_name` : name of the model in pytorch segmentation models, default is 'unet'.<br>
 `encoder_name` :  Name of the encoder from pytorch segmentation model, default is 'resnet34'.<br>
 `num_worker` : number of worker used by dataloader, value should not be set at a higher value than 2 for linux because paved detection can have concurrency issues compared with traditional detection and set to 0 for mac and windows (gdal implementation's problem).<br><br>
+
+`num_worker` : wether to write the dataframe of raster slicing to a file.<br><br>
 
 `norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]) or custom (center-reduced with provided means and standard deviantions).<br>
 `norm_means`: If custom, means for each input band.<br>
