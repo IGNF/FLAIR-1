@@ -129,7 +129,7 @@ This library comprises two main entry points:<br>
 
 #### :file_folder: flair
 
-The flair_patch module is used for training, inference and metrics calculation at the patch level. To use this pipeline :
+The flair module is used for training, inference and metrics calculation at the patch level. To use this pipeline :
 
 ```bash
 flair --conf=/my/conf/file.yaml
@@ -147,7 +147,7 @@ flair-detect --conf=/my/conf/file-detect.yaml
 
 <br><br>
 
-### Configuration for flair_patch :page_facing_up:
+### Configuration for flair :page_facing_up:
 
 The pipeline is configured using a YAML file (`flair-1-config.yaml`). The configuration file includes sections for data paths, tasks, model configuration, hyperparameters and computational resources.
 
