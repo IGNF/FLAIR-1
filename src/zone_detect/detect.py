@@ -166,7 +166,7 @@ class Detector:
                 LOGGER.warning("If custom, provided normalization means and stds should be of the same length.")
                 raise ValueError("Mismatched means and stds lengths")
             else:
-                for i in range(len(norma['norm_means'])):
+                for i in range(len(np.shape(in_img[0]))):
                     in_img[:, i] -= norma['norm_means'][i]/255
                     in_img[:, i] /= norma['norm_stds'][i]/255
         return in_img
