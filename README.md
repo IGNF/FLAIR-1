@@ -203,14 +203,14 @@ The pipeline is configured using a YAML file (`flair-1-config.yaml`). The config
 
 The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 
-`output_path`: path where you want to output your result.<br><br>
+`output_path`: path to output result.<br><br>
 
-`input_img_path` : path to your georeferenced raster.<br>
+`input_img_path` : path to georeferenced raster.<br>
 `bands` : bands to be used in your raster file.<br><br>
 
 `img_pixels_detection` : size in pixels of infered patches, default is 512.<br>
 `margin` : margin between patchs for overlapping detection. 128 by exemple means that every 128*resolution step, a patch center will be computed.<br>
-`output_type` : type of output, can be "float32" for raw model output, "uint8" for a band of integer between 0 and 255 representing the output of the model (use less memory than float32), "argmax" which will output only one band with the index of the class, and "bit" which will binarize the output of each band with a threshold.<br>
+`output_type` : type of output, can be "class_proba" for integer between 0 and 255 representing the output of the model or "argmax" which will output only one band with the index of the class.<br>
 `n_classes` : number of classes.<br><br>
 
 `model_weights` : path to your model weights or checkpoint.<br>
