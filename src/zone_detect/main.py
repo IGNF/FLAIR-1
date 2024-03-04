@@ -54,12 +54,12 @@ def setup(args):
         return config, path_out, device, use_gpu
     
     except Exception as error:
-        print(f"Something went wrong during detection configuration: {error}") 
+        STD_OUT_LOGGER.info(f"Something went wrong during detection configuration: {error}") 
         
     
 
 def conf_log(config, resolution):
-    print(f"""
+    STD_OUT_LOGGER.info(f"""
     |- output path: {config['output_path']}
     |- output raster name: {config['output_name']}
 
