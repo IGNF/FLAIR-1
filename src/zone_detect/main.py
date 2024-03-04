@@ -61,8 +61,7 @@ def setup(args):
 def conf_log(config, resolution):
     STD_OUT_LOGGER.info(f"""
     |- output path: {config['output_path']}
-    |- output raster name: {config['output_name']}
-
+    |- output raster name: {config['output_name']}\n
     |- input image path: {config['input_img_path']}
     |- bands: {config['bands']}
     |- resolution: {resolution}\n
