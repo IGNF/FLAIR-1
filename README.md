@@ -117,7 +117,8 @@ conda activate my_env_name
 git clone git@github.com:IGNF/FLAIR-1.git
 cd FLAIR-1*
 pip install -e .
-pip install torch==2.0.0 --extra-index-url=https://download.pytorch.org/whl/cu117
+# if torch.cuda.is_available() returns False, do the following :
+# pip install torch==2.0.0 --extra-index-url=https://download.pytorch.org/whl/cu117
 
 ```
 
