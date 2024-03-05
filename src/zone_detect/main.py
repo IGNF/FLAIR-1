@@ -41,20 +41,26 @@ def read_config(file_path):
 
 
 def setup(args):
-    config = read_config(args.conf)    
+    config = read_config(args.conf)
     use_gpu = (False if torch.cuda.is_available() is False else config['use_gpu'])
     device = torch.device("cuda" if use_gpu else "cpu")
+
+    assert isinstance(config['output_path'], str), "Output path does not exist."
+    assert os.path.exists(config['input_img_path']), "Input image path does not exist."
+    assert config['margin'] * 2 < config['img_pixels_detection'], "Margin is too large : margin*2 < img_pixels_detection"
+    assert config['output_type'] in ['class_prob', 'argmax'], "Invalid output type: should be argmax or class_prob."
+    assert config['norma_task'][0]['norm_type'] in ['custom', 'scaling'], "Invalid normalization type: should be custom or scaling."
+    assert os.path.isfile(config['model_weights']), "Model weights file does not exist."
+    if not config['output_name'].endswith('.tif'):
+        config['output_name'] += '.tif'  
     try:
         Path(config['output_path']).mkdir(parents=True, exist_ok=True)
-        path_out = os.path.join(config['output_path'], config['output_name']+'.tif')
+        path_out = os.path.join(config['output_path'], config['output_name'])
         if os.path.exists(path_out):
-            os.remove(path_out)  ### removing if existing
-        if not all(os.path.isfile(f) for f in [config['model_weights']]):
-            raise Exception("Model weight files do not exist.")
+            os.remove(path_out)  # Removing if existing
         return config, path_out, device, use_gpu
-    
     except Exception as error:
-        STD_OUT_LOGGER.info(f"Something went wrong during detection configuration: {error}") 
+        print(f"Something went wrong during detection configuration: {error}")
         
     
 
