@@ -212,7 +212,7 @@ The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 
 `img_pixels_detection` : size in pixels of infered patches, default is 512.<br>
 `margin` : margin between patchs for overlapping detection. 128 by exemple means that every 128*resolution step, a patch center will be computed.<br>
-`output_type` : type of output, can be "class_proba" for integer between 0 and 255 representing the output of the model or "argmax" which will output only one band with the index of the class.<br>
+`output_type` : type of output, can be "class_prob" for integer between 0 and 255 representing the output of the model or "argmax" which will output only one band with the index of the class.<br>
 `n_classes` : number of classes.<br><br>
 
 `model_weights` : path to your model weights or checkpoint.<br>
