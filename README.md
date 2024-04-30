@@ -260,7 +260,7 @@ The baseline U-Net with ResNet34 backbone obtains the following confusion matrix
 ## Reference
 Please include a citation to the following article if you use the FLAIR #1 dataset:
 
-```
+```bibtex
 @article{garioud2022flair1,
   doi = {10.13140/RG.2.2.30183.73128/1},
   url = {https://arxiv.org/pdf/2211.12979.pdf},
