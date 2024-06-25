@@ -37,7 +37,6 @@ setup(
         "pytorch-lightning==2.1.1",
         "segmentation-models-pytorch==0.3.3",
         "albumentations==1.3.1",
-        "rasterio==1.3.6",
         "tensorboard==2.15.1"
     ],
     include_package_data=True,
