@@ -108,7 +108,7 @@ domain, obtained with the baseline trained model:
 
 ## Pre-trained models
 
-<b>Pre-trained models &#9889;</b> with different modalities and architectures are available as a IGNF's HuggingFace collection here : <a href="https://huggingface.co/collections/IGNF/flair-models-landcover-semantic-segmentation-65bb67415a5dbabc819a95de">huggingface.co/collections/IGNF/flair-models-landcover-semantic-segmentation</a> <br>
+<b>Pre-trained models &#9889;&#9889;&#9889;</b> with different modalities and architectures are available as a IGNF's HuggingFace collection here : <a href="https://huggingface.co/collections/IGNF/flair-models-landcover-semantic-segmentation-65bb67415a5dbabc819a95de">huggingface.co/collections/IGNF/flair-models-landcover-semantic-segmentation</a> <br>
 See datacards for more details about each model. 
 
 <br>
@@ -166,34 +166,36 @@ The pipeline is configured using a YAML file (`flair-1-config.yaml`). The config
 `train_csv`: Path to the CSV file containing paths to image-mask pairs for training.<br>
 `val_csv`: Path to the CSV file containing paths to image-mask pairs for validation.<br>
 `test_csv`: Path to the CSV file containing paths to image-mask pairs for testing.<br>
-`ckpt_model_path`: The path to the checkpoint file of the model for prediction if train is disabled.<br>
+`ckpt_model_path`: The path to the checkpoint file of the model. Used if train_tasks/init_weights_only_from_ckpt or resume_training_from_ckpt is True and for prediction if train is disabled.<br>
+`path_metadata_aerial`: The path to the aerial metadata JSON file if used with FLAIR data and `model_provider` is SegmentationModelsPytorch.<br><br>
+
 
 `train`: If set to True, the model will be trained.<br>
-`train_load_ckpt`: Initialize model with given weights.<br><br>
+`init_weights_only_from_ckpt`: Use if fine-tuning to load weights from the ckpt file and perform training<br>
+`resume_training_from_ckpt`: Use if you want to resume an aborted training or complete a training. This will load the weights, optimizer, scheduler and all relevant hyperparameters from the provided ckpt.<br><br>
 `predict`: If set to True, predictions will be made using the model.<br>
 `metrics`: If set to True, metrics will be calculated.<br>
 `delete_preds`: Remove prediction files after metrics calculation.<br><br>
 
-`model_architecture`: The architecture of the model to be used (e.g., ‘unet’).<br>
-`encoder_name`: The name of the encoder to be used in the model (e.g., ‘resnet34’).<br>
-`use_augmentation`: If set to True, data augmentation will be applied during training.<br>
+`model_provider`: the library providing models, either HuggingFace or SegmentationModelsPytorch.<br>
+`org_model`: to be used if `model_provider` is HuggingFace in the form HFOrganization_Modelname, e.g., "openmmlab/upernet-swin-small".<br>
+`encoder_decoder`: to be used if `model_provider` is SegmentationModelsPytorch in the form encodername_decoder_name, e.g., "resnet34_unet".<br><br>
 
-`use_metadata`: If set to True, metadata will be used. If other than the FLAIR dataset, see structure to be provided.<br>
-`path_metadata_aerial`: The path to the aerial metadata JSON file.<br><br>
+`use_augmentation`: If set to True, data augmentation will be applied during training.<br>
+`use_metadata`: If set to True, metadata will be used. If other than the FLAIR dataset, see structure to be provided.<br><br>
 
 `channels`: The channels opened in your input images. Images are opened with rasterio which starts at 1 for the first channel.<br>
-`seed`: The seed for random number generation to ensure reproducibility.<br><br>
+`norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]), custom (center-reduced with provided means and standard deviantions), without.<br>
+`norm_means`: If custom, means for each input band.<br>
+`norm_stds`: If custom standard deviation for each input band.<br><br>
 
+`seed`: The seed for random number generation to ensure reproducibility.<br>
 `batch_size`: The batch size for training.<br>
 `learning_rate`: The learning rate for training.<br>
 `num_epochs`: The number of epochs for training.<br><br>
 
 `use_weights`: If set to True, class weights will be used during training.<br>
 `classes`: Dict of semantic classes with value in images as key and list [weight, classname] as value. See config file for an example.<br>
-
-`norm_type`: Normalization to be applied: scaling (linear interpolation in the range [0,1]), custom (center-reduced with provided means and standard deviantions), without.<br>
-`norm_means`: If custom, means for each input band.<br>
-`norm_stds`: If custom standard deviation for each input band.<br><br>
 
 `georeferencing_output`: If set to True, the output will be georeferenced.<br><br>
 
@@ -202,6 +204,14 @@ The pipeline is configured using a YAML file (`flair-1-config.yaml`). The config
 `gpus_per_node`: The number of GPUs to use per node for training.<br>
 `strategy`: The strategy to use for distributed training (‘auto’,‘ddp’,...).<br>
 `num_workers`: The number of workers to use for data loading.<br><br>
+
+
+`ckpt_save_also_last`: on top of best epoch will also save last epoch ckpt file in the same folder.<br>
+`ckpt_verbose`: print whenever a ckpt file is saved.<br>
+`ckpt_weights_only`: save only weights of model in ckpt for storage optimization. This prevents `resume_training_from_ckpt`.<br>
+`ckpt_monitor`: metric to be monitored for saving ckpt files. By default val_loss.<br>
+`ckpt_monitor_mode`: wether min or max of `ckpt_monitor` for saving a ckpt file.<br>
+`ckpt_earlystopping_patience`: ending training if no improvement after defined number of epochs. Default is 30.<br><br>
 
 `cp_csv_and_conf_to_output`: Makes a copy of paths csv and config file to the output directory.<br>
 `enable_progress_bar`: If set to True, a progress bar will be displayed during training and inference.<br>
