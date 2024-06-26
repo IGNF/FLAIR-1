@@ -65,7 +65,12 @@ def train(config, data_module, seg_module, out_dir):
     )
 
     ## Train model
-    trainer.fit(seg_module, datamodule=data_module)
+    if config['tasks']['continue_training']:
+        print("-------------CONTINUE TRAINING----------------")
+        print('----------------------------------------------')
+        trainer.fit(seg_module, datamodule=data_module, ckpt_path=config['paths']['ckpt_model_path'])
+    else:
+        trainer.fit(seg_module, datamodule=data_module)
 
     ## Check metrics on validation set
     trainer.validate(seg_module, datamodule=data_module)

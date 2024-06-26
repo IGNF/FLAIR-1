@@ -7,7 +7,7 @@ from torch import nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import albumentations as A
 
-from src.flair.model import smp_unet_mtd
+from src.flair.model import FLAIR_ModelFactory
 from src.flair.data_module import flair_datamodule
 from src.flair.task_module import segmentation_task_training, segmentation_task_predict
 
@@ -78,13 +78,15 @@ def get_segmentation_module(config,
     assert stage in ['train', 'predict'], "stage must be either 'train' or 'predict'"
     
     # Define model
-    model = smp_unet_mtd(architecture = config['model_architecture'],
+    model = FLAIR_ModelFactory(architecture = config['model_architecture'],
                          encoder = config['encoder_name'],
                          n_channels = len(config["channels"]), 
                          n_classes = len(config["classes"]), 
                          use_metadata = config["use_metadata"],
     )
-    
+
+    #print(model)
+
     if stage == 'train':
         if config["use_weights"]:
             with torch.no_grad():

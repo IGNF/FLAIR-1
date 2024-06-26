@@ -40,6 +40,7 @@ def read_config(file_path):
         return yaml.safe_load(f)
 
 
+
 def setup(args):
     config = read_config(args.conf)
     use_gpu = (False if torch.cuda.is_available() is False else config['use_gpu'])
@@ -53,21 +54,26 @@ def setup(args):
     assert os.path.isfile(config['model_weights']), "Model weights file does not exist."
     if not config['output_name'].endswith('.tif'):
         config['output_name'] += '.tif'  
+
     try:
         Path(config['output_path']).mkdir(parents=True, exist_ok=True)
         path_out = os.path.join(config['output_path'], config['output_name'])
         if os.path.exists(path_out):
             os.remove(path_out)  # Removing if existing
         return config, path_out, device, use_gpu
+
     except Exception as error:
         print(f"Something went wrong during detection configuration: {error}")
-        
-    
+
+
+
+
 
 def conf_log(config, resolution):
-    STD_OUT_LOGGER.info(f"""
+    print(f"""
     |- output path: {config['output_path']}
-    |- output raster name: {config['output_name']}\n
+    |- output raster name: {config['output_name']}
+
     |- input image path: {config['input_img_path']}
     |- bands: {config['bands']}
     |- resolution: {resolution}\n
