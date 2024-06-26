@@ -83,20 +83,20 @@ def load_checkpoint(ckpt_file_path, seg_module, exit_on_fail=False):
     seg_module: Segmentation module for training or prediction.
     exit_on_fail (bool): Whether to raise a SystemExit if the checkpoint file is invalid.
     """
-    print('-'*80) 
+    print('---------------------------------------------------------------') 
     if ckpt_file_path is not None and os.path.isfile(ckpt_file_path) and ckpt_file_path.endswith('.ckpt'):
         checkpoint = torch.load(ckpt_file_path, map_location="cpu")
         seg_module.load_state_dict(checkpoint["state_dict"], strict=False)
-        print('Loaded model weights from ckpt.')
+        print('--------------- Loaded model weights from ckpt. ---------------')
     elif ckpt_file_path is not None and os.path.isfile(ckpt_file_path) and (ckpt_file_path.endswith('.pth') or ckpt_file_path.endswith('.pt')):
         checkpoint = torch.load(ckpt_file_path, map_location="cpu")
         seg_module.load_state_dict(checkpoint, strict=False)
-        print('Loaded model weights from pytorch file.')       
+        print('----------- Loaded model weights from pytorch file. -----------')       
     else: 
         print("Invalid checkpoint file path.")
         if exit_on_fail:
             raise SystemExit()
-    print('-'*80)
+    print('---------------------------------------------------------------')
 
 
 def training_stage(config, data_module, out_dir):
@@ -119,12 +119,12 @@ def training_stage(config, data_module, out_dir):
 
     seg_module = get_segmentation_module(config, stage='train')
 
-    if config['tasks']['train_load_ckpt']:
+    if config['tasks']['train_tasks']['init_weights_only_from_ckpt']:
         load_checkpoint(config['paths']['ckpt_model_path'], seg_module, exit_on_fail=False)
 
-    train(config, data_module, seg_module, out_dir)
+    ckpt_callback = train(config, data_module, seg_module, out_dir)
 
-    trained_state_dict = seg_module.state_dict()
+    best_trained_state_dict = torch.load(ckpt_callback.best_model_path, map_location=torch.device('cpu'))['state_dict']
 
     end = datetime.datetime.now()
     inference_time_seconds = end - start
@@ -134,7 +134,7 @@ def training_stage(config, data_module, out_dir):
     print(f"Model path : {os.path.join(out_dir,'checkpoints')}\n\n")
     print('\n'+'-'*40)
 
-    return trained_state_dict
+    return best_trained_state_dict
    
 def predict_stage(config, data_module, out_dir_predict, trained_state_dict=None):
     """
