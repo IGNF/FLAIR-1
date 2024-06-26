@@ -19,19 +19,21 @@ def train(config, data_module, seg_module, out_dir):
 
     ## Define callbacks
     ckpt_callback = ModelCheckpoint(
-        monitor = "val_loss",
+        monitor = config['ckpt_monitor'],
         dirpath = os.path.join(out_dir,"checkpoints"),
         filename = "ckpt-{epoch:02d}-{val_loss:.2f}"+'_' + config['paths']["out_model_name"],
         save_top_k = 1,
-        mode = "min",
-        save_weights_only = False, # can be changed accordingly
+        mode = config['ckpt_monitor_mode'],
+        save_last=config['ckpt_save_also_last'],
+        verbose=config['ckpt_verbose'],
+        save_weights_only = config['ckpt_weights_only'], 
     )
 
     early_stop_callback = EarlyStopping(
-        monitor = "val_loss",
+        monitor = config['ckpt_monitor'],
         min_delta = 0.00,
-        patience = 30, # if no improvement after 30 epoch, stop learning. 
-        mode = "min",
+        patience = config['ckpt_earlystopping_patience'], 
+        mode = config['ckpt_monitor_mode'],
     )
 
     prog_rate = TQDMProgressBar(refresh_rate=config["progress_rate"])
@@ -65,16 +67,20 @@ def train(config, data_module, seg_module, out_dir):
     )
 
     ## Train model
-    if config['tasks']['continue_training']:
-        print("-------------CONTINUE TRAINING----------------")
-        print('----------------------------------------------')
+    if config['tasks']['train_tasks']['resume_training_from_ckpt']:
+        print('---------------------------------------------------------------')                      
+        print('------------- RESUMING TRAINING FROM CKPT_PATH ----------------')
+        print('---------------------------------------------------------------')
+        checkpoint = torch.load(config['paths']['ckpt_model_path'])
         trainer.fit(seg_module, datamodule=data_module, ckpt_path=config['paths']['ckpt_model_path'])
-    else:
+              
+    else:    
         trainer.fit(seg_module, datamodule=data_module)
 
     ## Check metrics on validation set
     trainer.validate(seg_module, datamodule=data_module)
-
+    
+    return ckpt_callback
 
 
 
