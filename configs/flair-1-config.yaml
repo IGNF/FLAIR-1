@@ -16,21 +16,31 @@ paths:
 #### USAGE
 tasks:
     train: False
-    train_load_ckpt: False
+    train_tasks: 
+        init_weights_only_from_ckpt: False
+        resume_training_from_ckpt: False
 
     predict: True
 
     metrics: True
-    delete_preds: False
+    delete_preds: True
 
 #### TRAINING CONF
-model_architecture: 'unet'
-encoder_name: 'resnet34'
+model_framework: 
+    model_provider: HuggingFace
+    HuggingFace:
+        org_model: openmmlab/upernet-swin-small
+    SegmentationModelsPytorch:
+        encoder_decoder:
+        
 use_augmentation: True
-
 use_metadata: False # Can be True if FLAIR dataset
 
 channels: [1,2,3,4,5] # starts at 1
+norm_type: custom # [scaling, custom, without], default: scaling to range [0,1], see github readme
+norm_means: [105.08,110.87,101.82,106.38,53.26] # same length (order) as channels
+norm_stds: [52.17,45.38,44,39.69,79.3] # same length (order) as channels
+
 seed: 2022
 
 #### HYPERPARAMETERS
@@ -61,11 +71,6 @@ classes: # k = value in MSK : v = [weight, name]
     18: [1, 'greenhouse']
     19: [0, 'other']
 
-#### NORMALIZATION
-norm_type: custom # [scaling, custom, without], default: scaling to range [0,1], see github readme
-norm_means: [105.08,110.87,101.82,106.38,53.26] # same length (order) as channels
-norm_stds: [52.17,45.38,44,39.69,79.3] # same length (order) as channels
-
 #### PREDICT CONF
 georeferencing_output : True
 
@@ -75,6 +80,14 @@ num_nodes: 1
 gpus_per_node: 1
 strategy: 'auto' # null if only one GPU, else 'ddp' 
 num_workers: 10
+
+#### CKPT OPTIONS 
+ckpt_save_also_last: True
+ckpt_verbose: False
+ckpt_weights_only: False
+ckpt_monitor: val_loss
+ckpt_monitor_mode: min
+ckpt_earlystopping_patience: 30
 
 #### PRINT PROGRESS
 cp_csv_and_conf_to_output: True
