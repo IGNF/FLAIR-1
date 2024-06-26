@@ -69,12 +69,12 @@ class segmentation_task_training(pl.LightningModule):
             images, metadata, targets = batch["img"], '', batch["msk"]            
         logits = self.forward(images, metadata)
         targets = torch.argmax(targets, dim=1)
-        
         loss = self.criterion(logits, targets)
 
         with torch.no_grad():
             proba = torch.softmax(logits, dim=1)
             preds = torch.argmax(proba, dim=1)
+            #targets = torch.argmax(targets, dim=1)
             preds = preds.flatten(start_dim=1)  # Change shapes and cast target to integer for metrics computation
             targets = targets.flatten(start_dim=1).type(torch.int32)
         return loss, preds, targets

@@ -99,7 +99,7 @@ def metrics(config: dict, path_preds: str, remove_preds=False):
     print("{:<25} {:<15} {:<10} {:<10} {:<10} {:<10}".format('Class', 'Weight', 'IoU', 'F-score', 'Precision', 'Recall'))
     print('-'*65)
     print_class_metrics(used_classes)
-    print("\nUnused Classes:")
+    print("\nNot learned Classes:")
     print("{:<25} {:<15}".format('Class', 'Weight'))
     print('-'*65)
     print_class_metrics(unused_classes, metrics_available=False)

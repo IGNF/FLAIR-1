@@ -22,7 +22,7 @@ def norm(in_img : np.ndarray,
                 raise SystemExit()                
             else:
                 in_img = in_img.astype(np.float64)
-                for i in range(len(means)):
+                for i in range(in_img.shape[0]):
                     in_img[i] -= means[i]
                     in_img[i] /= stds[i]
         elif norm_type == 'scaling':
