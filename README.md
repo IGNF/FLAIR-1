@@ -249,18 +249,14 @@ The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 
 <br><br>
 
-## Leaderboard
+## Baseline results
 
 | Model | mIoU 
 ------------ | ------------- 
 | baseline U-Net (ResNet34) | 0.5443±0.0014
 | baseline U-Net (ResNet34) + _metadata + augmentation_ | 0.5570±0.0027
 
-If you want to submit a new entry, you can open a new issue.
-<b> Results of the challenge will be reported soon! </b>
-
 The baseline U-Net with ResNet34 backbone obtains the following confusion matrix: 
-
 
 <p>
   <img width="50%" src="images/flair-1_heatmap.png">
