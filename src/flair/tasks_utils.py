@@ -76,14 +76,11 @@ def get_segmentation_module(config,
     seg_module: Segmentation module with specified configuration.
     """
     assert stage in ['train', 'predict'], "stage must be either 'train' or 'predict'"
-    
+    assert config['model_framework']['model_provider'] in ['HuggingFace', 'SegmentationModelsPytorch'], "model_provider should be either HuggingFace or SegmentationModelsPytorch"
+
+                              
     # Define model
-    model = FLAIR_ModelFactory(architecture = config['model_architecture'],
-                         encoder = config['encoder_name'],
-                         n_channels = len(config["channels"]), 
-                         n_classes = len(config["classes"]), 
-                         use_metadata = config["use_metadata"],
-    )
+    model = FLAIR_ModelFactory(config)
 
     #print(model)
 
