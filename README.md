@@ -28,6 +28,8 @@ Participate in obtaining more accurate maps for a more comprehensive description
 
 - **Dataset links :** https://ignf.github.io/FLAIR/ or https://huggingface.co/datasets/IGNF/FLAIR
 
+- **Pre-trained models :** https://huggingface.co/collections/IGNF/flair-models-landcover-semantic-segmentation-65bb67415a5dbabc819a95de
+
 - **Challenge page :**  https://codalab.lisn.upsaclay.fr/competitions/8769 [🛑 closed!]
 
 </div>
