@@ -11,6 +11,14 @@ n_classes: 19
 
 
 model_weights: ../FLAIR-INC_rgbie_15cl_resnet34-unet_weights.pth
+model_framework: 
+    model_provider: HuggingFace
+    HuggingFace:
+        org_model: openmmlab/upernet-swin-small
+    SegmentationModelsPytorch:
+        encoder_decoder: resnet34_unet
+
+
 batch_size: 4
 use_gpu: true
 model_name: 'unet'
