@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import torch
 
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
