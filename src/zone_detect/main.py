@@ -75,7 +75,7 @@ def conf_log(config, resolution):
     |- output raster name: {config['output_name']}
 
     |- input image path: {config['input_img_path']}
-    |- bands: {config['bands']}
+    |- channels: {config['channels']}
     |- resolution: {resolution}\n
     |- image size for detection: {config['img_pixels_detection']}
     |- overlap margin: {config['margin']}
@@ -86,8 +86,9 @@ def conf_log(config, resolution):
     |- model weights path: {config['model_weights']}
     |- model arch: {config['model_name']}
     |- encoder: {config['encoder_name']}
+    |- model template: {config['model_framework']['model_provider']}
     |- device: {"cuda" if config['use_gpu'] else "cpu"}
-    |- batch size: {config['batch_size']}\n\n""")      
+    |- batch size: {config['batch_size']}\n\n""")       
 
 
 
@@ -134,7 +135,7 @@ def main():
     config, path_out, device, use_gpu = setup(args)
 
     input_img_path = config['input_img_path']
-    bands = config['bands']
+    channels = config['channels']
     img_pixels_detection = config['img_pixels_detection']
     norma_task = config['norma_task']
     batch_size = config['batch_size']    
@@ -150,7 +151,7 @@ def main():
     dataset = Sliced_Dataset(dataframe=sliced_dataframe,
                             img_path=input_img_path,
                             resolution=resolution,
-                            bands=bands, 
+                            bands=channels, 
                             patch_detection_size=img_pixels_detection,
                             norma_dict=norma_task,
                             )    
@@ -176,6 +177,8 @@ def main():
             imgs = imgs.cuda()
         with torch.no_grad():
             logits = model(imgs)
+            if config['model_framework']['model_provider'] == 'HuggingFace':
+                logits = logits.logits
             logits.to(device)
         predictions = torch.softmax(logits, dim=1)
         predictions = predictions.cpu().numpy()
