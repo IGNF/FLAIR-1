@@ -1,49 +1,61 @@
-import os
 import torch
 import torch.nn as nn
-
-from pathlib import Path
-from segmentation_models_pytorch import create_model
+import segmentation_models_pytorch as smp
+from transformers import AutoModelForSemanticSegmentation, AutoConfig
 from dataclasses import dataclass, field
 from typing import Mapping
+import os
+from pathlib import Path
 from logging import getLogger
 
 LOGGER = getLogger(__name__)
 
 @dataclass
-class SegmentationModelFactory:
+class FLAIR_ModelFactory:
     """
-    Factory for creating segmentation models.
+    A factory class for creating models based on the provided configuration.
+    This class supports models from both SegmentationModelsPytorch and HuggingFace. 
     """
 
-    model_name: str = 'unet'
-    encoder: str = 'resnet34'
-    n_channels: int = 5
-    n_classes: int = 19
-    segmentation_model: torch.nn.Module | None = field(init=False)
+    config: Mapping
+    model_provider: str = field(init=False)
+    seg_model: nn.Module = field(init=False)
 
     def __post_init__(self):
-        self.segmentation_model = create_model(
-            arch=self.model_name,
-            encoder_name=self.encoder,
-            classes=self.n_classes,
-            in_channels=self.n_channels
-        )
 
-    def get(self) -> torch.nn.Module:
-        return self.segmentation_model
+        self.model_provider = self.config['model_framework']['model_provider']
 
-    @classmethod
-    def create_model(cls, model_name: str = 'unet', encoder: str = 'resnet34', n_channels: int = 5,
-                     n_classes: int = 15) -> torch.nn.Module:
-        return SegmentationModelFactory(
-            model_name=model_name,
-            encoder=encoder,
-            n_channels=n_channels,
-            n_classes=n_classes
-        ).get()
-    
-    
+        n_channels = int(len(self.config['channels']))
+        n_classes = self.config["n_classes"]
+
+        if self.model_provider == 'SegmentationModelsPytorch':
+            encoder, architecture = self.config['model_framework']['SegmentationModelsPytorch']['encoder_decoder'].split('_')
+            self.seg_model = smp.create_model(
+                arch=architecture,
+                encoder_name=encoder,
+                classes=n_classes,
+                in_channels=n_channels
+            )
+
+        elif self.model_provider == 'HuggingFace':
+            cfg_model = AutoConfig.from_pretrained(
+                self.config['model_framework']['HuggingFace']['org_model'], 
+                num_labels=n_classes
+            )
+            self.seg_model = AutoModelForSemanticSegmentation.from_pretrained(
+                self.config['model_framework']['HuggingFace']['org_model'], 
+                config=cfg_model, 
+                ignore_mismatched_sizes=True
+            )
+
+    def forward(self, x, met=None):
+        if self.model_provider == 'SegmentationModelsPytorch':
+            output = self.seg_model(x)
+        elif self.model_provider == 'HuggingFace':
+            output = self.seg_model(x)
+        return output
+
+
 
 def get_module(checkpoint: str | Path) -> Mapping:
     if checkpoint is not None and os.path.isfile(checkpoint):
@@ -52,6 +64,7 @@ def get_module(checkpoint: str | Path) -> Mapping:
             weights = weights['state_dict']
     else:
         LOGGER.error('Error with checkpoint provided: either a .ckpt with a "state_dict" key or an OrderedDict pt/pth file')
+        return {}
 
     if 'model.seg_model' in list(weights.keys())[0]:
         weights = {k.partition('model.seg_model.')[2]: v for k, v in weights.items()} 
@@ -60,13 +73,13 @@ def get_module(checkpoint: str | Path) -> Mapping:
     return weights
 
 
-    
-def load_model(checkpoint: str | Path, model_name: str = 'Unet',
-               encoder: str = 'resnet34', n_classes: int = 15,
-               n_channels: int = 5, *args, **kwargs) -> nn.Module:
 
-    model: nn.Module = SegmentationModelFactory.create_model(model_name=model_name, encoder=encoder,
-                                                                n_classes=n_classes, n_channels=n_channels)
+def load_model(config: Mapping) -> nn.Module:
+    checkpoint = config.get('model_weights')
+
+    model_factory = FLAIR_ModelFactory(config)
+    model = model_factory.seg_model
+
     state_dict = get_module(checkpoint=checkpoint)
     model.load_state_dict(state_dict=state_dict, strict=True)
 
