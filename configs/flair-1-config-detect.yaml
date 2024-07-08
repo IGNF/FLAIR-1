@@ -16,7 +16,7 @@ model_framework:
     HuggingFace:
         org_model: openmmlab/upernet-swin-small
     SegmentationModelsPytorch:
-        encoder_decoder: resnet34_unet
+        encoder_decoder:
 
 
 batch_size: 4
