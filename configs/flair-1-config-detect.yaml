@@ -2,7 +2,7 @@ output_path:
 output_name:
 
 input_img_path: ../path/to/raster/file.tif
-bands: [1, 2, 3, 4, 5]
+channels: [1, 2, 3, 4, 5]
 
 img_pixels_detection: 512
 margin: 128
