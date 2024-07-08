@@ -113,12 +113,7 @@ def prepare(config, device):
     conf_log(config, resolution)
     STD_OUT_LOGGER.info(f"""    [x] sliced input raster to {len(sliced_dataframe)} squares...""")
     ## loading model and weights
-    model = load_model(checkpoint=config['model_weights'], 
-                       n_classes=config['n_classes'], 
-                       n_channels=len(config['bands']), 
-                       encoder=config['encoder_name'], 
-                       model_name=config['model_name'],
-            )
+    model = load_model(config)
     model.eval()
     model = model.to(device)  
     STD_OUT_LOGGER.info(f"""    [x] loaded model and weights...""")
