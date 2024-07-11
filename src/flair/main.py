@@ -20,7 +20,7 @@ from src.flair.utils import read_config, print_recap
 
 
 argParser = argparse.ArgumentParser()
-argParser.add_argument("--conf", help="Path to the .yaml config file")
+argParser.add_argument("--conf", help="Path to the .yaml config file", required=True)
 
 
 def setup_environment(args):
