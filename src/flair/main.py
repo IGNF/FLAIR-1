@@ -18,7 +18,6 @@ from src.flair.metrics import metrics
 from src.flair.utils import read_config, print_recap
 
 
-
 argParser = argparse.ArgumentParser()
 argParser.add_argument("--conf", help="Path to the .yaml config file", required=True)
 
@@ -47,7 +46,8 @@ class Logger(object):
 
     def flush(self):
         self.log.flush()
-
+        
+@rank_zero_only
 def get_datasets(config):
     """
     Get the datasets for training, validation, and testing.
@@ -74,29 +74,96 @@ def copy_csv_and_config(config, out_dir, args):
     shutil.copy(args.conf, csv_copy_dir)
 
 
-def load_checkpoint(ckpt_file_path, seg_module, exit_on_fail=False):
+@rank_zero_only
+def load_checkpoint(ckpt_file_path, seg_module, num_classes, exit_on_fail=False):
     """
-    Load model weights from a checkpoint file.
-
+    Load model weights from a checkpoint file and adjust final classification layers for new number of classes if needed.
+    
     Parameters:
     ckpt_file_path (str): Path to the checkpoint file.
     seg_module: Segmentation module for training or prediction.
+    num_classes (int): New number of classes for the final layers.
     exit_on_fail (bool): Whether to raise a SystemExit if the checkpoint file is invalid.
     """
-    print('---------------------------------------------------------------') 
-    if ckpt_file_path is not None and os.path.isfile(ckpt_file_path) and ckpt_file_path.endswith('.ckpt'):
+    print()
+    print('###############################################################')
+
+    # Ensure the checkpoint file path is valid
+    if ckpt_file_path and os.path.isfile(ckpt_file_path):
         checkpoint = torch.load(ckpt_file_path, map_location="cpu")
-        seg_module.load_state_dict(checkpoint["state_dict"], strict=False)
-        print('--------------- Loaded model weights from ckpt. ---------------')
-    elif ckpt_file_path is not None and os.path.isfile(ckpt_file_path) and (ckpt_file_path.endswith('.pth') or ckpt_file_path.endswith('.pt')):
-        checkpoint = torch.load(ckpt_file_path, map_location="cpu")
-        seg_module.load_state_dict(checkpoint, strict=False)
-        print('----------- Loaded model weights from pytorch file. -----------')       
-    else: 
+        
+        if ckpt_file_path.endswith('.ckpt'):
+            state_dict = checkpoint.get("state_dict", checkpoint)
+        elif ckpt_file_path.endswith('.pth') or ckpt_file_path.endswith('.pt'):
+            state_dict = checkpoint
+        else:
+            print("Invalid file extension.")
+            if exit_on_fail:
+                raise SystemExit()
+            return
+        
+        # Determine number of classes from checkpoint
+        ckpt_num_classes = None
+        for k, v in state_dict.items():
+            if 'classifier.weight' in k or 'criterion.weight' in k:
+                ckpt_num_classes = v.shape[0]
+                break
+
+        model_state_dict = seg_module.state_dict()
+        
+        # Load model weights if class numbers match
+        if ckpt_num_classes is not None and ckpt_num_classes == num_classes:
+            seg_module.load_state_dict(state_dict, strict=False)
+            print('--------------- Loaded model weights from checkpoint with matching number of classes. ---------------')
+        else:
+            print(f'Number of classes in checkpoint ({ckpt_num_classes}) does not match the current number of classes ({num_classes}). Proceeding with modifications.')
+            
+            # Identify and exclude layers with mismatched shapes
+            ignored_layers = [k for k, v in state_dict.items() if k in model_state_dict and v.shape != model_state_dict[k].shape]
+            state_dict = {k: v for k, v in state_dict.items() if k not in ignored_layers}
+            seg_module.load_state_dict(state_dict, strict=False)
+            
+            # Update classifier layers
+            def adjust_classification_layer(layer, in_channels, num_classes):
+                if isinstance(layer, torch.nn.Conv2d):
+                    return torch.nn.Conv2d(in_channels, num_classes, kernel_size=layer.kernel_size, stride=layer.stride, padding=layer.padding)
+                elif isinstance(layer, torch.nn.Linear):
+                    return torch.nn.Linear(in_channels, num_classes)
+                return layer
+
+            def update_classifier(module, classifier_path, num_classes):
+                classifier = module
+                path_parts = classifier_path.split('.')
+                for attr in path_parts:
+                    if hasattr(classifier, attr):
+                        classifier = getattr(classifier, attr)
+                    else:
+                        print(f'Layer path {classifier_path} not found in model.')
+                        return
+                
+                in_channels = classifier.in_channels if isinstance(classifier, torch.nn.Conv2d) else classifier.in_features
+                updated_classifier = adjust_classification_layer(classifier, in_channels, num_classes)
+                parent = module
+                for attr in path_parts[:-1]:
+                    parent = getattr(parent, attr)
+                setattr(parent, path_parts[-1], updated_classifier)
+                print(f'- Modified {classifier_path} to have {num_classes} output classes.')
+            
+            # Update if needed for more layers
+            if 'model.seg_model.decode_head.classifier.weight' in model_state_dict:
+                update_classifier(seg_module, 'model.seg_model.decode_head.classifier', num_classes)
+            if 'model.seg_model.auxiliary_head.classifier.weight' in model_state_dict:
+                update_classifier(seg_module, 'model.seg_model.auxiliary_head.classifier', num_classes)
+            if 'model.seg_model.segmentation_head.0.weight' in model_state_dict:
+                update_classifier(seg_module, 'model.seg_model.segmentation_head.0', num_classes)
+
+        print('###############################################################')
+    else:
         print("Invalid checkpoint file path.")
         if exit_on_fail:
             raise SystemExit()
-    print('---------------------------------------------------------------')
+        print('###############################################################')
+    print()
 
 
 def training_stage(config, data_module, out_dir):
