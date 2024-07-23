@@ -187,7 +187,7 @@ def training_stage(config, data_module, out_dir):
     seg_module = get_segmentation_module(config, stage='train')
 
     if config['tasks']['train_tasks']['init_weights_only_from_ckpt']:
-        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, exit_on_fail=False)
+        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config['classes']), exit_on_fail=False)
 
     ckpt_callback = train(config, data_module, seg_module, out_dir)
 
@@ -218,7 +218,7 @@ def predict_stage(config, data_module, out_dir_predict, trained_state_dict=None)
     if config['tasks']['train']:
         seg_module.load_state_dict(trained_state_dict, strict=False)  
     else:
-        load_checkpoint(config['paths']['ckpt_model_path'], seg_module)
+        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config['classes']),)
     predict(config, data_module, seg_module, out_dir_predict)
 
 
