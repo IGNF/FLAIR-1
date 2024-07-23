@@ -17,7 +17,6 @@ from src.flair.tasks_utils import get_data_module, get_segmentation_module, gath
 from src.flair.metrics import metrics
 from src.flair.utils import read_config, print_recap
 
-
 argParser = argparse.ArgumentParser()
 argParser.add_argument("--conf", help="Path to the .yaml config file", required=True)
 
@@ -46,8 +45,7 @@ class Logger(object):
 
     def flush(self):
         self.log.flush()
-        
-@rank_zero_only
+
 def get_datasets(config):
     """
     Get the datasets for training, validation, and testing.
@@ -72,7 +70,6 @@ def copy_csv_and_config(config, out_dir, args):
         shutil.copy(config["paths"]["val_csv"], csv_copy_dir)
     if config["tasks"]["predict"]: shutil.copy(config["paths"]["test_csv"], csv_copy_dir)
     shutil.copy(args.conf, csv_copy_dir)
-
 
 @rank_zero_only
 def load_checkpoint(ckpt_file_path, seg_module, num_classes, exit_on_fail=False):
@@ -165,7 +162,6 @@ def load_checkpoint(ckpt_file_path, seg_module, num_classes, exit_on_fail=False)
         print('###############################################################')
     print()
 
-
 def training_stage(config, data_module, out_dir):
     """
     Conducts the training stage of the model: sets up the training environment, loads the model weights from a checkpoint if available,
@@ -187,7 +183,7 @@ def training_stage(config, data_module, out_dir):
     seg_module = get_segmentation_module(config, stage='train')
 
     if config['tasks']['train_tasks']['init_weights_only_from_ckpt']:
-        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config['classes']), exit_on_fail=False)
+        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config["classes"]), exit_on_fail=False)
 
     ckpt_callback = train(config, data_module, seg_module, out_dir)
 
@@ -218,8 +214,9 @@ def predict_stage(config, data_module, out_dir_predict, trained_state_dict=None)
     if config['tasks']['train']:
         seg_module.load_state_dict(trained_state_dict, strict=False)  
     else:
-        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config['classes']),)
+        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config["classes"]))
     predict(config, data_module, seg_module, out_dir_predict)
+
 
 
 def main():

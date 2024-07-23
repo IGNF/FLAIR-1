@@ -119,6 +119,7 @@ def get_segmentation_module(config,
             use_metadata = config["use_metadata"],
         )        
 
+
     return seg_module
 
 
