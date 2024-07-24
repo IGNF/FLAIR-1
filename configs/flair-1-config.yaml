@@ -27,19 +27,22 @@ tasks:
 
 #### TRAINING CONF
 model_framework: 
-    model_provider: HuggingFace
+    model_provider: HuggingFace # HuggingFace or SegmentationModelsPytorch
+    
     HuggingFace:
         org_model: openmmlab/upernet-swin-small
+        
     SegmentationModelsPytorch:
         encoder_decoder:
+
         
 use_augmentation: True
 use_metadata: False # Can be True if FLAIR dataset
 
 channels: [1,2,3,4,5] # starts at 1
 norm_type: custom # [scaling, custom, without], default: scaling to range [0,1], see github readme
-norm_means: [105.08,110.87,101.82,106.38,53.26] # same length (order) as channels
-norm_stds: [52.17,45.38,44,39.69,79.3] # same length (order) as channels
+norm_means: [105.08,110.87,101.82,106.38,53.26] # same length/order as channels
+norm_stds: [52.17,45.38,44,39.69,79.3] # same length/order as channels
 
 seed: 2022
 
