@@ -71,13 +71,13 @@ class FLAIR_ModelFactory(nn.Module):
 
 
 
-class metadata_mlp(nn.Module):
+class MetadataMLP(nn.Module):
     """ 
     Light MLP to encode metadata
     
     """
     def __init__(self):
-        super(metadata_mlp, self).__init__()
+        super(MetadataMLP, self).__init__()
 
         self.enc_mlp = nn.Sequential(
             nn.Linear(45, 64),
