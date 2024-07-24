@@ -15,7 +15,7 @@ paths:
 
 #### USAGE
 tasks:
-    train: False
+    train: True
     train_tasks: 
         init_weights_only_from_ckpt: False
         resume_training_from_ckpt: False
