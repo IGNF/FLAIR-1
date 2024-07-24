@@ -1,12 +1,35 @@
 import os
 from pathlib import Path
 import torch
+import torch.nn as nn
+import sys
 
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.callbacks.progress.tqdm_progress import TQDMProgressBar
 from pytorch_lightning import Trainer
 from src.flair.writer import predictionwriter
+
+
+def check_batchnorm_and_batch_size(config, seg_module):
+    """
+    Check if the model contains BatchNorm layers and if the batch size is 1.
+    If both conditions are met, print a message and abort the script.
+
+    Parameters:
+    config (dict): Configuration dictionary containing parameters for training.
+    seg_module (nn.Module): Segmentation module for training.
+    """
+    batch_size = config['batch_size']  # Assuming batch_size is in config
+
+    for module in seg_module.modules():
+        if isinstance(module, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)) and batch_size == 1:
+            print("Warning: The model contains BatchNorm layers and the batch size is set to 1.")
+            print("Aborting training to avoid potential issues.")
+            print("PLease set a batch size >1 in the current configuration.")
+            sys.exit(1)  # Exit the script
+
+
 
 def train(config, data_module, seg_module, out_dir):
     """
@@ -17,6 +40,8 @@ def train(config, data_module, seg_module, out_dir):
     data_module: Data module for training, validation, and testing.
     seg_module: Segmentation module for training.
     """
+
+    check_batchnorm_and_batch_size(config, seg_module)
 
     ## Define callbacks
     ckpt_callback = ModelCheckpoint(
