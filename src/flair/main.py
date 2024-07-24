@@ -218,8 +218,8 @@ def predict_stage(config, data_module, out_dir_predict, trained_state_dict=None)
     if config['tasks']['train']:
         seg_module.load_state_dict(trained_state_dict, strict=False)  
     else:
-        load_checkpoint(config['paths']['ckpt_model_path'], seg_module)
-    predict(config, data_module, seg_module, len(config['classes']), out_dir_predict)
+        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config['classes']))
+    predict(config, data_module, seg_module, out_dir_predict)
 
 
 def main():
