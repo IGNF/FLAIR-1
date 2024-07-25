@@ -37,7 +37,7 @@ model_framework:
 
         
 use_augmentation: True
-use_metadata: False # Can be True if FLAIR dataset
+use_metadata: False # Can be True if FLAIR dataset and SegmentationModelsPytorch model_provider
 
 channels: [1,2,3,4,5] # starts at 1
 norm_type: custom # [scaling, custom, without], default: scaling to range [0,1], see github readme
