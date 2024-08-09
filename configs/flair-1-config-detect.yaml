@@ -10,7 +10,7 @@ output_type: "argmax"
 n_classes: 19
 
 
-model_weights: ../FLAIR-INC_rgbie_15cl_resnet34-unet_weights.pth
+model_weights: ../path/to/model/weights.pth  #e.g., FLAIR-INC_rgbie_15cl_resnet34-unet_weights.pth
 model_framework: 
     model_provider: HuggingFace
     HuggingFace:
