@@ -74,19 +74,21 @@ def copy_csv_and_config(config, out_dir, args):
 
 
 @rank_zero_only
-def load_checkpoint(ckpt_file_path, seg_module, num_classes, exit_on_fail=False):
+def load_checkpoint(conf, seg_module, exit_on_fail=False):
     """
     Load model weights from a checkpoint file and adjust final classification layers for new number of classes if needed.
     
     Parameters:
-    ckpt_file_path (str): Path to the checkpoint file.
+    config (dict): experiment config.
     seg_module: Segmentation module for training or prediction.
-    num_classes (int): New number of classes for the final layers.
     exit_on_fail (bool): Whether to raise a SystemExit if the checkpoint file is invalid.
     """
     print()
     print('###############################################################')
 
+    ckpt_file_path = conf['paths']['ckpt_model_path']
+    num_classes = len(conf["classes"])
+    
     # Ensure the checkpoint file path is valid
     if ckpt_file_path and os.path.isfile(ckpt_file_path):
         checkpoint = torch.load(ckpt_file_path, map_location="cpu")
@@ -119,43 +121,22 @@ def load_checkpoint(ckpt_file_path, seg_module, num_classes, exit_on_fail=False)
             
             # Identify and exclude layers with mismatched shapes
             ignored_layers = [k for k, v in state_dict.items() if k in model_state_dict and v.shape != model_state_dict[k].shape]
-            state_dict = {k: v for k, v in state_dict.items() if k not in ignored_layers}
+            ignored_layers = [i for i in ignored_layers if any(x in i for x in ['head', 'criterion'])]         
+
+            for k in ignored_layers: 
+                if 'criterion' in k:
+                    print('-', k, 'has been modified.')
+                    print(state_dict[k].shape, '  ->  ', flush=True, end='')
+                    state_dict[k] = torch.FloatTensor([conf["classes"][i][0] for i in conf["classes"]])
+                    print(state_dict[k].shape)  
+                else:
+                    print('-', k, 'has been modified.')
+                    print(state_dict[k].shape, '  ->  ', flush=True, end='')
+                    state_dict[k] = 0 * np.abs(state_dict[k][0:num_classes])
+                    print(state_dict[k].shape)
+            
             seg_module.load_state_dict(state_dict, strict=False)
             
-            # Update classifier layers
-            def adjust_classification_layer(layer, in_channels, num_classes):
-                if isinstance(layer, torch.nn.Conv2d):
-                    return torch.nn.Conv2d(in_channels, num_classes, kernel_size=layer.kernel_size, stride=layer.stride, padding=layer.padding)
-                elif isinstance(layer, torch.nn.Linear):
-                    return torch.nn.Linear(in_channels, num_classes)
-                return layer
-
-            def update_classifier(module, classifier_path, num_classes):
-                classifier = module
-                path_parts = classifier_path.split('.')
-                for attr in path_parts:
-                    if hasattr(classifier, attr):
-                        classifier = getattr(classifier, attr)
-                    else:
-                        print(f'Layer path {classifier_path} not found in model.')
-                        return
-                
-                in_channels = classifier.in_channels if isinstance(classifier, torch.nn.Conv2d) else classifier.in_features
-                updated_classifier = adjust_classification_layer(classifier, in_channels, num_classes)
-                parent = module
-                for attr in path_parts[:-1]:
-                    parent = getattr(parent, attr)
-                setattr(parent, path_parts[-1], updated_classifier)
-                print(f'- Modified {classifier_path} to have {num_classes} output classes.')
-            
-            # Update if needed for more layers
-            if 'model.seg_model.decode_head.classifier.weight' in model_state_dict:
-                update_classifier(seg_module, 'model.seg_model.decode_head.classifier', num_classes)
-            if 'model.seg_model.auxiliary_head.classifier.weight' in model_state_dict:
-                update_classifier(seg_module, 'model.seg_model.auxiliary_head.classifier', num_classes)
-            if 'model.seg_model.segmentation_head.0.weight' in model_state_dict:
-                update_classifier(seg_module, 'model.seg_model.segmentation_head.0', num_classes)
-
         print('###############################################################')
     else:
         print("Invalid checkpoint file path.")
@@ -163,6 +144,7 @@ def load_checkpoint(ckpt_file_path, seg_module, num_classes, exit_on_fail=False)
             raise SystemExit()
         print('###############################################################')
     print()
+    
 
 
 def training_stage(config, data_module, out_dir):
@@ -186,7 +168,7 @@ def training_stage(config, data_module, out_dir):
     seg_module = get_segmentation_module(config, stage='train')
 
     if config['tasks']['train_tasks']['init_weights_only_from_ckpt']:
-        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config['classes']), exit_on_fail=False)
+        load_checkpoint(config, seg_module, exit_on_fail=False)
 
     ckpt_callback = train(config, data_module, seg_module, out_dir)
 
@@ -217,7 +199,7 @@ def predict_stage(config, data_module, out_dir_predict, trained_state_dict=None)
     if config['tasks']['train']:
         seg_module.load_state_dict(trained_state_dict, strict=False)  
     else:
-        load_checkpoint(config['paths']['ckpt_model_path'], seg_module, len(config['classes']))
+        load_checkpoint(config, seg_module)
     predict(config, data_module, seg_module, out_dir_predict)
 
 
