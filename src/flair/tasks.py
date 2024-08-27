@@ -26,7 +26,7 @@ def check_batchnorm_and_batch_size(config, seg_module):
         if isinstance(module, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)) and batch_size == 1:
             print("Warning: The model contains BatchNorm layers and the batch size is set to 1.")
             print("Aborting training to avoid potential issues.")
-            print("PLease set a batch size >1 in the current configuration.")
+            print("Please set a batch size >1 in the current model provider configuration.")
             sys.exit(1)  # Exit the script
 
 
