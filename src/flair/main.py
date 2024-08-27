@@ -47,7 +47,6 @@ class Logger(object):
     def flush(self):
         self.log.flush()
         
-@rank_zero_only
 def get_datasets(config):
     """
     Get the datasets for training, validation, and testing.
