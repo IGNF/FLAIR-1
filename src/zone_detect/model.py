@@ -1,12 +1,15 @@
 import torch
 import torch.nn as nn
-import segmentation_models_pytorch as smp
-from transformers import AutoModelForSemanticSegmentation, AutoConfig
-from dataclasses import dataclass, field
-from typing import Mapping
 import os
 from pathlib import Path
 from logging import getLogger
+from dataclasses import dataclass, field
+from typing import Mapping
+
+import segmentation_models_pytorch as smp
+from transformers import AutoModelForSemanticSegmentation, AutoConfig
+
+
 
 LOGGER = getLogger(__name__)
 
