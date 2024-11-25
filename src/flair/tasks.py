@@ -20,14 +20,14 @@ def check_batchnorm_and_batch_size(config, seg_module):
     config (dict): Configuration dictionary containing parameters for training.
     seg_module (nn.Module): Segmentation module for training.
     """
-    batch_size = config['batch_size']  # Assuming batch_size is in config
+    batch_size = config['batch_size'] 
 
     for module in seg_module.modules():
         if isinstance(module, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)) and batch_size == 1:
             print("Warning: The model contains BatchNorm layers and the batch size is set to 1.")
             print("Aborting training to avoid potential issues.")
             print("Please set a batch size >1 in the current model provider configuration.")
-            sys.exit(1)  # Exit the script
+            sys.exit(1)  # Exit
 
 
 
