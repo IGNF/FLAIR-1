@@ -121,10 +121,10 @@ See datacards for more details about each model.
 
 ```bash
 # it's recommended to install on a conda virtual env
-conda create -n my_env_name -c conda-forge python=3.11.6
-conda activate my_env_name
-git clone git@github.com:IGNF/FLAIR-1.git
-cd FLAIR-1*
+conda create -n FLAIR-INC -c conda-forge python=3.12.4
+conda activate FLAIR-INC
+git clone git@github.com:IGNF/FLAIR-INC.git
+cd FLAIR-INC*
 pip install -e .
 # if torch.cuda.is_available() returns False, do the following :
 # pip install torch>=2.0.0 --extra-index-url=https://download.pytorch.org/whl/cu117
@@ -137,7 +137,7 @@ pip install -e .
 
 This library comprises two main entry points:<br>
 
-#### :file_folder: flair
+#### :file_folder: flair_inc
 
 The flair module is used for training, inference and metrics calculation at the patch level. To use this pipeline :
 
