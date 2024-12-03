@@ -76,11 +76,18 @@ def slice_extent(in_img: str | Path, patch_size: int, margin: int, output_path: 
 
     gdf_output = gpd.GeoDataFrame(tmp_list, crs=profile['crs'], geometry="geometry")
 
-
     if filter_tiff_area:
         tiff_polygon = retrieve_boundary_polygon_from_tif(in_img, simplify = True)
-        gdf_output = gdf_output[gdf_output.intersects(tiff_polygon)]
-        gdf_output = gdf_output.reset_index(drop = True) # so that index retrieval works
+        
+        gdf_output["box_without_margin"] = gdf_output.apply(
+            lambda row: box(row["left"],
+                            row["bottom"],
+                            row["right"],
+                            row["top"]), axis=1)
+
+        gdf_output = gdf_output[gdf_output["box_without_margin"].intersects(tiff_polygon)]
+        gdf_output = gdf_output.drop("box_without_margin",axis=1)
+        gdf_output = gdf_output.reset_index(drop=True)  # so that index retrieval works
 
     if write_dataframe:
         gdf_output.to_file(os.path.join(output_path, output_name+'_detection.gpkg'), driver='GPKG')
