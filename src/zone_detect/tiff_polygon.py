@@ -43,8 +43,9 @@ def retrieve_boundary_polygon_from_tif(img_path, simplify = True):
         if src.overviews(1):  # Check if overviews are available
             
             # Get the lowest-resolution overview (last in the list)
-            overview_level = src.overviews(1)[-4]
-            print(f"I have the {overview_level} overviews")
+            overviews = src.overviews(1)
+            overview_level = overviews[-1]
+            print(f"I have the {overviews} overviews")
 
             # Read the downsampled data using the overview
             data = src.read(
