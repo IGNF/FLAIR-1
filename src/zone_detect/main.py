@@ -4,6 +4,7 @@ import warnings
 import torch
 import rasterio
 import yaml
+import gc
 
 from pathlib import Path
 import argparse 
@@ -156,46 +157,68 @@ def main():
     out_overall_profile.update({'dtype':'uint8', 'compress':'LZW', 'driver':'GTiff', 'BIGTIFF':'YES', 'tiled':True, 
                                 'blockxsize':img_pixels_detection, 'blockysize':img_pixels_detection})
     out_overall_profile['count'] = [1 if output_type == 'argmax' else n_classes][0]
-    out = rasterio.open(path_out, 'w+', **out_overall_profile)   
     
-    # get Dataloader
-    data_loader = DataLoader(dataset,
-                             batch_size=batch_size,
-                             num_workers=num_worker,
-                             pin_memory=True,
-                             )
-    # inference loop
-    STD_OUT_LOGGER.info(f"""    [ ] starting inference...\n""")
-    for samples in tqdm(data_loader):
-        imgs = samples["image"]
-        if use_gpu:
-            imgs = imgs.cuda()
-        with torch.no_grad():
-            logits = model(imgs)
-            if config['model_framework']['model_provider'] == 'HuggingFace':
-                logits = logits.logits
-            logits.to(device)
-        predictions = torch.softmax(logits, dim=1)
-        predictions = predictions.cpu().numpy()
-        indices = samples["index"].cpu().numpy()    
+    with rasterio.open(path_out, 'w+', **out_overall_profile) as out:
+    
+        # get Dataloader
+        data_loader = DataLoader(dataset,
+                                batch_size=batch_size,
+                                num_workers=num_worker,
+                                pin_memory=True,
+                                )
+        # inference loop
+        STD_OUT_LOGGER.info(f"""    [ ] starting inference...\n""")
+        for ind, samples in enumerate(tqdm(data_loader)):
 
-        # writing windowed raster to output rastert 
-        for prediction, index in zip(predictions, indices):
-            # removing margins
-            prediction = prediction[:,0+margin:img_pixels_detection-margin,0+margin:img_pixels_detection-margin]
-            prediction = convert(prediction, output_type)
-            sliced_patch_bounds = create_polygon_from_bounds(sliced_dataframe.at[index[0], 'left'], sliced_dataframe.at[index[0], 'right'], 
-                                                             sliced_dataframe.at[index[0], 'bottom'], sliced_dataframe.at[index[0], 'top'])
-            window = geometry_window(out, [sliced_patch_bounds], pixel_precision=6)
-            window = window.round_shape(op='ceil', pixel_precision=4)
-            #write
-            if output_type == "argmax":
-                out.write(prediction, window=window)
-            else:
-                out.write_band([i for i in range(1, n_classes + 1)], prediction, window=window)      
+            imgs = samples["image"]
+
+            
+            if use_gpu:
+                imgs = imgs.cuda()
+                imgs = imgs.requires_grad_(False)
                 
-    out.close()
-    dataset.close_raster()
+
+            with torch.no_grad():
+                logits = model(imgs)
+                if config['model_framework']['model_provider'] == 'HuggingFace':
+                    logits = logits.logits
+                
+                logits = logits.detach()  # Prevent further tracking
+                logits = logits.to(device)
+
+            predictions = torch.softmax(logits, dim=1)
+            predictions = predictions.cpu().numpy()
+            indices = samples["index"].cpu().numpy()
+            
+            del logits, imgs # Explicitly delete these
+            torch.cuda.empty_cache()  # If running on GPU
+            
+        
+            # writing windowed raster to output raster
+            for prediction, index in zip(predictions, indices):
+                # removing margins
+                prediction = prediction[:,0+margin:img_pixels_detection-margin,0+margin:img_pixels_detection-margin]
+                prediction = convert(prediction, output_type)
+                sliced_patch_bounds = create_polygon_from_bounds(sliced_dataframe.at[index[0], 'left'], sliced_dataframe.at[index[0], 'right'], 
+                                                                sliced_dataframe.at[index[0], 'bottom'], sliced_dataframe.at[index[0], 'top'])
+                
+                
+                window = geometry_window(out, [sliced_patch_bounds], pixel_precision=6)
+                window = window.round_shape(op='ceil', pixel_precision=4)
+                #write
+                if output_type == "argmax":
+                    out.write(prediction, window=window)
+                else:
+                    out.write_band([i for i in range(1, n_classes + 1)], prediction, window=window)      
+
+        
+
+            del indices, predictions  # Free memory for each prediction
+            torch.cuda.empty_cache()  # If running on GPU
+
+            if ind % 10 == 9: # we gc after 10 iterations.
+                gc.collect()  # Force garbage collection
+    
     STD_OUT_LOGGER.info(f"""    
                         
     [X] done writing to {path_out.split('/')[-1]} raster file.\n""")
