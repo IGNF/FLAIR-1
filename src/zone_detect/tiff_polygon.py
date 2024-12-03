@@ -36,6 +36,19 @@ def simplify_polygon(shapely_polygon):
 
 def retrieve_boundary_polygon_from_tif(img_path, simplify = True):
 
+    """ Compute the contour of a tiff image as a shapely Polygon
+    
+    Args:
+        img_path (str): the image path
+        simplify (bool): wether to simplify the output geometry.
+            If True, returns the exterior of the polygon if geometry is a Polygon.
+            Returns the convex hull if the geometry is a MultiPolygon.
+
+    Return:
+        a MultiPolygon
+    
+    """
+
     # Open the tiff
     with rasterio.open(img_path) as src:
 
