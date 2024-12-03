@@ -5,6 +5,7 @@ import geopandas as gpd
 
 from pathlib import Path
 from shapely.geometry import box, mapping
+from src.zone_detect.tiff_polygon import retrieve_boundary_polygon_from_tif
 
 
 def create_polygon_from_bounds(x_min, x_max, y_min, y_max):
@@ -15,7 +16,9 @@ def create_box_from_bounds(x_min, x_max, y_min, y_max):
     return box(x_min, y_max, x_max, y_min)
 
 
-def slice_extent(in_img: str | Path, patch_size: int, margin: int, output_path: str | Path, output_name: str | Path, write_dataframe: bool):
+def slice_extent(in_img: str | Path, patch_size: int, margin: int, output_path: str | Path, 
+                 output_name: str | Path, write_dataframe: bool,
+                 filter_tiff_area: bool = True):
     
     with rasterio.open(in_img) as src:
         profile = src.profile
@@ -72,6 +75,12 @@ def slice_extent(in_img: str | Path, patch_size: int, margin: int, output_path: 
             tmp_list.append(row_d)
 
     gdf_output = gpd.GeoDataFrame(tmp_list, crs=profile['crs'], geometry="geometry")
+
+
+    if filter_tiff_area:
+        tiff_polygon = retrieve_boundary_polygon_from_tif(in_img, simplify = True)
+        gdf_output = gdf_output[gdf_output.intersects(tiff_polygon)]
+        gdf_output = gdf_output.reset_index(drop = True) # so that index retrieval works
 
     if write_dataframe:
         gdf_output.to_file(os.path.join(output_path, output_name+'_detection.gpkg'), driver='GPKG')
