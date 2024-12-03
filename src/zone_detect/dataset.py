@@ -44,15 +44,8 @@ class Sliced_Dataset(Dataset):
         self.height, self.width = patch_detection_size, patch_detection_size
         self.norma_dict = norma_dict[0]
         
-        self.big_image = rasterio.open(self.img_path)   
-        
     def __len__(self):
         return len(self.dataframe)  
-
-
-    def close_raster(self):
-        if self.big_image and not self.big_image.closed:
-            self.big_image.close()  
             
             
     def normalization(self, in_img: np.ndarray, norm_type: str, means: list, stds: list):
@@ -77,19 +70,21 @@ class Sliced_Dataset(Dataset):
     def __getitem__(self, index):
         try: 
             bounds = self.dataframe.at[index, 'geometry'].bounds
-            src = self.big_image
+            
+            with rasterio.open(self.img_path) as src:  # Open and close per call
 
-            window = rasterio.windows.from_bounds(bounds[0], bounds[1], bounds[2], bounds[3], src.meta["transform"])
-            patch_img = src.read(indexes=self.bands, window=window, out_shape=(len(self.bands), self.height, self.width),
-                           resampling=Resampling.bilinear, boundless=True,
-                         )
+                window = rasterio.windows.from_bounds(bounds[0], bounds[1], bounds[2], bounds[3], src.meta["transform"])
+                patch_img = src.read(indexes=self.bands, window=window, out_shape=(len(self.bands), self.height, self.width),
+                            resampling=Resampling.bilinear, boundless=True,
+                            )
 
             patch_img = self.normalization(patch_img, self.norma_dict['norm_type'], self.norma_dict['norm_means'], self.norma_dict['norm_stds'])
-
+            
             return {
                 "image": torch.as_tensor(patch_img, dtype=torch.float),
                 "index": torch.from_numpy(np.asarray([index])).int()
             }            
+
                      
         except rasterio._err.CPLE_BaseError as error:
             LOGGER.warning(f"CPLE error {error}")    
