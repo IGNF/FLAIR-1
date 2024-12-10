@@ -38,7 +38,10 @@ setup(
         "segmentation-models-pytorch==0.3.3",
         "albumentations==1.3.1",
         "tensorboard==2.15.1",
-        "transformers>=4.41.2"
+        "transformers>=4.41.2",
+        "fastapi>=0.115.6,<1",
+        "uvicorn>=0.32.1,<1",
+        "google-cloud-storage>=2.18.2,<3"
     ],
     include_package_data=True,
     package_data={
