@@ -235,10 +235,12 @@ The pipeline is configured using a YAML file (`flair-1-config-detect.yaml`).
 `n_classes` : number of classes.<br><br>
 
 `model_weights` : path to your model weights or checkpoint.<br>
+`model_provider`: the library providing models, either HuggingFace or SegmentationModelsPytorch.<br>
+`org_model`: to be used if `model_provider` is HuggingFace in the form HFOrganization_Modelname, e.g., "openmmlab/upernet-swin-small".<br>
+`encoder_decoder`: to be used if `model_provider` is SegmentationModelsPytorch in the form encodername_decoder_name, e.g., "resnet34_unet".<br><br>
+
 `batch_size` : size of batch in dataloader, default is 2.<br> 
 `use_gpu` : boolean, rather use gpu or cpu for inference, default is true.<br>
-`model_name` : name of the model in pytorch segmentation models, default is 'unet'.<br>
-`encoder_name` :  Name of the encoder from pytorch segmentation model, default is 'resnet34'.<br>
 `num_worker` : number of worker used by dataloader, value should not be set at a higher value than 2 for linux because paved detection can have concurrency issues compared with traditional detection and set to 0 for mac and windows (gdal implementation's problem).<br><br>
 
 `write_dataframe` : wether to write the dataframe of raster slicing to a file.<br><br>
