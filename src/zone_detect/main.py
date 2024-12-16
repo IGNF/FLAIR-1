@@ -84,8 +84,6 @@ def conf_log(config, resolution):
     |- normalization: {config['norma_task'][0]['norm_type']}
     |- output type: {config['output_type']}\n
     |- model weights path: {config['model_weights']}
-    |- model arch: {config['model_name']}
-    |- encoder: {config['encoder_name']}
     |- model template: {config['model_framework']['model_provider']}
     |- device: {"cuda" if config['use_gpu'] else "cpu"}
     |- batch size: {config['batch_size']}\n\n""")       
