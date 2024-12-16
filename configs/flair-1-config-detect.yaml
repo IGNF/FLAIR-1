@@ -22,8 +22,6 @@ model_framework:
 
 batch_size: 4
 use_gpu: true
-model_name: 'unet'
-encoder_name: 'resnet34'
 num_worker: 2
 
 write_dataframe: False
