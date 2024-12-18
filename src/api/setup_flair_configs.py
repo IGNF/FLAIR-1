@@ -2,37 +2,45 @@ import os
 
 import yaml
 
+from src.constants import DEFAULT_FLAIR_CONFIG_DETECT_PATH
+
 
 def setup_config_flair_detect(
-    image_path: str,
-    model_path: str,
-    output_path: str,
-    config_path: str,
+    input_image_path: str,
+    model_weights_path: str,
+    output_image_name: str,
+    output_folder: str,
 ):
     """Setup the configuration file for the prediction.
 
     Args:
-        image_path: The path to the image.
-        output_path: The path to the output.
-        config_path: The path to the configuration file.
-        model_path: The path to the model.
+        input_image_path: The path to the input image.
+        model_weights_path: The path to the model weights.
+        output_image_name: The name of the output image.
+        output_folder: Folder where to store config and output_image.
+
+    Returns:
+        the path to the generated conf file
     """
-    output_name = os.path.basename(output_path)
-    output_path = os.path.dirname(output_path)
-    with open(config_path) as f:
+    with open(DEFAULT_FLAIR_CONFIG_DETECT_PATH) as f:
         flair = yaml.safe_load(f)
-        flair["output_path"] = output_path
-        flair["output_name"] = output_name
-        flair["input_img_path"] = image_path
+        flair["output_path"] = output_folder
+        flair["output_name"] = output_image_name
+        flair["input_img_path"] = input_image_path
         flair["channels"] = [1, 2, 3, 4]
-        flair["model_weights"] = model_path
+        flair["model_weights"] = model_weights_path
         flair["img_pixels_detection"] = 1024
         flair["margin"] = 256
         flair["num_worker"] = 0
 
+    runtime_config_path = os.path.join(output_folder, "flair-1-config-detect.yaml")
+
+    with open(runtime_config_path, "w+") as f:
         yaml.dump(
             flair,
-            open(config_path, "w+"),
+            f,
             default_flow_style=None,
             sort_keys=False,
         )
+
+    return runtime_config_path

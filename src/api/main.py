@@ -1,5 +1,6 @@
 from subprocess import CalledProcessError
 import os
+from uuid import uuid4
 
 import torch
 from fastapi import FastAPI, HTTPException
@@ -15,8 +16,7 @@ from src.api.logger import get_logger
 from src.api.setup_flair_configs import setup_config_flair_detect
 from src.constants import (
     DATA_FOLDER,
-    FLAIR_GCP_PROJECT,
-    DEFAULT_FLAIR_CONFIG_DETECT_PATH,
+    FLAIR_GCP_PROJECT, OUTPUT_FOLDER, INPUT_FOLDER,
 )
 
 logger = get_logger()
@@ -56,20 +56,30 @@ async def flair_detect(
         )
     logger.info(f"Flair model weights available at {model_weights_path}")
 
+    # Set identifier for the current prediction (avoid overlap with async calls)
+    prediction_id = str(uuid4())
+
+    # Create input and output folders for the prediction
+    input_prediction_folder = os.path.join(INPUT_FOLDER, prediction_id)
+    output_prediction_folder = os.path.join(OUTPUT_FOLDER, prediction_id)
+    os.makedirs(input_prediction_folder, exist_ok=True)
+    os.makedirs(output_prediction_folder, exist_ok=True)
+
     # Setup flair-detect config
     # TODO : download input_image_path from bucket
     setup_config_flair_detect(
-        image_path=input_image_path,
-        model_path=model_weights_path,
-        output_path=output_image_path,
-        config_path=DEFAULT_FLAIR_CONFIG_DETECT_PATH,  # TODO : won't work with async calls
+        input_image_path=input_image_path,
+        model_weights_path=model_weights_path,
+        output_image_name=os.path.basename(input_image_path),
+        output_folder=output_prediction_folder,
     )
     logger.info(f"Config setup for flair-detect for image {input_image_path}")
 
-    # TODO : upload output_image to bucket (separate bucket & prefix in params)
+    # TODO : upload output_image to bucket
     try:
         use_gpu = torch.cuda.is_available()
         return {
+            "prediction_id": prediction_id,
             "message": f"prediction tiff available at {output_image_path}",
             "use_gpu": use_gpu,
         }

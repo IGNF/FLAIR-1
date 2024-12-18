@@ -1,0 +1,28 @@
+output_path: /data/output/6939be99-cb84-47a2-ae31-96e1f37a24a9
+output_name: 75-2018-0645-6865-LA93-0M20-E080_rgbi_15cl_resnet34-unet.tif
+
+input_img_path: /data/input/6939be99-cb84-47a2-ae31-96e1f37a24a9/75-2018-0645-6865-LA93-0M20-E080_RGBN.tif
+
+channels: [1, 2, 3, 4]
+
+img_pixels_detection: 1024
+margin: 256
+
+output_type: argmax
+n_classes: 19
+model_weights: /data/model/model.pth
+
+model_framework:
+  model_provider: SegmentationModelsPytorch
+  HuggingFace: { org_model: null }
+  SegmentationModelsPytorch: { encoder_decoder: resnet34_unet }
+batch_size: 4
+use_gpu: true
+model_name: unet
+encoder_name: resnet34
+num_worker: 0
+write_dataframe: false
+norma_task:
+  - norm_type: custom
+    norm_means: [105.08, 110.87, 101.82, 106.38, 53.26]
+    norm_stds: [52.17, 45.38, 44, 39.69, 79.3]
