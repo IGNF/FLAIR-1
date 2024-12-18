@@ -8,6 +8,7 @@ class SupportedModel(Enum):
 
 
 class FlairModel(ABC):
+    name: str
     bucket_name: str
     blob_prefix: str
 
@@ -20,6 +21,7 @@ class FlairModel(ABC):
 
 @dataclass
 class Rgbi15clResnet34UnetModel(FlairModel):
+    name: str = "rgbi_15cl_resnet34-unet"
     bucket_name: str = "netcarbon-ign"
     blob_prefix: str = "FLAIR-1/model"
 

@@ -41,3 +41,31 @@ def download_gcs_folder(
         blob.download_to_filename(local_file_path)
 
         logger.info(f"Copied: {blob.name} to {local_file_path}")
+
+
+def download_file(bucket_name: str,
+                  blob_path: str,
+                  local_path: str,
+                  client: Client,
+                  force=False):
+    """Download a file from bucket to the dedicated local path
+
+        Args:
+            bucket_name (str): Name of the GCS bucket.
+            blob_path (str): blob path in the bucket
+            local_path (str): where to save the file
+            client: gcs Client
+            force (bool): force download even if file already exists
+    """
+    if not os.path.exists(local_path) or force:
+        # Get the bucket and the blob
+        bucket = client.bucket(bucket_name)
+        blob = bucket.blob(blob_path)
+
+        # Ensure local subdirectories exist
+        os.makedirs(os.path.dirname(local_path), exist_ok=True)
+
+        # Download
+        blob.download_to_filename(local_path)
+
+
