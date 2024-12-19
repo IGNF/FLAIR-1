@@ -4,7 +4,7 @@ from enum import Enum
 
 
 class SupportedModel(Enum):
-    Rgbi15clResnet34Unet = "rgbi_15cl_resnet34-unet"
+    Rgbi15clResnet34Unet = "rgbi-15cl-resnet34-unet"
 
 
 class FlairModel(ABC):
@@ -21,7 +21,7 @@ class FlairModel(ABC):
 
 @dataclass
 class Rgbi15clResnet34UnetModel(FlairModel):
-    name: str = "rgbi_15cl_resnet34-unet"
+    name: str = "rgbi-15cl-resnet34-unet"
     bucket_name: str = "netcarbon-ign"
     blob_prefix: str = "FLAIR-1/model"
 
