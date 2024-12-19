@@ -15,8 +15,9 @@ def download_gcs_folder(
 
     Args:
         bucket_name (str): Name of the GCS bucket.
-        blob_prefix (str): The prefix or folder path in the bucket to copy from.
-        local_directory (str): Path to the local directory where files should be copied.
+        blob_prefix (str): The prefix or folder path in the bucket to copy from
+        local_directory (str): Path to the local directory where files should
+                               be copied.
         client: gcs Client
     """
     # Ensure local directory exists
@@ -43,19 +44,21 @@ def download_gcs_folder(
         logger.info(f"Copied: {blob.name} to {local_file_path}")
 
 
-def download_file(bucket_name: str,
-                  blob_path: str,
-                  local_path: str,
-                  client: Client,
-                  force=False):
+def download_file(
+    bucket_name: str,
+    blob_path: str,
+    local_path: str,
+    client: Client,
+    force=False,
+):
     """Download a file from bucket to the dedicated local path
 
-        Args:
-            bucket_name (str): Name of the GCS bucket.
-            blob_path (str): blob path in the bucket
-            local_path (str): where to save the file
-            client: gcs Client
-            force (bool): force download even if file already exists
+    Args:
+        bucket_name (str): Name of the GCS bucket.
+        blob_path (str): blob path in the bucket
+        local_path (str): where to save the file
+        client: gcs Client
+        force (bool): force download even if file already exists
     """
     if not os.path.exists(local_path) or force:
         # Get the bucket and the blob
@@ -68,17 +71,17 @@ def download_file(bucket_name: str,
         # Download
         blob.download_to_filename(local_path)
 
-def upload_file(bucket_name: str,
-                blob_path: str,
-                local_path: str,
-                client: Client):
+
+def upload_file(
+    bucket_name: str, blob_path: str, local_path: str, client: Client
+):
     """Upload a file to bucket to the dedicated blob path
 
-        Args:
-            bucket_name (str): Name of the GCS bucket.
-            blob_path (str): blob path in the bucket
-            local_path (str): the file to upload
-            client: gcs Client
+    Args:
+        bucket_name (str): Name of the GCS bucket.
+        blob_path (str): blob path in the bucket
+        local_path (str): the file to upload
+        client: gcs Client
     """
     # Get the bucket and the blob
     bucket = client.bucket(bucket_name)

@@ -33,7 +33,9 @@ def setup_config_flair_detect(
         flair["margin"] = 256
         flair["num_worker"] = 0
 
-    runtime_config_path = os.path.join(output_folder, "flair-1-config-detect.yaml")
+    runtime_config_path = os.path.join(
+        output_folder, "flair-1-config-detect.yaml"
+    )
 
     with open(runtime_config_path, "w+") as f:
         yaml.dump(
