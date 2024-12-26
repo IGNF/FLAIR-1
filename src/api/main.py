@@ -1,9 +1,11 @@
 import os
 from time import perf_counter
+from typing import Annotated
 from uuid import uuid4
 
 import torch
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from fastapi.security import HTTPAuthorizationCredentials
 from google.cloud.storage import Client
 
 from src.api.classes.prediction_models import SupportedModel
@@ -13,6 +15,7 @@ from src.api.flair_detect_service import (
     run_prediction,
     upload_result_to_bucket,
 )
+from src.api.security import verify_token
 from src.api.logger import get_logger
 from src.api.setup_flair_configs import setup_config_flair_detect
 from src.constants import FLAIR_GCP_PROJECT, OUTPUT_FOLDER
@@ -25,7 +28,6 @@ logger = get_logger()
 app = FastAPI(title="FLAIR-1 API")
 
 
-# Endpoint for flair-detect
 @app.post("/flair-detect")
 async def flair_detect(
     image_bucket_name: str,
@@ -33,6 +35,7 @@ async def flair_detect(
     model: SupportedModel,
     output_bucket_name: str,
     output_blob_path: str,
+    token: Annotated[HTTPAuthorizationCredentials, Depends(verify_token)],
 ):
     # Set identifier for the current prediction (avoid overlap with async calls
     prediction_id = str(uuid4())

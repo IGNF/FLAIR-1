@@ -8,6 +8,10 @@ OUTPUT_FOLDER = os.path.join(DATA_FOLDER, "output")
 os.makedirs(INPUT_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-DEFAULT_FLAIR_CONFIG_DETECT_PATH = os.path.join(REPOSITORY_FOLDER, "configs", "flair-1-config-detect.yaml")
+DEFAULT_FLAIR_CONFIG_DETECT_PATH = os.path.join(
+    REPOSITORY_FOLDER, "configs", "flair-1-config-detect.yaml"
+)
 
-FLAIR_GCP_PROJECT = os.environ.get("FLAIR_GCP_PROJECT", "netcarbon-datawarehouse")
+FLAIR_GCP_PROJECT = os.environ.get(
+    "FLAIR_GCP_PROJECT", "netcarbon-datawarehouse"
+)

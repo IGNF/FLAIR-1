@@ -41,7 +41,8 @@ setup(
         "transformers>=4.41.2",
         "fastapi>=0.115.6,<1",
         "uvicorn>=0.32.1,<1",
-        "google-cloud-storage>=2.18.2,<3"
+        "google-cloud-storage>=2.18.2,<3",
+        "google-cloud-secret-manager>=2.22.0,<3",
     ],
     extras_require={
             'dev': [
