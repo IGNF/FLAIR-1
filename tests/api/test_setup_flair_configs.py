@@ -19,7 +19,8 @@ def test_setup_config_flair_detect(
         input_image_path=input_image_path,
         model_weights_path=model_weights_path,
         output_image_name=output_image_name,
-        output_folder=output_folder
+        output_folder=output_folder,
+        batch_size=8
     )
 
     # assert
@@ -35,3 +36,4 @@ def test_setup_config_flair_detect(
     assert updated_config["img_pixels_detection"] == 1024
     assert updated_config["margin"] == 256
     assert updated_config["num_worker"] == 0
+    assert updated_config["batch_size"] == 8

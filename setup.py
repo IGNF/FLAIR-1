@@ -43,6 +43,7 @@ setup(
         "uvicorn>=0.32.1,<1",
         "google-cloud-storage>=2.18.2,<3",
         "google-cloud-secret-manager>=2.22.0,<3",
+        "python-dotenv>=1.0.1,<2"
     ],
     extras_require={
             'dev': [

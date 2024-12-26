@@ -10,6 +10,7 @@ def setup_config_flair_detect(
     model_weights_path: str,
     output_image_name: str,
     output_folder: str,
+    batch_size: int,
 ):
     """Setup the configuration file for the prediction.
 
@@ -18,6 +19,7 @@ def setup_config_flair_detect(
         model_weights_path: The path to the model weights.
         output_image_name: The name of the output image.
         output_folder: Folder where to store config and output_image.
+        batch_size: batch_size value
 
     Returns:
         the path to the generated conf file
@@ -32,6 +34,7 @@ def setup_config_flair_detect(
         flair["img_pixels_detection"] = 1024
         flair["margin"] = 256
         flair["num_worker"] = 0
+        flair["batch_size"] = batch_size
 
     runtime_config_path = os.path.join(
         output_folder, "flair-1-config-detect.yaml"

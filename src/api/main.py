@@ -18,8 +18,11 @@ from src.api.flair_detect_service import (
 from src.api.security import verify_token
 from src.api.logger import get_logger
 from src.api.setup_flair_configs import setup_config_flair_detect
-from src.constants import FLAIR_GCP_PROJECT, OUTPUT_FOLDER
-
+from src.constants import (
+    FLAIR_GCP_PROJECT,
+    OUTPUT_FOLDER,
+    FLAIR_DETECT_BATCH_SIZE,
+)
 
 logger = get_logger()
 
@@ -70,6 +73,7 @@ async def flair_detect(
         model_weights_path=model_weights_path,
         output_image_name=output_name,
         output_folder=output_prediction_folder,
+        batch_size=FLAIR_DETECT_BATCH_SIZE,
     )
     logger.info(
         "Config setup for flair-detect for model %s and image %s",

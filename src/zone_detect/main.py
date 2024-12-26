@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader
 from rasterio.features import geometry_window
 from tqdm import tqdm
 
+from src.constants import GARBAGE_COLLECTOR_FREQUENCY
 from src.zone_detect.slicing_job import slice_extent, create_polygon_from_bounds
 from src.zone_detect.model import load_model
 from src.zone_detect.dataset import Sliced_Dataset, convert
@@ -216,7 +217,7 @@ def main():
             del indices, predictions  # Free memory for each prediction
             torch.cuda.empty_cache()  # If running on GPU
 
-            if ind % 10 == 9: # we gc after 10 iterations.
+            if ind % GARBAGE_COLLECTOR_FREQUENCY == (GARBAGE_COLLECTOR_FREQUENCY - 1): # we gc after N iterations.
                 gc.collect()  # Force garbage collection
     
     STD_OUT_LOGGER.info(f"""    
