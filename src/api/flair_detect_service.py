@@ -2,7 +2,6 @@ import os
 from time import perf_counter
 from typing import Tuple
 from subprocess import run
-from uuid import uuid4
 
 import torch
 from google.cloud.storage import Client
@@ -33,6 +32,10 @@ logger = get_logger()
 available_models: dict[SupportedModel, FlairModel] = {
     SupportedModel.Rgbi15clResnet34Unet: Rgbi15clResnet34UnetModel()
 }
+
+
+def get_output_prediction_folder(prediction_id: str):
+    return os.path.join(OUTPUT_FOLDER, prediction_id)
 
 
 def get_requested_model(
@@ -120,12 +123,12 @@ def flair_detect_service(
     model: SupportedModel,
     output_bucket_name: str,
     output_blob_path: str,
+    prediction_id: str,
 ):
-    # Set identifier for the current prediction (avoid overlap with async calls
-    prediction_id = str(uuid4())
-
     # Create output folder for the prediction
-    output_prediction_folder = os.path.join(OUTPUT_FOLDER, prediction_id)
+    output_prediction_folder = get_output_prediction_folder(
+        prediction_id=prediction_id
+    )
     os.makedirs(output_prediction_folder, exist_ok=True)
 
     # Google clood storage client
