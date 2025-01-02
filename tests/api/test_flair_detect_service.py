@@ -9,6 +9,7 @@ from src.api.flair_detect_service import (
     download_file_to_process,
     upload_result_to_bucket,
     flair_detect_service,
+    run_prediction,
 )
 from tests.tests_constants import TESTS_DATA_FOLDER
 
@@ -108,6 +109,23 @@ def test_download_file_to_process(download_file_mock):
     # assert
     assert image_local_path == "/data/input/tile_RGBN.tif"
     download_file_mock.assert_called_once()
+
+
+@patch(f"{TESTED_MODULE}.run")
+def test_run_prediction(run_mock):
+    # init
+    prediction_config_path_test = Mock()
+
+    # act
+    run_prediction(prediction_config_path=prediction_config_path_test)
+
+    # assert
+    run_mock.assert_called_once_with(
+        ["flair-detect", "--conf", prediction_config_path_test],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 @patch(f"{TESTED_MODULE}.upload_file")
