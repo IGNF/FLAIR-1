@@ -40,7 +40,7 @@ def get_output_prediction_folder(prediction_id: str):
 
 def get_requested_model(
     model: SupportedModel, client: Client, data_folder: str = DATA_FOLDER
-) -> Tuple[FlairModel, str]:
+) -> str:
     # Get model from hash map
     flair_model = available_models[model]
     model_weights_path = os.path.join(
@@ -57,7 +57,7 @@ def get_requested_model(
         )
     logger.info("Flair model weights available at %s", model_weights_path)
 
-    return flair_model, model_weights_path
+    return model_weights_path
 
 
 def download_file_to_process(
@@ -135,20 +135,18 @@ def flair_detect_service(
     client = Client(project=FLAIR_GCP_PROJECT)
 
     # Download requested model from netcarbon gcs
-    flair_model, model_weights_path = get_requested_model(
+    model_weights_path = get_requested_model(
         model=model, client=client
     )
 
     # Download file to process
-    start_time = perf_counter()
     image_local_path = download_file_to_process(
         image_bucket_name=image_bucket_name,
         image_blob_path=image_blob_path,
         client=client,
     )
-    download_file_duration = int(round(perf_counter() - start_time))
-
-    logger.info("download file duration: %s seconds", download_file_duration)
+    logger.info("%s ; download image to process done",
+                prediction_id)
 
     # Setup flair-detect config
     output_name = os.path.basename(output_blob_path)
@@ -160,23 +158,25 @@ def flair_detect_service(
         batch_size=FLAIR_DETECT_BATCH_SIZE,
     )
     logger.info(
-        "Config setup for flair-detect for model %s and image %s",
-        flair_model.name,
-        image_blob_path,
+        "%s ; config setup for flair-detect done",
+        prediction_id
     )
 
     # Run the prediction with flair-detect script
     use_gpu = torch.cuda.is_available()
-    logger.info("cuda is available : %s", use_gpu)
+    logger.info("%s cuda is available : %s",
+                prediction_id,
+                use_gpu)
 
     start_time = perf_counter()
     result = run_prediction(prediction_config_path=prediction_config_path)
     run_prediction_duration = int(round(perf_counter() - start_time))
 
-    logger.info("run prediction duration: %s seconds", run_prediction_duration)
+    logger.info("%s ; run prediction done in %s seconds",
+                prediction_id,
+                run_prediction_duration)
 
     # Upload resulted tif to bucket
-    start_time = perf_counter()
     upload_result_to_bucket(
         output_prediction_folder=output_prediction_folder,
         output_name=output_name,
@@ -184,18 +184,14 @@ def flair_detect_service(
         output_blob_path=output_blob_path,
         client=client,
     )
-    upload_result_duration = int(round(perf_counter() - start_time))
 
-    logger.info("upload result duration: %s seconds", upload_result_duration)
+    logger.info("%s ; upload prediction result to bucket",
+                prediction_id)
 
     return {
         "prediction_id": prediction_id,
         "message": f"prediction tif is available at gs://{output_bucket_name}/{output_blob_path}",
         "cuda_used": use_gpu,
         "result_stdout": result.stdout,
-        "perf": {
-            "download_file_duration": download_file_duration,
-            "run_prediction_duration": run_prediction_duration,
-            "upload_result_duration": upload_result_duration,
-        },
+        "run_prediction_duration": run_prediction_duration
     }

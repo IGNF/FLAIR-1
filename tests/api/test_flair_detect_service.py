@@ -8,6 +8,7 @@ from src.api.flair_detect_service import (
     get_output_prediction_folder,
     download_file_to_process,
     upload_result_to_bucket,
+    flair_detect_service,
 )
 from tests.tests_constants import TESTS_DATA_FOLDER
 
@@ -19,7 +20,6 @@ FLAIR_MODEL_MOCK = Mock(
     bucket_name="bucket-test",
     blob_prefix="blob-test",
 )
-
 TEST_AVAILABLE_MODELS = {"flair-model-test": FLAIR_MODEL_MOCK}
 
 
@@ -37,7 +37,6 @@ def test_get_output_prediction_folder():
     "supported_model, "
     "data_folder, "
     "expected_download_count, "
-    "expected_flair_model, "
     "expected_model_weights_path",
     [
         # Case 1 : model already exists locally
@@ -46,7 +45,6 @@ def test_get_output_prediction_folder():
             "flair-model-test",
             TESTS_DATA_FOLDER,
             0,
-            FLAIR_MODEL_MOCK,
             os.path.join(TESTS_DATA_FOLDER, "flair-model-test_weights.pth"),
         ),
         # Case 2 : model doesn't exist locally
@@ -55,7 +53,6 @@ def test_get_output_prediction_folder():
             "flair-model-test",
             TESTS_DATA_FOLDER,
             1,
-            FLAIR_MODEL_MOCK,
             os.path.join(TESTS_DATA_FOLDER, "flair-model-test_weights.pth"),
         ),
     ],
@@ -65,7 +62,6 @@ def test_get_requested_model(
     supported_model,
     data_folder,
     expected_download_count,
-    expected_flair_model,
     expected_model_weights_path,
 ):
     # init
@@ -85,7 +81,7 @@ def test_get_requested_model(
             with patch(
                 f"{TESTED_MODULE}.download_gcs_folder"
             ) as download_gcs_folder_mock:
-                flair_model, model_weights_path = get_requested_model(
+                model_weights_path = get_requested_model(
                     model=supported_model,
                     client=client_gcs_mock,
                     data_folder=data_folder,
@@ -93,7 +89,6 @@ def test_get_requested_model(
 
     # assert
     assert download_gcs_folder_mock.call_count == expected_download_count
-    assert flair_model == expected_flair_model
     assert model_weights_path == expected_model_weights_path
 
 
@@ -139,4 +134,103 @@ def test_upload_result_to_bucket(upload_file_mock):
         blob_path=output_blob_path,
         local_path=f"{output_prediction_folder}/{output_name}",
         client=client_gcs,
+    )
+
+
+@patch(f"{TESTED_MODULE}.FLAIR_DETECT_BATCH_SIZE", 4)
+@patch(f"{TESTED_MODULE}.upload_result_to_bucket")
+@patch(f"{TESTED_MODULE}.run_prediction")
+@patch(f"{TESTED_MODULE}.perf_counter")
+@patch(f"{TESTED_MODULE}.torch")
+@patch(f"{TESTED_MODULE}.setup_config_flair_detect")
+@patch(f"{TESTED_MODULE}.download_file_to_process")
+@patch(f"{TESTED_MODULE}.get_requested_model")
+@patch(f"{TESTED_MODULE}.Client")
+@patch(f"{TESTED_MODULE}.os.makedirs")
+@patch(f"{TESTED_MODULE}.get_output_prediction_folder")
+def test_flair_detect_service(
+    get_output_prediction_folder_mock,
+    os_makedirs_mock,
+    client_mock,
+    get_requested_model_mock,
+    download_file_to_process_mock,
+    setup_config_flair_detect_mock,
+    torch_mock,
+    perf_counter_mock,
+    run_prediction_mock,
+    upload_result_to_bucket_mock,
+):
+    # init
+    image_bucket_name_test = "netcarbon-ortho"
+    image_blob_path_test = "RGBN/tile_RGBN.tif"
+    model_test = "flair-model-test"
+    output_bucket_name_test = "netcarbon-landcover"
+    output_blob_path_test = "prediction_raster/tile_flair-model-test.tif"
+    prediction_id_test = "RGBN-crc32c_flair-model-test"
+
+    # mock output prediction folder
+    output_prediction_folder_mock = Mock()
+    get_output_prediction_folder_mock.return_value = (
+        output_prediction_folder_mock
+    )
+
+    # mock GCS client
+    client_gcs_mock = Mock()
+    client_mock.return_value = client_gcs_mock
+
+    # mock model
+    model_weights_path_mock = Mock()
+    get_requested_model_mock.return_value = model_weights_path_mock
+
+    # mock image local path
+    image_local_path_mock = Mock()
+    download_file_to_process_mock.return_value = image_local_path_mock
+
+    # mock flair-detect config
+    prediction_config_path_mock = Mock()
+    setup_config_flair_detect_mock.return_value = prediction_config_path_mock
+
+    # act
+    response = flair_detect_service(
+        image_bucket_name=image_bucket_name_test,
+        image_blob_path=image_blob_path_test,
+        model=model_test,
+        output_bucket_name=output_bucket_name_test,
+        output_blob_path=output_blob_path_test,
+        prediction_id=prediction_id_test,
+    )
+
+    # assert
+    get_output_prediction_folder_mock.assert_called_once_with(
+        prediction_id=prediction_id_test
+    )
+    get_requested_model_mock.assert_called_once_with(
+        model=model_test, client=client_gcs_mock
+    )
+    download_file_to_process_mock.assert_called_once_with(
+        image_bucket_name=image_bucket_name_test,
+        image_blob_path=image_blob_path_test,
+        client=client_gcs_mock,
+    )
+    setup_config_flair_detect_mock.assert_called_once_with(
+        input_image_path=image_local_path_mock,
+        model_weights_path=model_weights_path_mock,
+        output_image_name="tile_flair-model-test.tif",
+        output_folder=output_prediction_folder_mock,
+        batch_size=4,
+    )
+    run_prediction_mock.assert_called_once_with(
+        prediction_config_path=prediction_config_path_mock
+    )
+    upload_result_to_bucket_mock.assert_called_once_with(
+        output_prediction_folder=output_prediction_folder_mock,
+        output_name="tile_flair-model-test.tif",
+        output_bucket_name=output_bucket_name_test,
+        output_blob_path=output_blob_path_test,
+        client=client_gcs_mock,
+    )
+    assert response["prediction_id"] == prediction_id_test
+    assert (
+        f"{output_bucket_name_test}/{output_blob_path_test}"
+        in response["message"]
     )
