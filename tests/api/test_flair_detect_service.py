@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.api.flair_detect_service import get_requested_model, get_output_prediction_folder
+from src.api.flair_detect_service import get_requested_model, get_output_prediction_folder, download_file_to_process
 from tests.tests_constants import TESTS_DATA_FOLDER
 
 
@@ -92,5 +92,21 @@ def test_get_requested_model(
     assert model_weights_path == expected_model_weights_path
 
 
+@patch(f"{TESTED_MODULE}.download_file")
+def test_download_file_to_process(
+    download_file_mock
+):
+    # init
+    client_gcs = Mock()
 
+    # act
+    image_local_path = download_file_to_process(
+        image_bucket_name="netcarbon-ortho",
+        image_blob_path="RGBN/tile_RGBN.tif",
+        client=client_gcs,
+        input_folder="/data/input"
+    )
 
+    # assert
+    assert image_local_path == "/data/input/tile_RGBN.tif"
+    download_file_mock.assert_called_once()
