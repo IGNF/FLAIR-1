@@ -3,7 +3,12 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.api.flair_detect_service import get_requested_model, get_output_prediction_folder, download_file_to_process
+from src.api.flair_detect_service import (
+    get_requested_model,
+    get_output_prediction_folder,
+    download_file_to_process,
+    upload_result_to_bucket,
+)
 from tests.tests_constants import TESTS_DATA_FOLDER
 
 
@@ -93,9 +98,7 @@ def test_get_requested_model(
 
 
 @patch(f"{TESTED_MODULE}.download_file")
-def test_download_file_to_process(
-    download_file_mock
-):
+def test_download_file_to_process(download_file_mock):
     # init
     client_gcs = Mock()
 
@@ -104,9 +107,36 @@ def test_download_file_to_process(
         image_bucket_name="netcarbon-ortho",
         image_blob_path="RGBN/tile_RGBN.tif",
         client=client_gcs,
-        input_folder="/data/input"
+        input_folder="/data/input",
     )
 
     # assert
     assert image_local_path == "/data/input/tile_RGBN.tif"
     download_file_mock.assert_called_once()
+
+
+@patch(f"{TESTED_MODULE}.upload_file")
+def test_upload_result_to_bucket(upload_file_mock):
+    # init
+    output_prediction_folder = "/data/output/prediction"
+    output_name = "tile_model.tif"
+    output_bucket_name = "netcarbon-landcover"
+    output_blob_path = "prediction_raster"
+    client_gcs = Mock()
+
+    # act
+    upload_result_to_bucket(
+        output_prediction_folder=output_prediction_folder,
+        output_name=output_name,
+        output_bucket_name=output_bucket_name,
+        output_blob_path=output_blob_path,
+        client=client_gcs,
+    )
+
+    # assert
+    upload_file_mock.assert_called_once_with(
+        bucket_name=output_bucket_name,
+        blob_path=output_blob_path,
+        local_path=f"{output_prediction_folder}/{output_name}",
+        client=client_gcs,
+    )
