@@ -9,8 +9,7 @@ from tests.tests_constants import TESTS_DATA_FOLDER
 @pytest.fixture
 def tests_output_folder():
     # Create output folder for tests
-    output_folder = os.path.join(TESTS_DATA_FOLDER,
-                                 "output")
+    output_folder = os.path.join(TESTS_DATA_FOLDER, "output")
     os.makedirs(output_folder, exist_ok=True)
 
     # Return path to the folder
