@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.api.flair_detect_service import get_requested_model
+from src.api.flair_detect_service import get_requested_model, get_output_prediction_folder
 from tests.tests_constants import TESTS_DATA_FOLDER
 
 
@@ -16,6 +16,15 @@ FLAIR_MODEL_MOCK = Mock(
 )
 
 TEST_AVAILABLE_MODELS = {"flair-model-test": FLAIR_MODEL_MOCK}
+
+
+@patch(f"{TESTED_MODULE}.OUTPUT_FOLDER", "/output/folder")
+def test_get_output_prediction_folder():
+    prediction_id = "RGBN-crc32c_model-name"
+
+    folder = get_output_prediction_folder(prediction_id)
+
+    assert folder == f"/output/folder/{prediction_id}"
 
 
 @pytest.mark.parametrize(
@@ -81,3 +90,7 @@ def test_get_requested_model(
     assert download_gcs_folder_mock.call_count == expected_download_count
     assert flair_model == expected_flair_model
     assert model_weights_path == expected_model_weights_path
+
+
+
+
