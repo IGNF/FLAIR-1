@@ -4,11 +4,6 @@ FROM continuumio/miniconda3
 # Set working directory
 WORKDIR /app
 
-# Install g++ / gcc for rasterio
-#ENV DEBIAN_FRONTEND=noninteractive
-#RUN apt-get update && \
-#    apt-get -y install build-essential
-
 # Copy the Conda environment file and the project into the container
 COPY environment.yml .
 
