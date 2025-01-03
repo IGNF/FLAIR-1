@@ -58,20 +58,11 @@ jobs:
         - name: Run Ruff with Auto-Fix
           run: |
             ruff check src/api --fix --config ruff.toml
-
               
         - name: Run Tests with Coverage
           run: |
             coverage run --source=src/api --omit="tests/*" -m pytest
             coverage xml
-  
-        - name: Upload Coverage Results to Codecov
-          uses: codecov/codecov-action@v4
-          with:
-            token: ${{ secrets.CODECOV_TOKEN }}
-            files: coverage.xml
-            fail_ci_if_error: true
-            verbose: true
 
         - name: Check the coverage
           run: |
