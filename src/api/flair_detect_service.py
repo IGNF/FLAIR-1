@@ -1,3 +1,8 @@
+"""This module provides functionalities to run flair detect workflow
+
+From downloading model & image to uploading results.
+"""
+
 import os
 from time import perf_counter
 from subprocess import run
@@ -34,12 +39,31 @@ available_models: dict[SupportedModel, FlairModel] = {
 
 
 def get_output_prediction_folder(prediction_id: str):
+    """Returns the path to the output prediction folder.
+
+    Args:
+        prediction_id (str): Unique identifier for the prediction.
+
+    Returns:
+        str: Path to the output folder for the given prediction ID.
+    """
     return os.path.join(OUTPUT_FOLDER, prediction_id)
 
 
 def get_requested_model(
     model: SupportedModel, client: Client, data_folder: str = DATA_FOLDER
 ) -> str:
+    """Downloads model files from GCS if it's not already present locally.
+
+    Args:
+        model (SupportedModel): The model to be downloaded.
+        client (Client): Google Cloud Storage client.
+        data_folder (str): Path to the local folder where model weights
+                           should be stored.
+
+    Returns:
+        str: Path to the downloaded model weights.
+    """
     # Get model from hash map
     flair_model = available_models[model]
     model_weights_path = os.path.join(
@@ -65,6 +89,17 @@ def download_file_to_process(
     client: Client,
     input_folder: str = INPUT_FOLDER,
 ):
+    """Downloads an image from a specified GCS bucket to a local input folder.
+
+    Args:
+        image_bucket_name (str): Name of the bucket containing the image.
+        image_blob_path (str): Path to the image blob within the bucket.
+        client (Client): Google Cloud Storage client.
+        input_folder (str): Path to the local input folder.
+
+    Returns:
+        str: Local path to the downloaded image.
+    """
     image_name = os.path.basename(image_blob_path)
     image_local_path = os.path.join(input_folder, image_name)
 
@@ -86,6 +121,15 @@ def download_file_to_process(
 
 
 def run_prediction(prediction_config_path: str):
+    """Runs the flair-detect script using the provided configuration file.
+
+    Args:
+        prediction_config_path (str): Path to the flair-detect configuration
+                                      file.
+
+    Returns:
+        CompletedProcess: Result of the executed prediction process.
+    """
     result = run(
         ["flair-detect", "--conf", prediction_config_path],
         check=True,
@@ -107,6 +151,17 @@ def upload_result_to_bucket(
     output_blob_path: str,
     client: Client,
 ):
+    """Uploads the prediction result file to a specified GCS bucket.
+
+    Args:
+        output_prediction_folder (str): Local folder containing the prediction
+                                        result.
+        output_name (str): Name of the output file.
+        output_bucket_name (str): Name of the target Google Cloud Storage
+                                  bucket.
+        output_blob_path (str): Path to the blob within the bucket.
+        client (Client): Google Cloud Storage client.
+    """
     output_path = os.path.join(output_prediction_folder, output_name)
     upload_file(
         bucket_name=output_bucket_name,
@@ -124,6 +179,21 @@ def flair_detect_service(
     output_blob_path: str,
     prediction_id: str,
 ):
+    """Main service function that orchestrates the flair-detect workflow.
+
+    Args:
+        image_bucket_name (str): Name of the bucket containing the input image.
+        image_blob_path (str): Path to the image blob within the bucket.
+        model (SupportedModel): The prediction model to be used.
+        output_bucket_name (str): Name of the target bucket for the prediction
+                                  result.
+        output_blob_path (str): Path to the output blob within the bucket.
+        prediction_id (str): Unique identifier for the prediction.
+
+    Returns:
+        dict: Information about the prediction result, including duration
+              and CUDA usage.
+    """
     # Create output folder for the prediction
     output_prediction_folder = get_output_prediction_folder(
         prediction_id=prediction_id

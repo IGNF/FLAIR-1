@@ -1,3 +1,5 @@
+"""Module to setup config file for flair scripts"""
+
 import os
 
 import yaml

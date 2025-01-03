@@ -1,3 +1,5 @@
+"""Main module to start the API application"""
+
 import gc
 import shutil
 from subprocess import CalledProcessError
@@ -32,6 +34,27 @@ async def flair_detect(
     prediction_id: str,
     token: Annotated[HTTPAuthorizationCredentials, Depends(verify_token)],
 ):
+    """Handles POST requests to the /flair-detect endpoint.
+
+    Args:
+        image_bucket_name (str): Name of the Google Cloud Storage bucket
+                                 containing the input image.
+        image_blob_path (str): Path to the image blob within the bucket.
+        model (SupportedModel): The model to be used for prediction.
+        output_bucket_name (str): Name of the Google Cloud Storage bucket to
+                                  store the prediction result.
+        output_blob_path (str): Path to the blob within the output bucket
+                                where the result will be stored.
+        prediction_id (str): Unique identifier for the prediction.
+        token: Bearer token for authentication.
+
+    Returns:
+            dict: Result of the prediction including details such as
+                  prediction ID, CUDA usage, and execution duration.
+
+    Raises:
+            HTTPException: Raised when an execution error occurs.
+    """
     output_prediction_folder = get_output_prediction_folder(
         prediction_id=prediction_id
     )
