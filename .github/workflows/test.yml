@@ -75,5 +75,5 @@ jobs:
 
         - name: Check the coverage
           run: |
-            coverage report --fail-under=45 -m 
+            coverage report --fail-under=75 -m 
     
