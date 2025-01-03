@@ -10,19 +10,18 @@ from src.api.utils import retrieve_secret
 
 logger = get_logger()
 
-VALID_TOKEN = retrieve_secret(
-    name="FLAIR_API_TOKEN",
-    version=1,
-    client_secret_manager=SecretManagerServiceClient(),
-)
-
 security = HTTPBearer()
 
 
 def verify_token(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
 ):
-    if credentials.credentials != VALID_TOKEN:
+    valid_token = retrieve_secret(
+        name="FLAIR_API_TOKEN",
+        version=1,
+        client_secret_manager=SecretManagerServiceClient(),
+    )
+    if credentials.credentials != valid_token:
         raise HTTPException(status_code=401, detail="Invalid or missing token")
     logger.info("Token is valid")
     return credentials.credentials
