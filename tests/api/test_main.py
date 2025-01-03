@@ -6,6 +6,7 @@ import pytest
 TESTED_MODULE = "src.api.main"
 
 
+@patch("src.api.security.SecretManagerServiceClient", Mock())
 @patch("src.api.security.retrieve_secret", Mock(return_value="valid-token"))
 @patch(f"{TESTED_MODULE}.gc.collect")
 @patch(f"{TESTED_MODULE}.shutil.rmtree")
