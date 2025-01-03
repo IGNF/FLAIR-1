@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - netcarbon_dev
-      - feature/make_flair_an_api
 
 jobs:
   build-push-gcr:
