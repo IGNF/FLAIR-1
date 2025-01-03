@@ -1,0 +1,79 @@
+name: test
+
+on:
+  push:
+    branches:
+      - feature/*
+      - fix/*
+      - doc/*
+      - experimental/*
+      - release/*
+      - hotfix/*
+      - dev
+      - netcarbon_dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+        run:
+          shell: bash -l {0}
+
+    steps:
+
+        - name : Checkout code sdfds
+          uses: actions/checkout@v3
+
+        - name: Set up Python 3.10.13
+          uses: actions/setup-python@v4
+          with:
+            python-version: "3.10.13"
+
+        - name: Set up Conda environment
+          uses: conda-incubator/setup-miniconda@v3
+          with:
+            activate-environment: flair
+            environment-file: environment.yml
+            auto-activate-base: false
+  
+        - name: Verify Conda installation
+          run: |
+            conda info
+            conda list
+
+        - name: Install Package in Editable Mode
+          run: |
+            pip install -e ".[dev]"
+
+        - name: Python Interrogate Check
+          uses: JackMcKew/python-interrogate-check@main
+          with:
+              path: 'src/api'
+              fail-under: 75
+
+        - name: Run Ruff formatting check
+          run: |
+            ruff format src/api --check --config ruff.toml
+
+        - name: Run Ruff with Auto-Fix
+          run: |
+            ruff check src/api --fix --config ruff.toml
+
+              
+        - name: Run Tests with Coverage
+          run: |
+            coverage run --source=src/api --omit="tests/*" -m pytest
+            coverage xml
+  
+        - name: Upload Coverage Results to Codecov
+          uses: codecov/codecov-action@v4
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }}
+            files: coverage.xml
+            fail_ci_if_error: true
+            verbose: true
+
+        - name: Check the coverage
+          run: |
+            coverage report --fail-under=45 -m 
+    

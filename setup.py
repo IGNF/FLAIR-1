@@ -49,7 +49,8 @@ setup(
             'dev': [
                 'pytest>=7.0.0',
                 'ruff==0.7.4',
-                'httpx>=0.28.1,<1'
+                'httpx>=0.28.1,<1',
+                'coverage==7.6.7'
             ]
         },
     include_package_data=True,
