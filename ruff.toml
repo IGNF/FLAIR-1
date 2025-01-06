@@ -1,0 +1,37 @@
+line-length = 79
+
+[lint]
+extend-select = [
+    "E", # PEP8
+    "F", # Flake8
+    "B", # Bugbear
+    "D", # Docstring
+    "N", # Naming convention
+]
+
+# Rule to ignore (for now ;) ...)
+ignore = [
+    "D100",  # Missing docstring in public module
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D103",  # Missing docstring in public function
+    "D104",  # Missing docstring in public package
+    "D415",  # Missing argument descriptions in the docstring
+]
+
+
+[format]
+docstring-code-format = true
+docstring-code-line-length = 79
+
+[lint.mccabe]
+max-complexity = 10
+
+[lint.pycodestyle]
+ignore-overlong-task-comments = true
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.pyflakes]
+allowed-unused-imports = ["rioxarray"]
