@@ -11,7 +11,7 @@ class SupportedModel(Enum):
     Rgbi15clResnet34Unet = "rgbi-15cl-resnet34-unet"
 
 
-class FlairModel(ABC):
+class FlairModelAbstract(ABC):
     """Abstract base class representing a flair-detect model.
 
     Attributes:
@@ -38,7 +38,7 @@ class FlairModel(ABC):
 
 
 @dataclass
-class Rgbi15clResnet34UnetModel(FlairModel):
+class Rgbi15ClResnet34UnetModelAbstract(FlairModelAbstract):
     """FlairModel for the Rgbi15clResnet34Unet model."""
 
     name: str = "rgbi-15cl-resnet34-unet"
