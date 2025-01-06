@@ -18,8 +18,8 @@ from src.api.handle_files import (
 from src.api.logger import get_logger
 from src.api.classes.prediction_models import (
     SupportedModel,
-    Rgbi15ClResnet34UnetModelAbstract,
-    FlairModelAbstract,
+    Rgbi15ClResnet34UnetModel,
+    AbstractFlairModel,
 )
 from src.api.setup_flair_configs import setup_config_flair_detect
 from src.constants import (
@@ -33,8 +33,8 @@ from src.constants import (
 logger = get_logger()
 
 # Models hash map
-available_models: dict[SupportedModel, FlairModelAbstract] = {
-    SupportedModel.Rgbi15clResnet34Unet: Rgbi15ClResnet34UnetModelAbstract()
+available_models: dict[SupportedModel, AbstractFlairModel] = {
+    SupportedModel.Rgbi15clResnet34Unet: Rgbi15ClResnet34UnetModel()
 }
 
 
