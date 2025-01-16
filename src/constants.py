@@ -19,9 +19,10 @@ FLAIR_GCP_PROJECT = os.environ.get(
     "FLAIR_GCP_PROJECT", "netcarbon-datawarehouse"
 )
 
-FLAIR_DETECT_BATCH_SIZE = int(os.environ.get(
-    "FLAIR_DETECT_BATCH_SIZE", 4
-))
-GARBAGE_COLLECTOR_FREQUENCY = int(os.environ.get(
-    "GARBAGE_COLLECTOR_FREQUENCY", 10
-))
+FLAIR_DETECT_BATCH_SIZE = int(os.environ.get("FLAIR_DETECT_BATCH_SIZE", 4))
+GARBAGE_COLLECTOR_FREQUENCY = int(
+    os.environ.get("GARBAGE_COLLECTOR_FREQUENCY", 10)
+)
+
+clean = os.environ.get("CLEAN_ALL_FILES_AFTER_PREDICTION", "false")
+CLEAN_ALL_FILES_AFTER_PREDICTION = True if clean.lower() == "true" else False
