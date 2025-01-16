@@ -2,7 +2,7 @@ services:
   api-flair:
     build: ./
     platform: linux/amd64
-    image: netcarbon/landcover/apiflair:test
+    image: apiflair:test
     volumes:
       - "${HOME}/.config/gcloud:${HOME}/.config/gcloud:ro"
     env_file: ".env"
