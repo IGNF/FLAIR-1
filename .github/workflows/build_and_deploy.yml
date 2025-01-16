@@ -38,4 +38,4 @@ jobs:
         docker push europe-west1-docker.pkg.dev/$PROJECT_ID/$IMAGE_LOCATION/$IMAGE_NAME:latest
 
     - name: Deploy Image to Cloud Run
-      run: gcloud run deploy $SERVICE --image europe-west1-docker.pkg.dev/$PROJECT_ID/$IMAGE_LOCATION/$IMAGE_NAME:latest --region europe-west1
+      run: gcloud run deploy $SERVICE --image europe-west1-docker.pkg.dev/$PROJECT_ID/$IMAGE_LOCATION/$IMAGE_NAME:latest --region europe-west4 --allow-unauthenticated
