@@ -93,7 +93,7 @@ def slice_extent(
     gdf_output = gpd.GeoDataFrame(tmp_list, crs=profile['crs'], geometry="geometry")
 
     if write_dataframe:
-        gdf_output.to_file(os.path.join(output_path, output_name.split('.tif')[0]+'_detection.gpkg'), driver='GPKG')
+        gdf_output.to_file(os.path.join(output_path, output_name.split('.tif')[0]+'_slicing_job.gpkg'), driver='GPKG')
 
     return gdf_output, profile, resolution
 
