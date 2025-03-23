@@ -57,9 +57,18 @@ def setup(args):
 
     try:
         Path(config['output_path']).mkdir(parents=True, exist_ok=True)
-        path_out = os.path.join(config['output_path'], config['output_name'])
-        if os.path.exists(path_out):
-            os.remove(path_out)  # Removing if existing
+        base_name = config['output_name']
+        path_out = os.path.join(config['output_path'], base_name)
+
+        # If it's a .tif file, handle that
+        filename, ext = os.path.splitext(base_name)
+        counter = 1
+
+        while os.path.exists(path_out):
+            new_name = f"{filename}_{counter}{ext}"
+            path_out = os.path.join(config['output_path'], new_name)
+            counter += 1
+        config['output_name'] = os.path.splitext(os.path.basename(path_out))[0]
         return config, path_out, device, use_gpu
 
     except Exception as error:
@@ -67,26 +76,35 @@ def setup(args):
 
 
 
-
-
 def conf_log(config, resolution):
+    # Determine model template info based on provider
+    provider = config['model_framework']['model_provider']
+    if provider == 'HuggingFace':
+        model_template = f"{provider} - {config['model_framework']['HuggingFace']['org_model']}"
+    elif provider == 'SegmentationModelsPytorch':
+        model_template = f"{provider} - {config['model_framework']['SegmentationModelsPytorch']['encoder_decoder']}"
+    else:
+        model_template = provider  # fallback if unknown
+
     print(f"""
     |- output path: {config['output_path']}
     |- output raster name: {config['output_name']}
 
     |- input image path: {config['input_img_path']}
     |- channels: {config['channels']}
-    |- resolution: {resolution}\n
+    |- resolution: {resolution}
     |- image size for detection: {config['img_pixels_detection']}
     |- overlap margin: {config['margin']}
     |- write dataframe: {config['write_dataframe']}
     |- number of classes: {config['n_classes']}
     |- normalization: {config['norma_task'][0]['norm_type']}
-    |- output type: {config['output_type']}\n
+    |- output type: {config['output_type']}
+
     |- model weights path: {config['model_weights']}
-    |- model template: {config['model_framework']['model_provider']}
+    |- model template: {model_template}
     |- device: {"cuda" if config['use_gpu'] else "cpu"}
-    |- batch size: {config['batch_size']}\n\n""")       
+    |- batch size: {config['batch_size']}\n
+    """)    
 
 
 
@@ -118,7 +136,6 @@ def prepare(config, device):
 
     return sliced_dataframe, profile, resolution, model
     
-
 
 
 def main():
