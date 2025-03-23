@@ -1,13 +1,11 @@
 import numpy as np
 import torch 
 import rasterio.windows
-import logging 
 
 from torch.utils.data import Dataset
 from skimage.util import img_as_float
 from rasterio.enums import Resampling
 
-LOGGER = logging.getLogger(__name__)
 
 
 def convert(img, img_type):
@@ -21,7 +19,7 @@ def convert(img, img_type):
         img = np.argmax(img, axis=0)
         return np.expand_dims(img.astype(np.uint8), axis=0)
     else:
-        LOGGER.warning("The output type has not been interpreted.")
+        print("The output type has not been interpreted.")
         return img 
 
 
@@ -92,4 +90,4 @@ class Sliced_Dataset(Dataset):
             }            
                      
         except rasterio._err.CPLE_BaseError as error:
-            LOGGER.warning(f"CPLE error {error}")    
+            print(f"CPLE error {error}")    
