@@ -2,16 +2,12 @@ import torch
 import torch.nn as nn
 import os
 from pathlib import Path
-from logging import getLogger
 from dataclasses import dataclass, field
 from typing import Mapping
 
 import segmentation_models_pytorch as smp
 from transformers import AutoModelForSemanticSegmentation, AutoConfig
 
-
-
-LOGGER = getLogger(__name__)
 
 @dataclass
 class FLAIR_ModelFactory:
@@ -66,7 +62,7 @@ def get_module(checkpoint: str | Path) -> Mapping:
         if checkpoint.endswith('.ckpt'):
             weights = weights['state_dict']
     else:
-        LOGGER.error('Error with checkpoint provided: either a .ckpt with a "state_dict" key or an OrderedDict pt/pth file')
+        print('Error with checkpoint provided: either a .ckpt with a "state_dict" key or an OrderedDict pt/pth file')
         return {}
 
     if 'model.seg_model' in list(weights.keys())[0]:
