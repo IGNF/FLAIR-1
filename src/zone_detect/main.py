@@ -1,5 +1,5 @@
-import os
-import logging 
+import os, sys
+import datetime
 import warnings
 import torch
 import rasterio
@@ -8,6 +8,7 @@ import yaml
 from pathlib import Path
 import argparse 
 from torch.utils.data import DataLoader
+from pytorch_lightning.utilities.rank_zero import rank_zero_only  
 from rasterio.features import geometry_window
 from tqdm import tqdm
 
@@ -22,23 +23,25 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 argParser = argparse.ArgumentParser()
 argParser.add_argument("--conf", help="Path to the .yaml config file")
 
-#### LOGGERS 
-LOGGER = logging.getLogger(__name__)
 
-log = logging.getLogger('stdout_detection')
-log.setLevel(logging.DEBUG)
-STD_OUT_LOGGER = log
+@rank_zero_only
+class Logger(object):
+    def __init__(self, filename='Default.log'):
+        self.terminal = sys.stdout
+        self.log = open(filename, 'w', encoding='utf-8') 
+        self.encoding = self.terminal.encoding
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-STD_OUT_LOGGER.addHandler(ch)
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
 
+    def flush(self):
+        self.log.flush()
 
 
 def read_config(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
-
 
 
 def setup(args):
@@ -110,7 +113,7 @@ def conf_log(config, resolution):
 
 def prepare(config, device):
     
-    STD_OUT_LOGGER.info(f"""
+    print(f"""
     ##############################################
     ZONE DETECTION
     ##############################################
@@ -127,12 +130,12 @@ def prepare(config, device):
                                                                )
     ## log
     conf_log(config, resolution)
-    STD_OUT_LOGGER.info(f"""    [x] sliced input raster to {len(sliced_dataframe)} squares...""")
+    print(f"""    [x] sliced input raster to {len(sliced_dataframe)} squares...""")
     ## loading model and weights
     model = load_model(config)
     model.eval()
     model = model.to(device)  
-    STD_OUT_LOGGER.info(f"""    [x] loaded model and weights...""")
+    print(f"""    [x] loaded model and weights...""")
 
     return sliced_dataframe, profile, resolution, model
     
@@ -143,6 +146,11 @@ def main():
     # reading yaml
     args = argParser.parse_args()
     config, path_out, device, use_gpu = setup(args)
+
+    log_filename = os.path.join(config['output_path'], f"{config['output_name']}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+    sys.stdout = Logger(filename=log_filename)
+    sys.stderr = sys.stdout
+    print(f"    [LOGGER] Writing logs to: {log_filename}")
 
     input_img_path = config['input_img_path']
     channels = config['channels']
@@ -180,7 +188,7 @@ def main():
                              pin_memory=True,
                              )
     # inference loop
-    STD_OUT_LOGGER.info(f"""    [ ] starting inference...\n""")
+    print(f"""    [ ] starting inference...\n""")
     for samples in tqdm(data_loader):
         imgs = samples["image"]
         if use_gpu:
@@ -211,10 +219,11 @@ def main():
                 
     out.close()
     dataset.close_raster()
-    STD_OUT_LOGGER.info(f"""    
+    print(f"""    
                         
     [X] done writing to {path_out.split('/')[-1]} raster file.\n""")
-
+    
+    sys.stdout = sys.__stdout__ 
 
 if __name__ == '__main__':
     main()         
