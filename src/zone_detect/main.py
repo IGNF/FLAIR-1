@@ -44,6 +44,7 @@ def read_config(file_path):
         return yaml.safe_load(f)
 
 
+
 def setup(args):
     config = read_config(args.conf)
     use_gpu = (False if torch.cuda.is_available() is False else config['use_gpu'])
@@ -79,7 +80,9 @@ def setup(args):
 
 
 
-def conf_log(config, resolution):
+
+
+def conf_log(config, resolution, img_size):
     # Determine model template info based on provider
     provider = config['model_framework']['model_provider']
     if provider == 'HuggingFace':
@@ -95,6 +98,7 @@ def conf_log(config, resolution):
 
     |- input image path: {config['input_img_path']}
     |- channels: {config['channels']}
+    |- input image WxH: {img_size[0], img_size[1]}   
     |- resolution: {resolution}
     |- image size for detection: {config['img_pixels_detection']}
     |- overlap margin: {config['margin']}
@@ -107,7 +111,8 @@ def conf_log(config, resolution):
     |- model template: {model_template}
     |- device: {"cuda" if config['use_gpu'] else "cpu"}
     |- batch size: {config['batch_size']}\n
-    """)    
+    """)
+      
 
 
 
@@ -121,7 +126,7 @@ def prepare(config, device):
     CUDA available? {torch.cuda.is_available()}""")
 
     ## slicing extent for overlapping detection 
-    sliced_dataframe, profile, resolution = slice_extent(in_img=config['input_img_path'],
+    sliced_dataframe, profile, resolution, img_size = slice_extent(in_img=config['input_img_path'],
                                                                 patch_size=config['img_pixels_detection'],  
                                                                 margin=config['margin'], 
                                                                 output_name=config['output_name'],
@@ -129,7 +134,7 @@ def prepare(config, device):
                                                                 write_dataframe=config['write_dataframe'],
                                                                )
     ## log
-    conf_log(config, resolution)
+    conf_log(config, resolution, img_size)
     print(f"""    [x] sliced input raster to {len(sliced_dataframe)} squares...""")
     ## loading model and weights
     model = load_model(config)
@@ -139,6 +144,7 @@ def prepare(config, device):
 
     return sliced_dataframe, profile, resolution, model
     
+
 
 
 def main():
@@ -151,6 +157,8 @@ def main():
     sys.stdout = Logger(filename=log_filename)
     sys.stderr = sys.stdout
     print(f"    [LOGGER] Writing logs to: {log_filename}")
+
+
 
     input_img_path = config['input_img_path']
     channels = config['channels']
@@ -191,8 +199,9 @@ def main():
     print(f"""    [ ] starting inference...\n""")
     for samples in tqdm(data_loader):
         imgs = samples["image"]
+        imgs = imgs.to(device, non_blocking=(device.type == "cuda"))
         if use_gpu:
-            imgs = imgs.cuda()
+            torch.cuda.synchronize()
         with torch.no_grad():
             logits = model(imgs)
             if config['model_framework']['model_provider'] == 'HuggingFace':
@@ -222,7 +231,7 @@ def main():
     print(f"""    
                         
     [X] done writing to {path_out.split('/')[-1]} raster file.\n""")
-    
+
     sys.stdout = sys.__stdout__ 
 
 if __name__ == '__main__':
