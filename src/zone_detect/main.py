@@ -1,103 +1,244 @@
-import os
-import numpy as np
+import os, sys
+import datetime
+import warnings
+import torch
 import rasterio
-import geopandas as gpd
+import yaml
 
 from pathlib import Path
-from shapely.geometry import box, mapping
+import argparse 
+from torch.utils.data import DataLoader
+from pytorch_lightning.utilities.rank_zero import rank_zero_only  
+from rasterio.features import geometry_window
+from tqdm import tqdm
+
+from src.zone_detect.slicing_job import slice_extent, create_polygon_from_bounds
+from src.zone_detect.model import load_model
+from src.zone_detect.dataset import Sliced_Dataset, convert
 
 
-def create_polygon_from_bounds(x_min, x_max, y_min, y_max):
-    return mapping(box(x_min, y_max, x_max, y_min))
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+#### CONF FILE
+argParser = argparse.ArgumentParser()
+argParser.add_argument("--conf", help="Path to the .yaml config file")
 
 
-def create_box_from_bounds(x_min, x_max, y_min, y_max):
-    return box(x_min, y_max, x_max, y_min)
+@rank_zero_only
+class Logger(object):
+    def __init__(self, filename='Default.log'):
+        self.terminal = sys.stdout
+        self.log = open(filename, 'w', encoding='utf-8') 
+        self.encoding = self.terminal.encoding
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+
+    def flush(self):
+        self.log.flush()
+
+
+def read_config(file_path):
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
 
 
 
-def slice_extent(
-    in_img: str | Path, 
-    patch_size: int, 
-    margin: int, 
-    output_path: str | Path, 
-    output_name: str | Path, 
-    write_dataframe: bool
-):
-    with rasterio.open(in_img) as src:
-        profile = src.profile
-        img_width, img_height = profile['width'], profile['height']
-        left_overall, bottom_overall, right_overall, top_overall = src.bounds
-        resolution = abs(round(src.res[0], 5)), abs(round(src.res[1], 5))
+def setup(args):
+    config = read_config(args.conf)
+    use_gpu = (False if torch.cuda.is_available() is False else config['use_gpu'])
+    device = torch.device("cuda" if use_gpu else "cpu")
+
+    assert isinstance(config['output_path'], str), "Output path does not exist."
+    assert os.path.exists(config['input_img_path']), "Input image path does not exist."
+    assert config['margin'] * 2 < config['img_pixels_detection'], "Margin is too large : margin*2 < img_pixels_detection"
+    assert config['output_type'] in ['class_prob', 'argmax'], "Invalid output type: should be argmax or class_prob."
+    assert config['norma_task'][0]['norm_type'] in ['custom', 'scaling'], "Invalid normalization type: should be custom or scaling."
+    assert os.path.isfile(config['model_weights']), "Model weights file does not exist."
+    if not config['output_name'].endswith('.tif'):
+        config['output_name'] += '.tif'  
+
+    try:
+        Path(config['output_path']).mkdir(parents=True, exist_ok=True)
+        base_name = config['output_name']
+        path_out = os.path.join(config['output_path'], base_name)
+
+        # If it's a .tif file, handle that
+        filename, ext = os.path.splitext(base_name)
+        counter = 1
+
+        while os.path.exists(path_out):
+            new_name = f"{filename}_{counter}{ext}"
+            path_out = os.path.join(config['output_path'], new_name)
+            counter += 1
+        config['output_name'] = os.path.splitext(os.path.basename(path_out))[0]
+        return config, path_out, device, use_gpu
+
+    except Exception as error:
+        print(f"Something went wrong during detection configuration: {error}")
+
+
+
+
+
+def conf_log(config, resolution, img_size):
+    # Determine model template info based on provider
+    provider = config['model_framework']['model_provider']
+    if provider == 'HuggingFace':
+        model_template = f"{provider} - {config['model_framework']['HuggingFace']['org_model']}"
+    elif provider == 'SegmentationModelsPytorch':
+        model_template = f"{provider} - {config['model_framework']['SegmentationModelsPytorch']['encoder_decoder']}"
+    else:
+        model_template = provider  # fallback if unknown
+
+    print(f"""
+    |- output path: {config['output_path']}
+    |- output raster name: {config['output_name']}
+
+    |- input image path: {config['input_img_path']}
+    |- channels: {config['channels']}
+    |- input image WxH: {img_size[0], img_size[1]}   
+    |- resolution: {resolution}
+    |- image size for detection: {config['img_pixels_detection']}
+    |- overlap margin: {config['margin']}
+    |- write dataframe: {config['write_dataframe']}
+    |- number of classes: {config['n_classes']}
+    |- normalization: {config['norma_task'][0]['norm_type']}
+    |- output type: {config['output_type']}
+
+    |- model weights path: {config['model_weights']}
+    |- model template: {model_template}
+    |- device: {"cuda" if config['use_gpu'] else "cpu"}
+    |- batch size: {config['batch_size']}\n
+    """)
+      
+
+
+
+def prepare(config, device):
     
-    geo_output_size = [
-        patch_size * resolution[0],
-        patch_size * resolution[1]
-    ]
-    geo_margin = [
-        margin * resolution[0],
-        margin * resolution[1]
-    ]
-    geo_step = [
-        geo_output_size[0] - (2 * geo_margin[0]),
-        geo_output_size[1] - (2 * geo_margin[1])
-    ]
+    print(f"""
+    ##############################################
+    ZONE DETECTION
+    ##############################################
+
+    CUDA available? {torch.cuda.is_available()}""")
+
+    ## slicing extent for overlapping detection 
+    sliced_dataframe, profile, resolution, img_size = slice_extent(in_img=config['input_img_path'],
+                                                                patch_size=config['img_pixels_detection'],  
+                                                                margin=config['margin'], 
+                                                                output_name=config['output_name'],
+                                                                output_path=config['output_path'],
+                                                                write_dataframe=config['write_dataframe'],
+                                                               )
+    ## log
+    conf_log(config, resolution, img_size)
+    print(f"""    [x] sliced input raster to {len(sliced_dataframe)} squares...""")
+    ## loading model and weights
+    model = load_model(config)
+    model.eval()
+    model = model.to(device)  
+    print(f"""    [x] loaded model and weights...""")
+
+    return sliced_dataframe, profile, resolution, model
+    
 
 
-    min_x, min_y = left_overall, bottom_overall
-    max_x, max_y = right_overall, top_overall    
 
-    tmp_list = []
-    existing_patches = set()  # To track unique patches
+def main():
 
-    for x_coord in np.arange(min_x - geo_margin[0], max_x + geo_margin[0], geo_step[0]):
-        for y_coord in np.arange(min_y - geo_margin[1], max_y + geo_margin[1], geo_step[1]):
+    # reading yaml
+    args = argParser.parse_args()
+    config, path_out, device, use_gpu = setup(args)
 
-            # Adjust last column to ensure proper alignment
-            if x_coord + geo_output_size[0] > max_x + geo_margin[0]:
-                x_coord = max_x + geo_margin[0] - geo_output_size[0]
-            # Adjust last row
-            if y_coord + geo_output_size[1] > max_y + geo_margin[1]:
-                y_coord = max_y + geo_margin[1] - geo_output_size[1]
-
-            # Define patch boundaries
-            left = x_coord + geo_margin[0]
-            right = x_coord + geo_output_size[0] - geo_margin[0]
-            bottom = y_coord + geo_margin[1]
-            top = y_coord + geo_output_size[1] - geo_margin[1]
-
-            # Ensure patches don't go outside raster bounds
-            right = min(right, max_x)
-            top = min(top, max_y)
-
-            col, row = int((y_coord - min_y) // resolution[0]) + 1, int((x_coord - min_x) // resolution[1]) + 1
-
-            # Unique identifier for patch
-            new_patch = (round(left, 6), round(bottom, 6), round(right, 6), round(top, 6))
-
-            if new_patch not in existing_patches:
-                existing_patches.add(new_patch)  # Track unique patches
-                row_d = {
-                    "id": str(f"{1}-{row}-{col}"),
-                    "output_id": output_name,
-                    "job_done": 0,
-                    "left": left,
-                    "bottom": bottom,
-                    "right": right,
-                    "top": top,
-                    "left_o": left_overall,
-                    "bottom_o": bottom_overall,
-                    "right_o": right_overall,
-                    "top_o": top_overall,
-                    "geometry": create_box_from_bounds(x_coord, x_coord + geo_output_size[0], y_coord, y_coord + geo_output_size[1])
-                }
-                tmp_list.append(row_d)
-
-    gdf_output = gpd.GeoDataFrame(tmp_list, crs=profile['crs'], geometry="geometry")
-
-    if write_dataframe:
-        gdf_output.to_file(os.path.join(output_path, output_name.split('.tif')[0]+'_slicing_job.gpkg'), driver='GPKG')
-
-    return gdf_output, profile, resolution, [img_width, img_height]
+    log_filename = os.path.join(config['output_path'], f"{config['output_name']}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+    sys.stdout = Logger(filename=log_filename)
+    sys.stderr = sys.stdout
+    print(f"    [LOGGER] Writing logs to: {log_filename}")
 
 
+
+    input_img_path = config['input_img_path']
+    channels = config['channels']
+    img_pixels_detection = config['img_pixels_detection']
+    norma_task = config['norma_task']
+    batch_size = config['batch_size']    
+    num_worker = config['num_worker']
+    output_type = config['output_type']    
+    margin = config['margin']
+    n_classes = config['n_classes']
+
+    # slicing and model gathering
+    sliced_dataframe, profile, resolution, model = prepare(config, device)
+    
+    # get dataset 
+    dataset = Sliced_Dataset(dataframe=sliced_dataframe,
+                            img_path=input_img_path,
+                            resolution=resolution,
+                            bands=channels, 
+                            patch_detection_size=img_pixels_detection,
+                            norma_dict=norma_task,
+                            )    
+    
+    # prepare output raster
+    out_overall_profile = profile.copy()
+    out_overall_profile.update({'dtype':'uint8', 'compress':'LZW', 'driver':'GTiff', 'BIGTIFF':'YES', 'tiled':True, 
+                                'blockxsize':img_pixels_detection, 'blockysize':img_pixels_detection})
+    out_overall_profile['count'] = [1 if output_type == 'argmax' else n_classes][0]
+    out = rasterio.open(path_out, 'w+', **out_overall_profile)   
+    
+    # get Dataloader
+    data_loader = DataLoader(dataset,
+                             batch_size=batch_size,
+                             num_workers=num_worker,
+                             pin_memory=True,
+                             )
+    # inference loop
+    print(f"""    [ ] starting inference...\n""")
+    for samples in tqdm(data_loader):
+        imgs = samples["image"]
+        imgs = imgs.to(device, non_blocking=(device.type == "cuda"))
+        if use_gpu:
+            torch.cuda.synchronize()
+        with torch.no_grad():
+            logits = model(imgs)
+            if config['model_framework']['model_provider'] == 'HuggingFace':
+                logits = logits.logits
+            logits.to(device)
+        predictions = torch.softmax(logits, dim=1)
+        predictions = predictions.cpu().numpy()
+        indices = samples["index"].cpu().numpy()    
+
+        # writing windowed raster to output rastert 
+        for prediction, index in zip(predictions, indices):
+            # removing margins
+            prediction = prediction[:,0+margin:img_pixels_detection-margin,0+margin:img_pixels_detection-margin]
+            prediction = convert(prediction, output_type)
+            sliced_patch_bounds = create_polygon_from_bounds(sliced_dataframe.at[index[0], 'left'], sliced_dataframe.at[index[0], 'right'], 
+                                                             sliced_dataframe.at[index[0], 'bottom'], sliced_dataframe.at[index[0], 'top'])
+            window = geometry_window(out, [sliced_patch_bounds], pixel_precision=6)
+            window = window.round_shape(op='ceil', pixel_precision=4)
+            #write
+            if output_type == "argmax":
+                out.write(prediction, window=window)
+            else:
+                out.write_band([i for i in range(1, n_classes + 1)], prediction, window=window)      
+                
+    out.close()
+    dataset.close_raster()
+    print(f"""    
+                        
+    [X] done writing to {path_out.split('/')[-1]} raster file.\n""")
+
+    sys.stdout = sys.__stdout__ 
+
+if __name__ == '__main__':
+    main()         
+
+
+
+
+
+    
