@@ -15,6 +15,7 @@ def create_box_from_bounds(x_min, x_max, y_min, y_max):
     return box(x_min, y_max, x_max, y_min)
 
 
+
 def slice_extent(
     in_img: str | Path, 
     patch_size: int, 
@@ -25,6 +26,7 @@ def slice_extent(
 ):
     with rasterio.open(in_img) as src:
         profile = src.profile
+        img_width, img_height = profile['width'], profile['height']
         left_overall, bottom_overall, right_overall, top_overall = src.bounds
         resolution = abs(round(src.res[0], 5)), abs(round(src.res[1], 5))
     
@@ -40,6 +42,7 @@ def slice_extent(
         geo_output_size[0] - (2 * geo_margin[0]),
         geo_output_size[1] - (2 * geo_margin[1])
     ]
+
 
     min_x, min_y = left_overall, bottom_overall
     max_x, max_y = right_overall, top_overall    
@@ -95,6 +98,4 @@ def slice_extent(
     if write_dataframe:
         gdf_output.to_file(os.path.join(output_path, output_name.split('.tif')[0]+'_slicing_job.gpkg'), driver='GPKG')
 
-    return gdf_output, profile, resolution
-
-
+    return gdf_output, profile, resolution, [img_width, img_height]
