@@ -37,9 +37,9 @@ class fit_dataset(Dataset):
                  dict_files : dict,
                  channels : list = [1,2,3,4,5],
                  num_classes : int = 13, 
-                 use_metadata : bool = True,
+                 use_metadata : bool = False,
                  use_augmentations : bool = None,
-                 norm_type : str = 'scale',
+                 norm_type : str = 'scaling',
                  means : list = [],
                  stds : list = []
                  ):
