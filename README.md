@@ -123,7 +123,7 @@ See datacards for more details about each model.
 # it's recommended to install on a conda virtual env
 conda create -n FLAIR-1 -c conda-forge python=3.11
 conda activate FLAIR-1
-git clone git@github.com:IGNF/FLAIR-1.git
+git clone https@github.com:IGNF/FLAIR-1.git
 cd FLAIR-1*
 pip install -e .
 # if torch.cuda.is_available() returns False, do the following :
