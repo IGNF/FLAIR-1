@@ -37,6 +37,7 @@ class fit_dataset(Dataset):
                  dict_files : dict,
                  channels : list = [1,2,3,4,5],
                  num_classes : int = 13, 
+                 start_one : bool = True,
                  use_metadata : bool = False,
                  use_augmentations : bool = None,
                  norm_type : str = 'scaling',
@@ -46,6 +47,7 @@ class fit_dataset(Dataset):
 
         self.list_imgs = np.array(dict_files["IMG"])
         self.list_msks = np.array(dict_files["MSK"])
+        self.start_one = start_one
         self.use_metadata = use_metadata
         if use_metadata == True:
             self.list_metadata = np.array(dict_files["MTD"])
@@ -62,9 +64,11 @@ class fit_dataset(Dataset):
             array = src_img.read(self.channels)
             return array
 
-    def read_msk(self, raster_file: str) -> np.ndarray:
+    def read_msk(self, raster_file: str, start_one) -> np.ndarray:
         with rasterio.open(raster_file) as src_msk:
-            array = src_msk.read()[0]-1
+            array = src_msk.read()[0]
+            if start_one :
+                array = array-1
             array = np.stack([array == i for i in range(self.num_classes)], axis=0)
             return array  
 
@@ -76,7 +80,7 @@ class fit_dataset(Dataset):
         img = self.read_img(raster_file=image_file)
         
         mask_file = self.list_msks[index]
-        msk = self.read_msk(raster_file=mask_file)
+        msk = self.read_msk(raster_file=mask_file, self.start_one)
 
         if self.use_augmentations is not None:
             sample = {"image" : img.swapaxes(0, 2).swapaxes(0, 1), "mask": msk.swapaxes(0, 2).swapaxes(0, 1)}
