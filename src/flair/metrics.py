@@ -42,7 +42,9 @@ def metrics(config: dict, path_preds: str, remove_preds=False):
     patch_confusion_matrices = []
     for u in range(len(truth_msks)):
         try:
-            target = np.array(Image.open(truth_msks[u]))-1 
+            target = np.array(Image.open(truth_msks[u]))
+            if config['supervision_starts_at_one']:
+                target = target-1
             preds = np.array(Image.open(preds_msks[u]))         
             patch_confusion_matrices.append(confusion_matrix(target.flatten(), preds.flatten(), labels=list(range(int(len(config["classes"]))))))
         except Exception as e:
