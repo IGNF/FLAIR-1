@@ -53,6 +53,7 @@ num_epochs: 3
 
 #### DATA CONF
 use_weights: True
+supervision_starts_at_one: True
 classes: # k = value in MSK : v = [weight, name]
     1:  [1, 'building']
     2:  [1, 'pervious surface']
