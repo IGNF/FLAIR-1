@@ -14,6 +14,7 @@ class flair_datamodule(LightningDataModule):
         batch_size : int = 2,
         drop_last : bool = True,
         num_classes : int = 13,
+        start_one : bool = True, 
         channels : list = [1,2,3,4,5],
         use_metadata: bool = True,
         use_augmentations : bool = True,
@@ -27,6 +28,7 @@ class flair_datamodule(LightningDataModule):
         self.dict_test = dict_test
         self.batch_size = batch_size
         self.num_classes = num_classes
+        self.start_one = start_one
         self.channels = channels
         self.num_workers = num_workers
         self.train_dataset = None
@@ -48,6 +50,7 @@ class flair_datamodule(LightningDataModule):
                 dict_files=self.dict_train,
                 channels=self.channels,
                 num_classes=self.num_classes,
+                start_one = self.start_one,
                 use_metadata=self.use_metadata,
                 use_augmentations=self.use_augmentations,
                 norm_type= self.norm_type,
@@ -59,6 +62,7 @@ class flair_datamodule(LightningDataModule):
                 dict_files=self.dict_val,
                 channels=self.channels,
                 num_classes=self.num_classes,
+                start_one = self.start_one,
                 use_metadata=self.use_metadata,
                 norm_type= self.norm_type,
                 means=self.means,
