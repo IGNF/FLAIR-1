@@ -80,7 +80,8 @@ class fit_dataset(Dataset):
         img = self.read_img(raster_file=image_file)
         
         mask_file = self.list_msks[index]
-        msk = self.read_msk(raster_file=mask_file, self.start_one)
+        msk = self.read_msk(raster_file=mask_file, start_one=self.start_one)
+
 
         if self.use_augmentations is not None:
             sample = {"image" : img.swapaxes(0, 2).swapaxes(0, 1), "mask": msk.swapaxes(0, 2).swapaxes(0, 1)}
