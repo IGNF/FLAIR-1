@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 setup(
     name='flair',
     version='0.2.0',  # Change this as needed or implement dynamic version reading from VERSION file
-    author='Anatol Garioud & Samy Khelifi',
-    author_email='ai-challenge@ign.fr',
+    author='Anatol Garioud',
+    author_email='flair@ign.fr',
     description='baseline and demo code from the flair #1 challenge',
     long_description='French Land-cover from Arospace ImageRy',
     long_description_content_type='French Land-cover from Arospace ImageRy',
