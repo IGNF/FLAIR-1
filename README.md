@@ -20,6 +20,16 @@ Participate in obtaining more accurate maps for a more comprehensive description
 </div>
 
 <div style="border-width:1px; border-style:solid; border-color:#d2db8c; padding-left: 1em; padding-right: 1em; ">
+
+<br>
+
+## 📢 New Repository Available
+
+A more recent FLAIR project is now available here: <br>
+👉 [FLAIR-HUB](https://github.com/IGNF/FLAIR-HUB)
+<br>
+
+
   
 <h2 style="margin-top:5px;">Links</h2>
 
