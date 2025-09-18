@@ -149,6 +149,9 @@ def prepare(config, device):
 
 def main():
 
+    start_dt = datetime.datetime.now()
+    print(f"    [STARTING TIME] {start_dt.strftime('%Y-%m-%d %H:%M:%S')}")
+    
     # reading yaml
     args = argParser.parse_args()
     config, path_out, device, use_gpu = setup(args)
@@ -233,6 +236,11 @@ def main():
                         
     [X] done writing to {path_out.split('/')[-1]} raster file.\n""")
 
+    end_dt = datetime.datetime.now()
+    total = end_dt - start_dt
+    print(f"    [ENDING TIME]   {end_dt.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"    [TOTAL PROCESSING TIME] { _format_hms(total) }")
+    
     sys.stdout = sys.__stdout__ 
 
 if __name__ == '__main__':
@@ -243,4 +251,5 @@ if __name__ == '__main__':
 
 
     
+
 
