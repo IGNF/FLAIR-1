@@ -114,16 +114,16 @@ def load_checkpoint(conf, seg_module, exit_on_fail=False):
         
         # Load model weights if class numbers match
         if ckpt_num_classes is not None and ckpt_num_classes == num_classes:
+            state_dict = {k: v for k, v in state_dict.items() if 'criterion' not in k}
             seg_module.load_state_dict(state_dict, strict=False)
             print('--------------- Loaded model weights from checkpoint with matching number of classes. ---------------')
-        else:
-            print(f'Number of classes in checkpoint ({ckpt_num_classes}) does not match the current number of classes ({num_classes}). Proceeding with modifications.')
-            
-            # Identify and exclude layers with mismatched shapes
-            ignored_layers = [k for k, v in state_dict.items() if k in model_state_dict and v.shape != model_state_dict[k].shape]
-            ignored_layers = [i for i in ignored_layers if any(x in i for x in ['head', 'criterion'])]         
 
-            for k in ignored_layers: 
+        else:
+            # Identify and exclude layers with mismatched shapes
+            modified_layers  = [k for k, v in state_dict.items() if k in model_state_dict and v.shape != model_state_dict[k].shape]
+            modified_layers  = [i for i in modified_layers  if any(x in i for x in ['head', 'criterion'])]         
+
+            for k in modified_layers : 
                 if 'criterion' in k:
                     print('-', k, 'has been modified.')
                     print(state_dict[k].shape, '  ->  ', flush=True, end='')
