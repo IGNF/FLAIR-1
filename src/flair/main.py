@@ -211,6 +211,7 @@ def main():
     # Custom Logger for console/logfile output
     sys.stdout = Logger(
         Path(config['paths']["out_folder"], config['paths']["out_model_name"], 'flair-compute.log').as_posix())
+    
     print(datetime.datetime.now().strftime("Starting : %Y-%m-%d  %H:%M") + '\n')
 
     # Define data sets
