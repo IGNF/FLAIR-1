@@ -34,7 +34,7 @@ setup(
         "scikit-image>=0.22.0",
         "pillow>=9.3.0",
         "torchmetrics==1.2.0",
-        "pytorch-lightning==2.1.1",
+        "pytorch-lightning>=2.4.0",
         "segmentation-models-pytorch==0.3.3",
         "albumentations==1.3.1",
         "tensorboard==2.15.1",
